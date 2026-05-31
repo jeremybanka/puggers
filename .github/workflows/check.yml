@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: ./.github/actions/setup
-      - run: cargo fmt --check
+      - run: just fmt-cargo-check
 
   CargoBuild:
     name: Cargo Build
@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: ./.github/actions/setup
-      - run: cargo build --workspace
+      - run: just build-cargo
 
   Clippy:
     name: Clippy
@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: ./.github/actions/setup
-      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: just check-clippy
 
   WasmBuild:
     name: Wasm Build
@@ -52,4 +52,4 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: ./.github/actions/setup
-      - run: cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release
+      - run: just build-wasm
