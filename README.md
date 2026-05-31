@@ -1,41 +1,32 @@
-# dprint-plugin-pug
+# puggers
 
-Tiny `dprint` Wasm plugin for a small subset of Pug.
+Workspace for a small family of Pug tools.
 
-## Scope
+## Crates
 
-This intentionally minimal formatter currently understands:
+- `crates/dprint-plugin-pug`: the existing tiny `dprint` formatter plugin
+- `crates/puggers-html`: Rust library for converting HTML into Pug
+- `crates/puggers-cli`: standalone CLI built on top of `puggers-html`
 
-- indentation-based nesting
-- tags
-- `.class` and `#id` shorthand
-- inline text
-- `//` comments
-
-Everything else is preserved as text where possible instead of trying to be clever.
-
-## Use with dprint
-
-```json
-{
-  "plugins": [
-    "target/wasm32-unknown-unknown/release/dprint_plugin_pug.wasm"
-  ]
-}
-```
-
-## Reference docs
-
-A dated local Pug reference set lives at `docs/pug/2026-05-31/`.
-
-## Build
+## CLI
 
 ```sh
-mise exec rust -- cargo build --target wasm32-unknown-unknown --release
+cargo run -p puggers-cli -- --help
 ```
 
-The plugin artifact will be at:
+Example:
 
-```txt
-target/wasm32-unknown-unknown/release/dprint_plugin_pug.wasm
+```sh
+cargo run -p puggers-cli -- \
+  --trim-outer-document \
+  --allow-attr id \
+  --allow-attr class \
+  --allow-attr href \
+  path/to/input.html
+```
+
+## Tests
+
+```sh
+cargo test
 ```

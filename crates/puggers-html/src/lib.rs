@@ -1,0 +1,310 @@
+use std::collections::BTreeSet;
+
+use kuchikiki::traits::TendrilSink;
+use kuchikiki::{NodeRef, parse_html};
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ConvertOptions {
+  pub allowed_attributes: BTreeSet<String>,
+  pub preserve_id_and_class_shorthand: bool,
+  pub trim_outer_document: bool,
+  pub collapse_single_nested: bool,
+  pub keep_comments: bool,
+}
+
+impl Default for ConvertOptions {
+  fn default() -> Self {
+    Self {
+      allowed_attributes: BTreeSet::new(),
+      preserve_id_and_class_shorthand: true,
+      trim_outer_document: false,
+      collapse_single_nested: false,
+      keep_comments: true,
+    }
+  }
+}
+
+pub fn convert_html_to_pug(input: &str, options: &ConvertOptions) -> String {
+  let document = parse_html().one(input);
+  let mut nodes = if options.trim_outer_document {
+    root_nodes_from_body(&document, options)
+  } else {
+    nodes_from_children(&document, options)
+  };
+
+  if options.collapse_single_nested {
+    nodes = nodes.into_iter().map(collapse_single_nested).collect();
+  }
+
+  let rendered = render_nodes(&nodes, 0, options);
+  if rendered.is_empty() {
+    String::new()
+  } else {
+    format!("{rendered}\n")
+  }
+}
+
+fn root_nodes_from_body(document: &NodeRef, options: &ConvertOptions) -> Vec<Node> {
+  document
+    .select_first("body")
+    .ok()
+    .map(|body| nodes_from_children(body.as_node(), options))
+    .filter(|children| !children.is_empty())
+    .unwrap_or_else(|| nodes_from_children(document, options))
+}
+
+fn nodes_from_children(node: &NodeRef, options: &ConvertOptions) -> Vec<Node> {
+  node
+    .children()
+    .filter_map(|child| node_from_dom(&child, options))
+    .collect()
+}
+
+fn node_from_dom(node: &NodeRef, options: &ConvertOptions) -> Option<Node> {
+  if let Some(doctype) = node.as_doctype() {
+    return Some(Node::Doctype(doctype.name.to_string()));
+  }
+
+  if let Some(comment) = node.as_comment() {
+    if !options.keep_comments {
+      return None;
+    }
+
+    let value = comment.borrow();
+    let trimmed = value.trim();
+    return (!trimmed.is_empty()).then(|| Node::Comment(trimmed.to_string()));
+  }
+
+  if let Some(text) = node.as_text() {
+    let value = text.borrow();
+    return normalize_text(&value).map(Node::Text);
+  }
+
+  if let Some(element) = node.as_element() {
+    let tag = element.name.local.to_string();
+    let attributes = sanitize_attributes(&element.attributes.borrow(), options);
+    let raw_text = if is_raw_text_tag(&tag) {
+      collect_raw_text(node)
+    } else {
+      None
+    };
+    let children = if raw_text.is_some() {
+      Vec::new()
+    } else {
+      nodes_from_children(node, options)
+    };
+
+    return Some(Node::Element(ElementNode {
+      tag,
+      attributes,
+      raw_text,
+      children,
+    }));
+  }
+
+  None
+}
+
+fn sanitize_attributes(
+  attributes: &kuchikiki::Attributes,
+  options: &ConvertOptions,
+) -> Vec<Attribute> {
+  let mut filtered = Vec::new();
+
+  for (name, attribute) in &attributes.map {
+    let local_name = name.local.to_string();
+    if !options.allowed_attributes.contains(&local_name) {
+      continue;
+    }
+
+    let value = attribute.value.trim().to_string();
+    let rendered_value = if value.is_empty() || value.eq_ignore_ascii_case(&local_name) {
+      None
+    } else {
+      Some(value)
+    };
+
+    filtered.push(Attribute {
+      name: local_name,
+      value: rendered_value,
+    });
+  }
+
+  filtered
+}
+
+fn normalize_text(input: &str) -> Option<String> {
+  let collapsed = input.split_whitespace().collect::<Vec<_>>().join(" ");
+  (!collapsed.is_empty()).then_some(collapsed)
+}
+
+fn collect_raw_text(node: &NodeRef) -> Option<String> {
+  let mut text = String::new();
+
+  for child in node.children() {
+    if let Some(value) = child.as_text() {
+      text.push_str(&value.borrow());
+    }
+  }
+
+  let trimmed = text.trim();
+  (!trimmed.is_empty()).then(|| trimmed.to_string())
+}
+
+fn collapse_single_nested(node: Node) -> Node {
+  match node {
+    Node::Element(mut element) => {
+      element.children = element
+        .children
+        .into_iter()
+        .map(collapse_single_nested)
+        .collect();
+
+      while element.tag == "div"
+        && element.attributes.is_empty()
+        && element.children.len() == 1
+        && matches!(&element.children[0], Node::Element(_))
+      {
+        match element.children.remove(0) {
+          Node::Element(child) => element = child,
+          other => return other,
+        }
+      }
+
+      Node::Element(element)
+    }
+    other => other,
+  }
+}
+
+fn render_nodes(nodes: &[Node], depth: usize, options: &ConvertOptions) -> String {
+  nodes
+    .iter()
+    .map(|node| render_node(node, depth, options))
+    .collect::<Vec<_>>()
+    .join("\n")
+}
+
+fn render_node(node: &Node, depth: usize, options: &ConvertOptions) -> String {
+  match node {
+    Node::Doctype(name) if name.eq_ignore_ascii_case("html") => format!("{}doctype html", indent(depth)),
+    Node::Doctype(name) => format!("{}doctype {}", indent(depth), name.trim()),
+    Node::Comment(comment) => format!("{}// {}", indent(depth), comment.trim()),
+    Node::Text(text) => format!("{}| {}", indent(depth), text.trim()),
+    Node::Element(element) => render_element(element, depth, options),
+  }
+}
+
+fn render_element(element: &ElementNode, depth: usize, options: &ConvertOptions) -> String {
+  let mut line = format!("{}{}", indent(depth), element.tag);
+  let mut trailing_attributes = Vec::new();
+
+  for attribute in &element.attributes {
+    if options.preserve_id_and_class_shorthand && attribute.name == "id" {
+      if let Some(value) = &attribute.value {
+        if is_shorthand_compatible(value) {
+          line.push('#');
+          line.push_str(value);
+          continue;
+        }
+      }
+    }
+
+    if options.preserve_id_and_class_shorthand && attribute.name == "class" {
+      if let Some(value) = &attribute.value {
+        let classes: Vec<_> = value.split_whitespace().collect();
+        if !classes.is_empty() && classes.iter().all(|class_name| is_shorthand_compatible(class_name)) {
+          for class_name in classes {
+            line.push('.');
+            line.push_str(class_name);
+          }
+          continue;
+        }
+      }
+    }
+
+    trailing_attributes.push(render_attribute(attribute));
+  }
+
+  if !trailing_attributes.is_empty() {
+    line.push('(');
+    line.push_str(&trailing_attributes.join(", "));
+    line.push(')');
+  }
+
+  if let Some(raw_text) = &element.raw_text {
+    let mut output = line;
+    output.push('.');
+    for raw_line in raw_text.lines() {
+      output.push('\n');
+      output.push_str(&indent(depth + 1));
+      output.push_str(raw_line);
+    }
+    return output;
+  }
+
+  if let [Node::Text(text)] = element.children.as_slice() {
+    line.push(' ');
+    line.push_str(text.trim());
+    return line;
+  }
+
+  if element.children.is_empty() {
+    return line;
+  }
+
+  let mut output = line;
+  for child in &element.children {
+    output.push('\n');
+    output.push_str(&render_node(child, depth + 1, options));
+  }
+  output
+}
+
+fn render_attribute(attribute: &Attribute) -> String {
+  match &attribute.value {
+    Some(value) => format!("{}=\"{}\"", attribute.name, escape_attr_value(value)),
+    None => attribute.name.clone(),
+  }
+}
+
+fn escape_attr_value(value: &str) -> String {
+  value.replace('\\', "\\\\").replace('"', "\\\"")
+}
+
+fn indent(depth: usize) -> String {
+  "  ".repeat(depth)
+}
+
+fn is_shorthand_compatible(value: &str) -> bool {
+  !value.is_empty()
+    && value
+      .chars()
+      .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '-' | '_'))
+}
+
+fn is_raw_text_tag(tag: &str) -> bool {
+  matches!(tag, "pre" | "script" | "style" | "textarea")
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum Node {
+  Doctype(String),
+  Comment(String),
+  Text(String),
+  Element(ElementNode),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ElementNode {
+  tag: String,
+  attributes: Vec<Attribute>,
+  raw_text: Option<String>,
+  children: Vec<Node>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Attribute {
+  name: String,
+  value: Option<String>,
+}

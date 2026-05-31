@@ -1,0 +1,92 @@
+use std::collections::BTreeSet;
+use std::env;
+use std::fs;
+use std::io::{self, Read};
+use std::process::ExitCode;
+
+use puggers_html::{ConvertOptions, convert_html_to_pug};
+
+fn main() -> ExitCode {
+  match run() {
+    Ok(()) => ExitCode::SUCCESS,
+    Err(message) => {
+      eprintln!("{message}");
+      ExitCode::FAILURE
+    }
+  }
+}
+
+fn run() -> Result<(), String> {
+  let mut args = env::args().skip(1);
+  let mut allowed_attributes = BTreeSet::new();
+  let mut trim_outer_document = false;
+  let mut collapse_single_nested = false;
+  let mut keep_comments = true;
+  let mut input_path = None;
+
+  while let Some(argument) = args.next() {
+    match argument.as_str() {
+      "--allow-attr" => {
+        let value = args
+          .next()
+          .ok_or_else(|| String::from("missing value after --allow-attr"))?;
+        allowed_attributes.insert(value);
+      }
+      "--trim-outer-document" => trim_outer_document = true,
+      "--collapse-single-nested" => collapse_single_nested = true,
+      "--drop-comments" => keep_comments = false,
+      "--help" | "-h" => {
+        print_help();
+        return Ok(());
+      }
+      _ if argument.starts_with('-') => {
+        return Err(format!("unknown flag: {argument}"));
+      }
+      _ => {
+        if input_path.is_some() {
+          return Err(String::from("only one input path is supported"));
+        }
+        input_path = Some(argument);
+      }
+    }
+  }
+
+  let input = if let Some(path) = input_path {
+    fs::read_to_string(&path).map_err(|error| format!("failed to read {path}: {error}"))?
+  } else {
+    let mut buffer = String::new();
+    io::stdin()
+      .read_to_string(&mut buffer)
+      .map_err(|error| format!("failed to read stdin: {error}"))?;
+    buffer
+  };
+
+  let output = convert_html_to_pug(
+    &input,
+    &ConvertOptions {
+      allowed_attributes,
+      trim_outer_document,
+      collapse_single_nested,
+      keep_comments,
+      ..Default::default()
+    },
+  );
+
+  print!("{output}");
+  Ok(())
+}
+
+fn print_help() {
+  println!(
+    "Usage: puggers [options] [path]\n\
+     \n\
+     If no path is provided, HTML is read from stdin.\n\
+     \n\
+     Options:\n\
+       --allow-attr <name>          Keep an attribute during conversion\n\
+       --trim-outer-document        Emit body children instead of html/head/body\n\
+       --collapse-single-nested     Collapse anonymous nested div wrappers\n\
+       --drop-comments              Remove HTML comments\n\
+       -h, --help                   Show this help text"
+  );
+}

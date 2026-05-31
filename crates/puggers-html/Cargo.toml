@@ -1,0 +1,11 @@
+[package]
+name = "puggers-html"
+version = "0.1.0"
+edition = "2024"
+description = "Convert HTML documents into Pug."
+license = "MIT"
+repository = "https://example.com/puggers-html"
+
+[dependencies]
+kuchikiki = "0.8.2"
+
