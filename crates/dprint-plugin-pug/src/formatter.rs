@@ -51,7 +51,10 @@ fn write_statement(
     use_tabs: bool,
 ) {
     write_indent(output, depth, indent_width, use_tabs);
-    output.push_str(element.content.trim());
+    output.push_str(&element.head.to_source());
+    if element.is_text_block {
+        output.push('.');
+    }
 
     for child in &element.children {
         output.push('\n');
