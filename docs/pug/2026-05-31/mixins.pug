@@ -1,0 +1,342 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(name="msapplication-config", content="/images/browserconfig.xml")
+    meta(name="theme-color", content="#ffffff")
+    link(rel="apple-touch-icon", sizes="180x180", href="/images/apple-touch-icon.png")
+    link(rel="icon", type="image/png", sizes="32x32", href="/images/favicon-32x32.png")
+    link(rel="icon", type="image/png", sizes="16x16", href="/images/favicon-16x16.png")
+    link(rel="manifest", href="/images/manifest.json")
+    link(rel="mask-icon", href="/images/safari-pinned-tab.svg")
+    link(rel="shortcut icon", href="/images/favicon.ico")
+    link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic|PT+Sans:400,400italic,700,700italic")
+    link(rel="stylesheet", href="/css/style.css")
+    title Mixins – Pug
+  body
+    aside.menu.outside
+      // CSS gurus requested
+      a.toggle
+        img(src="/images/menu-tab.svg")
+      // nav placeholder
+      nav.nav.nav-pills.nav-stacked
+        div.advert
+        a.nav-link API
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="../api/getting-started.html") Getting Started
+          a.nav-link(href="../api/express.html") Express Integration
+          a.nav-link(href="../api/reference.html") Reference
+          a.nav-link(href="../api/migration-v2.html") Migrating to Pug 2
+          a.nav-link(href="../api/migration-v3.html") Migrating to Pug 3
+          a.nav-link(href="https://github.com/pugjs/babel-plugin-transform-react-pug") React Integration
+        a.nav-link Language Reference
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="attributes.html") Attributes
+          a.nav-link(href="case.html") Case
+          a.nav-link(href="code.html") Code
+          a.nav-link(href="comments.html") Comments
+          a.nav-link(href="conditionals.html") Conditionals
+          a.nav-link(href="doctype.html") Doctype
+          a.nav-link(href="filters.html") Filters
+          a.nav-link(href="includes.html") Includes
+          a.nav-link(href="inheritance.html") Inheritance: Extends and Block
+          a.nav-link(href="interpolation.html") Interpolation
+          a.nav-link(href="iteration.html") Iteration
+          a.nav-link.active(href="mixins.html") Mixins
+          a.nav-link(href="plain-text.html") Plain Text
+          a.nav-link(href="tags.html") Tags
+        a.nav-link Support
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="../support/community.html") Community Support
+          a.nav-link(href="../support/enterprise.html") Enterprise Support
+        div.nav-link
+          | Sponsors
+          a.sponsor(href="https://www.coinnewsspan.com/") coin news
+          a.sponsor(href="https://opencollective.com/pug/sponsor/0/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/0/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/1/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/1/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/2/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/2/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/3/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/3/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/4/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/4/avatar.svg", height="64")
+    nav.navbar.navbar-full.navbar-dark.bg-primary
+      div.container
+        a.navbar-brand(href="/") pug
+        ul.nav.navbar-nav
+          li.nav-item.active
+            a.nav-link(href="../api/getting-started.html") Docs
+          li.nav-item
+            a.nav-link(href="https://github.com/pugjs/pug") GitHub
+    div.container
+      nav.menu.inside
+        // nav placeholder
+        nav.nav.nav-pills.nav-stacked
+          div.advert
+          a.nav-link API
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="../api/getting-started.html") Getting Started
+            a.nav-link(href="../api/express.html") Express Integration
+            a.nav-link(href="../api/reference.html") Reference
+            a.nav-link(href="../api/migration-v2.html") Migrating to Pug 2
+            a.nav-link(href="../api/migration-v3.html") Migrating to Pug 3
+            a.nav-link(href="https://github.com/pugjs/babel-plugin-transform-react-pug") React Integration
+          a.nav-link Language Reference
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="attributes.html") Attributes
+            a.nav-link(href="case.html") Case
+            a.nav-link(href="code.html") Code
+            a.nav-link(href="comments.html") Comments
+            a.nav-link(href="conditionals.html") Conditionals
+            a.nav-link(href="doctype.html") Doctype
+            a.nav-link(href="filters.html") Filters
+            a.nav-link(href="includes.html") Includes
+            a.nav-link(href="inheritance.html") Inheritance: Extends and Block
+            a.nav-link(href="interpolation.html") Interpolation
+            a.nav-link(href="iteration.html") Iteration
+            a.nav-link.active(href="mixins.html") Mixins
+            a.nav-link(href="plain-text.html") Plain Text
+            a.nav-link(href="tags.html") Tags
+          a.nav-link Support
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="../support/community.html") Community Support
+            a.nav-link(href="../support/enterprise.html") Enterprise Support
+          div.nav-link
+            | Sponsors
+            a.sponsor(href="https://www.coinnewsspan.com/") coin news
+            a.sponsor(href="https://opencollective.com/pug/sponsor/0/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/0/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/1/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/1/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/2/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/2/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/3/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/3/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/4/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/4/avatar.svg", height="64")
+      article.main
+        h1 Mixins
+        p Mixins allow you to create reusable blocks of Pug.
+        div.preview-wrapper(data-control="interactive", data-index="0")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="888256921")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  //- Declaration
+                  mixin list
+                    ul
+                      li foo
+                      li bar
+                      li baz
+                  //- Use
+                  +list
+                  +list
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <ul>
+                    <li>foo</li>
+                    <li>bar</li>
+                    <li>baz</li>
+                  </ul>
+                  <ul>
+                    <li>foo</li>
+                    <li>bar</li>
+                    <li>baz</li>
+                  </ul>
+        p Mixins are compiled to functions, and can take arguments:
+        div.preview-wrapper(data-control="interactive", data-index="1")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="-971655497")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  mixin pet(name)
+                    li.pet= name
+                  ul
+                    +pet('cat')
+                    +pet('dog')
+                    +pet('pig')
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <ul>
+                    <li class="pet">cat</li>
+                    <li class="pet">dog</li>
+                    <li class="pet">pig</li>
+                  </ul>
+        h2#mixin-blocks
+          | Mixin Blocks
+          a.header-anchor(href="#mixin-blocks", aria-hidden="true") ¶
+        p Mixins can also take a block of Pug to act as the content:
+        div.preview-wrapper(data-control="interactive", data-index="2")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="-1111740153")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  mixin article(title)
+                    .article
+                      .article-wrapper
+                        h1= title
+                        if block
+                          block
+                        else
+                          p No content provided
+                  
+                  +article('Hello world')
+                  
+                  +article('Hello world')
+                    p This is my
+                    p Amazing article
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <div class="article">
+                    <div class="article-wrapper">
+                      <h1>Hello world</h1>
+                      <p>No content provided</p>
+                    </div>
+                  </div>
+                  <div class="article">
+                    <div class="article-wrapper">
+                      <h1>Hello world</h1>
+                      <p>This is my</p>
+                      <p>Amazing article</p>
+                    </div>
+                  </div>
+        h2#mixin-attributes
+          | Mixin Attributes
+          a.header-anchor(href="#mixin-attributes", aria-hidden="true") ¶
+        p
+          | Mixins also get an implicit
+          code attributes
+          | argument, which is taken from the attributes passed to the mixin:
+        div.preview-wrapper(data-control="interactive", data-index="3")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="-1864322611")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  mixin link(href, name)
+                    //- attributes == {class: "btn"}
+                    a(class!=attributes.class href=href)= name
+                  
+                  +link('/foo', 'foo')(class="btn")
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <a class="btn" href="/foo">foo</a>
+        div.alert.alert-info
+          h6 Note
+          p
+            strong
+              | The values in
+              code attributes
+              | by default are already escaped!
+            | You should use
+            code !=
+            | to avoid escaping them a second time. (See also
+            a(href="attributes.html#unescaped-attributes") unescaped attributes
+            | .)
+        p
+          | You can also use mixins with
+          a(href="attributes.html#attributes")
+            code &attributes
+          | :
+        div.preview-wrapper(data-control="interactive", data-index="4")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="-227367882")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  mixin link(href, name)
+                    a(href=href)&attributes(attributes)= name
+                  
+                  +link('/foo', 'foo')(class="btn")
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <a class="btn" href="/foo">foo</a>
+        div.alert.alert-info
+          h6 Note
+          p
+            | The syntax
+            code +link(class="btn")
+            | is also valid and equivalent to
+            code +link()(class="btn")
+            | , since Pug tries to detect if parentheses’ contents are attributes or arguments. Nevertheless, we encourage you to use the second syntax, as you pass explicitly no arguments and you ensure the first parenthesis is the arguments list.
+        h2#default-arguments-values
+          | Default Argument’s Values
+          a.header-anchor(href="#default-arguments-values", aria-hidden="true") ¶
+        p
+          | You can also set default values for you
+          code arguments
+          | . Same as setting
+          em default function parameters
+          | in ES6.
+        div.preview-wrapper(data-control="interactive", data-index="5")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="-966395967")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  //- Declaration
+                  mixin article(title='Default Title')
+                    .article
+                      .article-wrapper
+                        h1= title
+                  
+                  //- Use
+                  +article()
+                  
+                  +article('Hello world')
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <div class="article">
+                    <div class="article-wrapper">
+                      <h1>Default Title</h1>
+                    </div>
+                  </div>
+                  <div class="article">
+                    <div class="article-wrapper">
+                      <h1>Hello world</h1>
+                    </div>
+                  </div>
+        h2#rest-arguments
+          | Rest Arguments
+          a.header-anchor(href="#rest-arguments", aria-hidden="true") ¶
+        p You can write mixins that take an unknown number of arguments using the “rest arguments” syntax.
+        div.preview-wrapper(data-control="interactive", data-index="6")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="369077732")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  mixin list(id, ...items)
+                    ul(id=id)
+                      each item in items
+                        li= item
+                  
+                  +list('my-list', 1, 2, 3, 4)
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <ul id="my-list">
+                    <li>1</li>
+                    <li>2</li>
+                    <li>3</li>
+                    <li>4</li>
+                  </ul>
+        div(style="margin-top: 50px")
+          div.AW-Form-692213006
+    script.
+      var demos=[{"files":[{"name":"index.pug","mode":"pug","contents":"\u002F\u002F- Declaration\nmixin list\n  ul\n    li foo\n    li bar\n    li baz\n\u002F\u002F- Use\n+list\n+list"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"mixin pet(name)\n  li.pet= name\nul\n  +pet('cat')\n  +pet('dog')\n  +pet('pig')"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"mixin article(title)\n  .article\n    .article-wrapper\n      h1= title\n      if block\n        block\n      else\n        p No content provided\n\n+article('Hello world')\n\n+article('Hello world')\n  p This is my\n  p Amazing article"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"mixin link(href, name)\n  \u002F\u002F- attributes == {class: \"btn\"}\n  a(class!=attributes.class href=href)= name\n\n+link('\u002Ffoo', 'foo')(class=\"btn\")"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"mixin link(href, name)\n  a(href=href)&attributes(attributes)= name\n\n+link('\u002Ffoo', 'foo')(class=\"btn\")"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"\u002F\u002F- Declaration\nmixin article(title='Default Title')\n  .article\n    .article-wrapper\n      h1= title\n\n\u002F\u002F- Use\n+article()\n\n+article('Hello world')"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"mixin list(id, ...items)\n  ul(id=id)\n    each item in items\n      li= item\n\n+list('my-list', 1, 2, 3, 4)"}]}];
+    script(src="/js/pug.js")
+    script(src="/js/language.js")
+    script.
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      
+      ga('create', 'UA-31798041-9', 'auto');
+      ga('send', 'pageview');

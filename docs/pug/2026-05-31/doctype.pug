@@ -1,0 +1,272 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(name="msapplication-config", content="/images/browserconfig.xml")
+    meta(name="theme-color", content="#ffffff")
+    link(rel="apple-touch-icon", sizes="180x180", href="/images/apple-touch-icon.png")
+    link(rel="icon", type="image/png", sizes="32x32", href="/images/favicon-32x32.png")
+    link(rel="icon", type="image/png", sizes="16x16", href="/images/favicon-16x16.png")
+    link(rel="manifest", href="/images/manifest.json")
+    link(rel="mask-icon", href="/images/safari-pinned-tab.svg")
+    link(rel="shortcut icon", href="/images/favicon.ico")
+    link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic|PT+Sans:400,400italic,700,700italic")
+    link(rel="stylesheet", href="/css/style.css")
+    title Doctype – Pug
+  body
+    aside.menu.outside
+      // CSS gurus requested
+      a.toggle
+        img(src="/images/menu-tab.svg")
+      // nav placeholder
+      nav.nav.nav-pills.nav-stacked
+        div.advert
+        a.nav-link API
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="../api/getting-started.html") Getting Started
+          a.nav-link(href="../api/express.html") Express Integration
+          a.nav-link(href="../api/reference.html") Reference
+          a.nav-link(href="../api/migration-v2.html") Migrating to Pug 2
+          a.nav-link(href="../api/migration-v3.html") Migrating to Pug 3
+          a.nav-link(href="https://github.com/pugjs/babel-plugin-transform-react-pug") React Integration
+        a.nav-link Language Reference
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="attributes.html") Attributes
+          a.nav-link(href="case.html") Case
+          a.nav-link(href="code.html") Code
+          a.nav-link(href="comments.html") Comments
+          a.nav-link(href="conditionals.html") Conditionals
+          a.nav-link.active(href="doctype.html") Doctype
+          a.nav-link(href="filters.html") Filters
+          a.nav-link(href="includes.html") Includes
+          a.nav-link(href="inheritance.html") Inheritance: Extends and Block
+          a.nav-link(href="interpolation.html") Interpolation
+          a.nav-link(href="iteration.html") Iteration
+          a.nav-link(href="mixins.html") Mixins
+          a.nav-link(href="plain-text.html") Plain Text
+          a.nav-link(href="tags.html") Tags
+        a.nav-link Support
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="../support/community.html") Community Support
+          a.nav-link(href="../support/enterprise.html") Enterprise Support
+        div.nav-link
+          | Sponsors
+          a.sponsor(href="https://www.coinnewsspan.com/") coin news
+          a.sponsor(href="https://opencollective.com/pug/sponsor/0/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/0/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/1/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/1/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/2/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/2/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/3/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/3/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/4/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/4/avatar.svg", height="64")
+    nav.navbar.navbar-full.navbar-dark.bg-primary
+      div.container
+        a.navbar-brand(href="/") pug
+        ul.nav.navbar-nav
+          li.nav-item.active
+            a.nav-link(href="../api/getting-started.html") Docs
+          li.nav-item
+            a.nav-link(href="https://github.com/pugjs/pug") GitHub
+    div.container
+      nav.menu.inside
+        // nav placeholder
+        nav.nav.nav-pills.nav-stacked
+          div.advert
+          a.nav-link API
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="../api/getting-started.html") Getting Started
+            a.nav-link(href="../api/express.html") Express Integration
+            a.nav-link(href="../api/reference.html") Reference
+            a.nav-link(href="../api/migration-v2.html") Migrating to Pug 2
+            a.nav-link(href="../api/migration-v3.html") Migrating to Pug 3
+            a.nav-link(href="https://github.com/pugjs/babel-plugin-transform-react-pug") React Integration
+          a.nav-link Language Reference
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="attributes.html") Attributes
+            a.nav-link(href="case.html") Case
+            a.nav-link(href="code.html") Code
+            a.nav-link(href="comments.html") Comments
+            a.nav-link(href="conditionals.html") Conditionals
+            a.nav-link.active(href="doctype.html") Doctype
+            a.nav-link(href="filters.html") Filters
+            a.nav-link(href="includes.html") Includes
+            a.nav-link(href="inheritance.html") Inheritance: Extends and Block
+            a.nav-link(href="interpolation.html") Interpolation
+            a.nav-link(href="iteration.html") Iteration
+            a.nav-link(href="mixins.html") Mixins
+            a.nav-link(href="plain-text.html") Plain Text
+            a.nav-link(href="tags.html") Tags
+          a.nav-link Support
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="../support/community.html") Community Support
+            a.nav-link(href="../support/enterprise.html") Enterprise Support
+          div.nav-link
+            | Sponsors
+            a.sponsor(href="https://www.coinnewsspan.com/") coin news
+            a.sponsor(href="https://opencollective.com/pug/sponsor/0/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/0/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/1/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/1/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/2/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/2/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/3/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/3/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/4/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/4/avatar.svg", height="64")
+      article.main
+        h1 Doctype
+        div.preview-wrapper(data-control="interactive", data-index="0")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="-1811845979")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  doctype html
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <!DOCTYPE html>
+        h2#doctype-shortcuts
+          | Doctype Shortcuts
+          a.header-anchor(href="#doctype-shortcuts", aria-hidden="true") ¶
+        p There are shortcuts for commonly used doctypes:
+        dl
+          dt doctype html
+          dd
+            pre.cm-s-default
+              code
+                span.cm-meta <!DOCTYPE html>
+          dt doctype xml
+          dd
+            pre.cm-s-default
+              code
+                span.cm-meta <?xml
+                span.cm-meta version="1.0" encoding="utf-8" ?>
+          dt doctype transitional
+          dd
+            pre.cm-s-default
+              code
+                span.cm-meta <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+          dt doctype strict
+          dd
+            pre.cm-s-default
+              code
+                span.cm-meta <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+          dt doctype frameset
+          dd
+            pre.cm-s-default
+              code
+                span.cm-meta <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+          dt doctype 1.1
+          dd
+            pre.cm-s-default
+              code
+                span.cm-meta <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+          dt doctype basic
+          dd
+            pre.cm-s-default
+              code
+                span.cm-meta <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+          dt doctype mobile
+          dd
+            pre.cm-s-default
+              code
+                span.cm-meta <!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">
+          dt doctype plist
+          dd
+            pre.cm-s-default
+              code
+                span.cm-meta <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        h2#custom-doctypes
+          | Custom Doctypes
+          a.header-anchor(href="#custom-doctypes", aria-hidden="true") ¶
+        p You can also use your own literal custom doctype:
+        div.preview-wrapper(data-control="interactive", data-index="1")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="1482066191")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  doctype html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN"
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN">
+        h2#doctype-option
+          | Doctype Option
+          a.header-anchor(href="#doctype-option", aria-hidden="true") ¶
+        p
+          | In addition to being buffered in the output, a doctype in Pug can affect compilation in other ways. For example, whether self-closing tags end with
+          code />
+          | or
+          code >
+          | depends on whether HTML or XML is specified. The output of
+          a(href="attributes.html#boolean-attributes") boolean attributes
+          | may be affected as well.
+        p
+          | If, for whatever reason, it is not possible to use the
+          code doctype
+          | keyword (e.g., just rendering HTML fragments), but you would still like to specify the doctype of the template, you can do so via the
+          a(href="../api/reference.html#options")
+            code doctype
+            | option
+          | .
+        pre.cm-s-default
+          code
+            span.cm-keyword var
+            span.cm-def pug
+            span.cm-operator =
+            span.cm-variable require
+            | (
+            span.cm-string 'pug'
+            | );
+            span.cm-keyword var
+            span.cm-def source
+            span.cm-operator =
+            span.cm-string 'img(src="foo.png")'
+            | ;
+            span.cm-variable pug
+            | .
+            span.cm-property render
+            | (
+            span.cm-variable source
+            | );
+            span.cm-comment // => '<img src="foo.png"/>'
+            span.cm-variable pug
+            | .
+            span.cm-property render
+            | (
+            span.cm-variable source
+            | , {
+            span.cm-property doctype
+            | :
+            span.cm-string 'xml'
+            | });
+            span.cm-comment // => '<img src="foo.png"></img>'
+            span.cm-variable pug
+            | .
+            span.cm-property render
+            | (
+            span.cm-variable source
+            | , {
+            span.cm-property doctype
+            | :
+            span.cm-string 'html'
+            | });
+            span.cm-comment // => '<img src="foo.png">'
+        div(style="margin-top: 50px")
+          div.AW-Form-692213006
+    script.
+      var demos=[{"files":[{"name":"index.pug","mode":"pug","contents":"doctype html"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"doctype html PUBLIC \"-\u002F\u002FW3C\u002F\u002FDTD XHTML Basic 1.1\u002F\u002FEN\""}]}];
+    script(src="/js/pug.js")
+    script(src="/js/language.js")
+    script.
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      
+      ga('create', 'UA-31798041-9', 'auto');
+      ga('send', 'pageview');

@@ -1,0 +1,223 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(name="msapplication-config", content="/images/browserconfig.xml")
+    meta(name="theme-color", content="#ffffff")
+    link(rel="apple-touch-icon", sizes="180x180", href="/images/apple-touch-icon.png")
+    link(rel="icon", type="image/png", sizes="32x32", href="/images/favicon-32x32.png")
+    link(rel="icon", type="image/png", sizes="16x16", href="/images/favicon-16x16.png")
+    link(rel="manifest", href="/images/manifest.json")
+    link(rel="mask-icon", href="/images/safari-pinned-tab.svg")
+    link(rel="shortcut icon", href="/images/favicon.ico")
+    link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic|PT+Sans:400,400italic,700,700italic")
+    link(rel="stylesheet", href="/css/style.css")
+    title Case – Pug
+  body
+    aside.menu.outside
+      // CSS gurus requested
+      a.toggle
+        img(src="/images/menu-tab.svg")
+      // nav placeholder
+      nav.nav.nav-pills.nav-stacked
+        div.advert
+        a.nav-link API
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="../api/getting-started.html") Getting Started
+          a.nav-link(href="../api/express.html") Express Integration
+          a.nav-link(href="../api/reference.html") Reference
+          a.nav-link(href="../api/migration-v2.html") Migrating to Pug 2
+          a.nav-link(href="../api/migration-v3.html") Migrating to Pug 3
+          a.nav-link(href="https://github.com/pugjs/babel-plugin-transform-react-pug") React Integration
+        a.nav-link Language Reference
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="attributes.html") Attributes
+          a.nav-link.active(href="case.html") Case
+          a.nav-link(href="code.html") Code
+          a.nav-link(href="comments.html") Comments
+          a.nav-link(href="conditionals.html") Conditionals
+          a.nav-link(href="doctype.html") Doctype
+          a.nav-link(href="filters.html") Filters
+          a.nav-link(href="includes.html") Includes
+          a.nav-link(href="inheritance.html") Inheritance: Extends and Block
+          a.nav-link(href="interpolation.html") Interpolation
+          a.nav-link(href="iteration.html") Iteration
+          a.nav-link(href="mixins.html") Mixins
+          a.nav-link(href="plain-text.html") Plain Text
+          a.nav-link(href="tags.html") Tags
+        a.nav-link Support
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="../support/community.html") Community Support
+          a.nav-link(href="../support/enterprise.html") Enterprise Support
+        div.nav-link
+          | Sponsors
+          a.sponsor(href="https://www.coinnewsspan.com/") coin news
+          a.sponsor(href="https://opencollective.com/pug/sponsor/0/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/0/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/1/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/1/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/2/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/2/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/3/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/3/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/4/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/4/avatar.svg", height="64")
+    nav.navbar.navbar-full.navbar-dark.bg-primary
+      div.container
+        a.navbar-brand(href="/") pug
+        ul.nav.navbar-nav
+          li.nav-item.active
+            a.nav-link(href="../api/getting-started.html") Docs
+          li.nav-item
+            a.nav-link(href="https://github.com/pugjs/pug") GitHub
+    div.container
+      nav.menu.inside
+        // nav placeholder
+        nav.nav.nav-pills.nav-stacked
+          div.advert
+          a.nav-link API
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="../api/getting-started.html") Getting Started
+            a.nav-link(href="../api/express.html") Express Integration
+            a.nav-link(href="../api/reference.html") Reference
+            a.nav-link(href="../api/migration-v2.html") Migrating to Pug 2
+            a.nav-link(href="../api/migration-v3.html") Migrating to Pug 3
+            a.nav-link(href="https://github.com/pugjs/babel-plugin-transform-react-pug") React Integration
+          a.nav-link Language Reference
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="attributes.html") Attributes
+            a.nav-link.active(href="case.html") Case
+            a.nav-link(href="code.html") Code
+            a.nav-link(href="comments.html") Comments
+            a.nav-link(href="conditionals.html") Conditionals
+            a.nav-link(href="doctype.html") Doctype
+            a.nav-link(href="filters.html") Filters
+            a.nav-link(href="includes.html") Includes
+            a.nav-link(href="inheritance.html") Inheritance: Extends and Block
+            a.nav-link(href="interpolation.html") Interpolation
+            a.nav-link(href="iteration.html") Iteration
+            a.nav-link(href="mixins.html") Mixins
+            a.nav-link(href="plain-text.html") Plain Text
+            a.nav-link(href="tags.html") Tags
+          a.nav-link Support
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="../support/community.html") Community Support
+            a.nav-link(href="../support/enterprise.html") Enterprise Support
+          div.nav-link
+            | Sponsors
+            a.sponsor(href="https://www.coinnewsspan.com/") coin news
+            a.sponsor(href="https://opencollective.com/pug/sponsor/0/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/0/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/1/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/1/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/2/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/2/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/3/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/3/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/4/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/4/avatar.svg", height="64")
+      article.main
+        h1 Case
+        p
+          | The
+          code case
+          | statement is a shorthand for JavaScript’s
+          code switch
+          | statement. It takes the following form:
+        div.preview-wrapper(data-control="interactive", data-index="0")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="-382428418")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  - var friends = 10
+                  case friends
+                    when 0
+                      p you have no friends
+                    when 1
+                      p you have a friend
+                    default
+                      p you have #{friends} friends
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <p>you have 10 friends</p>
+        h2#case-fall-through
+          | Case Fall Through
+          a.header-anchor(href="#case-fall-through", aria-hidden="true") ¶
+        p
+          | You can use fall through, just as you would in a JavaScript
+          code switch
+          | statement.
+        div.preview-wrapper(data-control="interactive", data-index="1")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="1496684683")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  - var friends = 0
+                  case friends
+                    when 0
+                    when 1
+                      p you have very few friends
+                    default
+                      p you have #{friends} friends
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <p>you have very few friends</p>
+        p
+          | The difference, however, is a fall through in JavaScript happens whenever a
+          code break
+          | statement is not explicitly included; in Pug, it only happens when a block is completely missing.
+        p
+          | If you would like to not output anything in a specific case, add an explicit unbuffered
+          code break
+          | :
+        div.preview-wrapper(data-control="interactive", data-index="2")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="-831747094")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  - var friends = 0
+                  case friends
+                    when 0
+                      - break
+                    when 1
+                      p you have very few friends
+                    default
+                      p you have #{friends} friends
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7")
+        h2#block-expansion
+          | Block Expansion
+          a.header-anchor(href="#block-expansion", aria-hidden="true") ¶
+        p Block expansion may also be used:
+        div.preview-wrapper(data-control="interactive", data-index="3")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="1358600651")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  - var friends = 1
+                  case friends
+                    when 0: p you have no friends
+                    when 1: p you have a friend
+                    default: p you have #{friends} friends
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <p>you have a friend</p>
+        div(style="margin-top: 50px")
+          div.AW-Form-692213006
+    script.
+      var demos=[{"files":[{"name":"index.pug","mode":"pug","contents":"- var friends = 10\ncase friends\n  when 0\n    p you have no friends\n  when 1\n    p you have a friend\n  default\n    p you have #{friends} friends"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"- var friends = 0\ncase friends\n  when 0\n  when 1\n    p you have very few friends\n  default\n    p you have #{friends} friends"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"- var friends = 0\ncase friends\n  when 0\n    - break\n  when 1\n    p you have very few friends\n  default\n    p you have #{friends} friends"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"- var friends = 1\ncase friends\n  when 0: p you have no friends\n  when 1: p you have a friend\n  default: p you have #{friends} friends"}]}];
+    script(src="/js/pug.js")
+    script(src="/js/language.js")
+    script.
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      
+      ga('create', 'UA-31798041-9', 'auto');
+      ga('send', 'pageview');

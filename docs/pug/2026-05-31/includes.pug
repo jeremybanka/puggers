@@ -1,0 +1,317 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(name="msapplication-config", content="/images/browserconfig.xml")
+    meta(name="theme-color", content="#ffffff")
+    link(rel="apple-touch-icon", sizes="180x180", href="/images/apple-touch-icon.png")
+    link(rel="icon", type="image/png", sizes="32x32", href="/images/favicon-32x32.png")
+    link(rel="icon", type="image/png", sizes="16x16", href="/images/favicon-16x16.png")
+    link(rel="manifest", href="/images/manifest.json")
+    link(rel="mask-icon", href="/images/safari-pinned-tab.svg")
+    link(rel="shortcut icon", href="/images/favicon.ico")
+    link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic|PT+Sans:400,400italic,700,700italic")
+    link(rel="stylesheet", href="/css/style.css")
+    title Includes – Pug
+  body
+    aside.menu.outside
+      // CSS gurus requested
+      a.toggle
+        img(src="/images/menu-tab.svg")
+      // nav placeholder
+      nav.nav.nav-pills.nav-stacked
+        div.advert
+        a.nav-link API
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="../api/getting-started.html") Getting Started
+          a.nav-link(href="../api/express.html") Express Integration
+          a.nav-link(href="../api/reference.html") Reference
+          a.nav-link(href="../api/migration-v2.html") Migrating to Pug 2
+          a.nav-link(href="../api/migration-v3.html") Migrating to Pug 3
+          a.nav-link(href="https://github.com/pugjs/babel-plugin-transform-react-pug") React Integration
+        a.nav-link Language Reference
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="attributes.html") Attributes
+          a.nav-link(href="case.html") Case
+          a.nav-link(href="code.html") Code
+          a.nav-link(href="comments.html") Comments
+          a.nav-link(href="conditionals.html") Conditionals
+          a.nav-link(href="doctype.html") Doctype
+          a.nav-link(href="filters.html") Filters
+          a.nav-link.active(href="includes.html") Includes
+          a.nav-link(href="inheritance.html") Inheritance: Extends and Block
+          a.nav-link(href="interpolation.html") Interpolation
+          a.nav-link(href="iteration.html") Iteration
+          a.nav-link(href="mixins.html") Mixins
+          a.nav-link(href="plain-text.html") Plain Text
+          a.nav-link(href="tags.html") Tags
+        a.nav-link Support
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="../support/community.html") Community Support
+          a.nav-link(href="../support/enterprise.html") Enterprise Support
+        div.nav-link
+          | Sponsors
+          a.sponsor(href="https://www.coinnewsspan.com/") coin news
+          a.sponsor(href="https://opencollective.com/pug/sponsor/0/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/0/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/1/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/1/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/2/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/2/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/3/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/3/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/4/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/4/avatar.svg", height="64")
+    nav.navbar.navbar-full.navbar-dark.bg-primary
+      div.container
+        a.navbar-brand(href="/") pug
+        ul.nav.navbar-nav
+          li.nav-item.active
+            a.nav-link(href="../api/getting-started.html") Docs
+          li.nav-item
+            a.nav-link(href="https://github.com/pugjs/pug") GitHub
+    div.container
+      nav.menu.inside
+        // nav placeholder
+        nav.nav.nav-pills.nav-stacked
+          div.advert
+          a.nav-link API
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="../api/getting-started.html") Getting Started
+            a.nav-link(href="../api/express.html") Express Integration
+            a.nav-link(href="../api/reference.html") Reference
+            a.nav-link(href="../api/migration-v2.html") Migrating to Pug 2
+            a.nav-link(href="../api/migration-v3.html") Migrating to Pug 3
+            a.nav-link(href="https://github.com/pugjs/babel-plugin-transform-react-pug") React Integration
+          a.nav-link Language Reference
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="attributes.html") Attributes
+            a.nav-link(href="case.html") Case
+            a.nav-link(href="code.html") Code
+            a.nav-link(href="comments.html") Comments
+            a.nav-link(href="conditionals.html") Conditionals
+            a.nav-link(href="doctype.html") Doctype
+            a.nav-link(href="filters.html") Filters
+            a.nav-link.active(href="includes.html") Includes
+            a.nav-link(href="inheritance.html") Inheritance: Extends and Block
+            a.nav-link(href="interpolation.html") Interpolation
+            a.nav-link(href="iteration.html") Iteration
+            a.nav-link(href="mixins.html") Mixins
+            a.nav-link(href="plain-text.html") Plain Text
+            a.nav-link(href="tags.html") Tags
+          a.nav-link Support
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="../support/community.html") Community Support
+            a.nav-link(href="../support/enterprise.html") Enterprise Support
+          div.nav-link
+            | Sponsors
+            a.sponsor(href="https://www.coinnewsspan.com/") coin news
+            a.sponsor(href="https://opencollective.com/pug/sponsor/0/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/0/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/1/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/1/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/2/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/2/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/3/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/3/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/4/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/4/avatar.svg", height="64")
+      article.main
+        h1 Includes
+        p Includes allow you to insert the contents of one Pug file into another.
+        div.preview-wrapper(data-control="interactive", data-index="0")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="456366491")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  //- index.pug
+                  doctype html
+                  html
+                    include includes/head.pug
+                    body
+                      h1 My Site
+                      p Welcome to my super lame site.
+                      include includes/foot.pug
+              div(data-reactid="5")
+                textarea(data-reactid="6").
+                  //- includes/head.pug
+                  head
+                    title My Site
+                    script(src='/javascripts/jquery.js')
+                    script(src='/javascripts/app.js')
+              div(data-reactid="7")
+                textarea(data-reactid="8").
+                  //- includes/foot.pug
+                  footer#footer
+                    p Copyright (c) foobar
+            div.col-lg-6(data-reactid="9")
+              div(data-reactid="10")
+                textarea(readonly, data-reactid="11").
+                  <!DOCTYPE html>
+                  <html>
+                  
+                  <head>
+                    <title>My Site</title>
+                    <script src="/javascripts/jquery.js"></script>
+                    <script src="/javascripts/app.js"></script>
+                  </head>
+                  
+                  <body>
+                    <h1>My Site</h1>
+                    <p>Welcome to my super lame site.</p>
+                    <footer id="footer">
+                      <p>Copyright (c) foobar</p>
+                    </footer>
+                  </body>
+                  
+                  </html>
+        p
+          | If the path is absolute (e.g.,
+          code include /root.pug
+          | ), it is resolved by prepending
+          code options.basedir
+          | . Otherwise, paths are resolved relative to the current file being compiled.
+        p
+          | If no file extension is given,
+          code .pug
+          | is automatically appended to the file name.
+        h2#including-plain-text
+          | Including Plain Text
+          a.header-anchor(href="#including-plain-text", aria-hidden="true") ¶
+        p Including non-Pug files simply includes their raw text.
+        div.preview-wrapper(data-control="interactive", data-index="1")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="80432334")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  //- index.pug
+                  doctype html
+                  html
+                    head
+                      style
+                        include style.css
+                    body
+                      h1 My Site
+                      p Welcome to my super lame site.
+                      script
+                        include script.js
+              div(data-reactid="5")
+                textarea(data-reactid="6").
+                  /* style.css */
+                  h1 {
+                    color: red;
+                  }
+              div(data-reactid="7")
+                textarea(data-reactid="8").
+                  // script.js
+                  console.log('You are awesome');
+            div.col-lg-6(data-reactid="9")
+              div(data-reactid="10")
+                textarea(readonly, data-reactid="11").
+                  <!DOCTYPE html>
+                  <html>
+                  
+                  <head>
+                    <style>
+                      /* style.css */
+                      h1 {
+                        color: red;
+                      }
+                    </style>
+                  </head>
+                  
+                  <body>
+                    <h1>My Site</h1>
+                    <p>Welcome to my super lame site.</p>
+                    <script>
+                      // script.js
+                      console.log('You are awesome');
+                    </script>
+                  </body>
+                  
+                  </html>
+        h2#including-filtered-text
+          | Including Filtered Text
+          a.header-anchor(href="#including-filtered-text", aria-hidden="true") ¶
+        p You can combine filters with includes, allowing you to filter things as you include them.
+        div
+          div.row
+            div.col-lg-6
+              pre.cm-s-default
+                code
+                  span.cm-comment //- index.pug
+                  span.cm-meta doctype html
+                  span.cm-tag html
+                  span.cm-indent
+                  span.cm-tag head
+                  span.cm-indent
+                  span.cm-tag title
+                  span.cm-string An Article
+                  span.cm-indent
+                  span.cm-tag body
+                  span.cm-indent
+                  span.cm-keyword include
+                  span.cm-string :markdown-it article.md
+              pre.cm-s-default
+                code
+                  span.cm-header.cm-header-1 #
+                  span.cm-header.cm-header-1 article.md
+                  | This is an article written in markdown.
+            div.col-lg-6
+              pre.cm-s-default
+                code
+                  span.cm-meta <!DOCTYPE html>
+                  span.cm-tag.cm-bracket <
+                  span.cm-tag html
+                  span.cm-tag.cm-bracket >
+                  span.cm-tag.cm-bracket <
+                  span.cm-tag head
+                  span.cm-tag.cm-bracket >
+                  span.cm-tag.cm-bracket <
+                  span.cm-tag title
+                  span.cm-tag.cm-bracket >
+                  | An Article
+                  span.cm-tag.cm-bracket </
+                  span.cm-tag title
+                  span.cm-tag.cm-bracket >
+                  span.cm-tag.cm-bracket </
+                  span.cm-tag head
+                  span.cm-tag.cm-bracket >
+                  span.cm-tag.cm-bracket <
+                  span.cm-tag body
+                  span.cm-tag.cm-bracket >
+                  span.cm-tag.cm-bracket <
+                  span.cm-tag h1
+                  span.cm-tag.cm-bracket >
+                  | article.md
+                  span.cm-tag.cm-bracket </
+                  span.cm-tag h1
+                  span.cm-tag.cm-bracket >
+                  span.cm-tag.cm-bracket <
+                  span.cm-tag p
+                  span.cm-tag.cm-bracket >
+                  | This is an article written in markdown.
+                  span.cm-tag.cm-bracket </
+                  span.cm-tag p
+                  span.cm-tag.cm-bracket >
+                  span.cm-tag.cm-bracket </
+                  span.cm-tag body
+                  span.cm-tag.cm-bracket >
+                  span.cm-tag.cm-bracket </
+                  span.cm-tag html
+                  span.cm-tag.cm-bracket >
+        div(style="margin-top: 50px")
+          div.AW-Form-692213006
+    script.
+      var demos=[{"files":[{"name":"index.pug","mode":"pug","contents":"\u002F\u002F- index.pug\ndoctype html\nhtml\n  include includes\u002Fhead.pug\n  body\n    h1 My Site\n    p Welcome to my super lame site.\n    include includes\u002Ffoot.pug"},{"name":"includes\u002Fhead.pug","mode":"pug","contents":"\u002F\u002F- includes\u002Fhead.pug\nhead\n  title My Site\n  script(src='\u002Fjavascripts\u002Fjquery.js')\n  script(src='\u002Fjavascripts\u002Fapp.js')"},{"name":"includes\u002Ffoot.pug","mode":"pug","contents":"\u002F\u002F- includes\u002Ffoot.pug\nfooter#footer\n  p Copyright (c) foobar"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"\u002F\u002F- index.pug\ndoctype html\nhtml\n  head\n    style\n      include style.css\n  body\n    h1 My Site\n    p Welcome to my super lame site.\n    script\n      include script.js"},{"name":"style.css","mode":"css","contents":"\u002F* style.css *\u002F\nh1 {\n  color: red;\n}"},{"name":"script.js","mode":"javascript","contents":"\u002F\u002F script.js\nconsole.log('You are awesome');"}]}];
+    script(src="/js/pug.js")
+    script(src="/js/language.js")
+    script.
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      
+      ga('create', 'UA-31798041-9', 'auto');
+      ga('send', 'pageview');

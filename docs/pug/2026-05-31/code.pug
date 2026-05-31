@@ -1,0 +1,243 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(name="msapplication-config", content="/images/browserconfig.xml")
+    meta(name="theme-color", content="#ffffff")
+    link(rel="apple-touch-icon", sizes="180x180", href="/images/apple-touch-icon.png")
+    link(rel="icon", type="image/png", sizes="32x32", href="/images/favicon-32x32.png")
+    link(rel="icon", type="image/png", sizes="16x16", href="/images/favicon-16x16.png")
+    link(rel="manifest", href="/images/manifest.json")
+    link(rel="mask-icon", href="/images/safari-pinned-tab.svg")
+    link(rel="shortcut icon", href="/images/favicon.ico")
+    link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic|PT+Sans:400,400italic,700,700italic")
+    link(rel="stylesheet", href="/css/style.css")
+    title Code – Pug
+  body
+    aside.menu.outside
+      // CSS gurus requested
+      a.toggle
+        img(src="/images/menu-tab.svg")
+      // nav placeholder
+      nav.nav.nav-pills.nav-stacked
+        div.advert
+        a.nav-link API
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="../api/getting-started.html") Getting Started
+          a.nav-link(href="../api/express.html") Express Integration
+          a.nav-link(href="../api/reference.html") Reference
+          a.nav-link(href="../api/migration-v2.html") Migrating to Pug 2
+          a.nav-link(href="../api/migration-v3.html") Migrating to Pug 3
+          a.nav-link(href="https://github.com/pugjs/babel-plugin-transform-react-pug") React Integration
+        a.nav-link Language Reference
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="attributes.html") Attributes
+          a.nav-link(href="case.html") Case
+          a.nav-link.active(href="code.html") Code
+          a.nav-link(href="comments.html") Comments
+          a.nav-link(href="conditionals.html") Conditionals
+          a.nav-link(href="doctype.html") Doctype
+          a.nav-link(href="filters.html") Filters
+          a.nav-link(href="includes.html") Includes
+          a.nav-link(href="inheritance.html") Inheritance: Extends and Block
+          a.nav-link(href="interpolation.html") Interpolation
+          a.nav-link(href="iteration.html") Iteration
+          a.nav-link(href="mixins.html") Mixins
+          a.nav-link(href="plain-text.html") Plain Text
+          a.nav-link(href="tags.html") Tags
+        a.nav-link Support
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="../support/community.html") Community Support
+          a.nav-link(href="../support/enterprise.html") Enterprise Support
+        div.nav-link
+          | Sponsors
+          a.sponsor(href="https://www.coinnewsspan.com/") coin news
+          a.sponsor(href="https://opencollective.com/pug/sponsor/0/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/0/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/1/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/1/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/2/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/2/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/3/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/3/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/4/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/4/avatar.svg", height="64")
+    nav.navbar.navbar-full.navbar-dark.bg-primary
+      div.container
+        a.navbar-brand(href="/") pug
+        ul.nav.navbar-nav
+          li.nav-item.active
+            a.nav-link(href="../api/getting-started.html") Docs
+          li.nav-item
+            a.nav-link(href="https://github.com/pugjs/pug") GitHub
+    div.container
+      nav.menu.inside
+        // nav placeholder
+        nav.nav.nav-pills.nav-stacked
+          div.advert
+          a.nav-link API
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="../api/getting-started.html") Getting Started
+            a.nav-link(href="../api/express.html") Express Integration
+            a.nav-link(href="../api/reference.html") Reference
+            a.nav-link(href="../api/migration-v2.html") Migrating to Pug 2
+            a.nav-link(href="../api/migration-v3.html") Migrating to Pug 3
+            a.nav-link(href="https://github.com/pugjs/babel-plugin-transform-react-pug") React Integration
+          a.nav-link Language Reference
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="attributes.html") Attributes
+            a.nav-link(href="case.html") Case
+            a.nav-link.active(href="code.html") Code
+            a.nav-link(href="comments.html") Comments
+            a.nav-link(href="conditionals.html") Conditionals
+            a.nav-link(href="doctype.html") Doctype
+            a.nav-link(href="filters.html") Filters
+            a.nav-link(href="includes.html") Includes
+            a.nav-link(href="inheritance.html") Inheritance: Extends and Block
+            a.nav-link(href="interpolation.html") Interpolation
+            a.nav-link(href="iteration.html") Iteration
+            a.nav-link(href="mixins.html") Mixins
+            a.nav-link(href="plain-text.html") Plain Text
+            a.nav-link(href="tags.html") Tags
+          a.nav-link Support
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="../support/community.html") Community Support
+            a.nav-link(href="../support/enterprise.html") Enterprise Support
+          div.nav-link
+            | Sponsors
+            a.sponsor(href="https://www.coinnewsspan.com/") coin news
+            a.sponsor(href="https://opencollective.com/pug/sponsor/0/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/0/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/1/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/1/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/2/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/2/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/3/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/3/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/4/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/4/avatar.svg", height="64")
+      article.main
+        h1 Code
+        p Pug allows you to write inline JavaScript code in your templates. There are three types of code: Unbuffered, Buffered, and Unescaped Buffered.
+        h2#unbuffered-code
+          | Unbuffered Code
+          a.header-anchor(href="#unbuffered-code", aria-hidden="true") ¶
+        p
+          | Unbuffered code starts with
+          code -
+          | . It does not directly add anything to the output.
+        div.preview-wrapper(data-control="interactive", data-index="0")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="-1891989992")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  - for (var x = 0; x < 3; x++)
+                    li item
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <li>item</li>
+                  <li>item</li>
+                  <li>item</li>
+        p Pug also supports block unbuffered code:
+        div.preview-wrapper(data-control="interactive", data-index="1")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="1224788240")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  -
+                    var list = ["Uno", "Dos", "Tres",
+                            "Cuatro", "Cinco", "Seis"]
+                  each item in list
+                    li= item
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <li>Uno</li>
+                  <li>Dos</li>
+                  <li>Tres</li>
+                  <li>Cuatro</li>
+                  <li>Cinco</li>
+                  <li>Seis</li>
+        h2#buffered-code
+          | Buffered Code
+          a.header-anchor(href="#buffered-code", aria-hidden="true") ¶
+        p
+          | Buffered code starts with
+          code =
+          | . It evaluates the JavaScript expression and outputs the result. For security, buffered code is first HTML escaped.
+        div.preview-wrapper(data-control="interactive", data-index="2")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="928743917")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  p
+                    = 'This code is <escaped>!'
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <p>This code is &lt;escaped&gt;!</p>
+        p It can also be written inline (after any attributes), and supports the full range of JavaScript expressions:
+        div.preview-wrapper(data-control="interactive", data-index="3")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="-1152334203")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  p= 'This code is' + ' <escaped>!'
+                  p(style="background: blue")= 'A message with a ' + 'blue' + ' background'
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <p>This code is &lt;escaped&gt;!</p>
+                  <p style="background: blue">A message with a blue background</p>
+        h2#unescaped-buffered-code
+          | Unescaped Buffered Code
+          a.header-anchor(href="#unescaped-buffered-code", aria-hidden="true") ¶
+        p
+          | Unescaped buffered code starts with
+          code !=
+          | . It evaluates the JavaScript expression and outputs the result. Unescaped buffered code does not perform any escaping, so is unsafe for user input:
+        div.preview-wrapper(data-control="interactive", data-index="4")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="1050186186")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  p
+                    != 'This code is <strong>not</strong> escaped!'
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <p>This code is <strong>not</strong> escaped!</p>
+        p Unescaped buffered code can also be written inline with attributes, and supports the full range of JavaScript expressions:
+        div.preview-wrapper(data-control="interactive", data-index="5")
+          div.row(data-reactroot, data-reactid="1", data-react-checksum="-17460043")
+            div.col-lg-6(data-reactid="2")
+              div(data-reactid="3")
+                textarea(data-reactid="4").
+                  p!= 'This code is' + ' <strong>not</strong> escaped!'
+            div.col-lg-6(data-reactid="5")
+              div(data-reactid="6")
+                textarea(readonly, data-reactid="7").
+                  <p>This code is <strong>not</strong> escaped!</p>
+        div.alert.alert-danger
+          h6 Caution
+          p
+            strong Unescaped buffered code can be dangerous.
+            | You must be sure to sanitize any user inputs to avoid
+            a(href="https://en.wikipedia.org/wiki/Cross-site_scripting") cross-site scripting
+            | (XSS).
+        div(style="margin-top: 50px")
+          div.AW-Form-692213006
+    script.
+      var demos=[{"files":[{"name":"index.pug","mode":"pug","contents":"- for (var x = 0; x \u003C 3; x++)\n  li item"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"-\n  var list = [\"Uno\", \"Dos\", \"Tres\",\n          \"Cuatro\", \"Cinco\", \"Seis\"]\neach item in list\n  li= item"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"p\n  = 'This code is \u003Cescaped\u003E!'"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"p= 'This code is' + ' \u003Cescaped\u003E!'\np(style=\"background: blue\")= 'A message with a ' + 'blue' + ' background'"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"p\n  != 'This code is \u003Cstrong\u003Enot\u003C\u002Fstrong\u003E escaped!'"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"p!= 'This code is' + ' \u003Cstrong\u003Enot\u003C\u002Fstrong\u003E escaped!'"}]}];
+    script(src="/js/pug.js")
+    script(src="/js/language.js")
+    script.
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      
+      ga('create', 'UA-31798041-9', 'auto');
+      ga('send', 'pageview');

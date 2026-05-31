@@ -1,0 +1,433 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(name="msapplication-config", content="/images/browserconfig.xml")
+    meta(name="theme-color", content="#ffffff")
+    link(rel="apple-touch-icon", sizes="180x180", href="/images/apple-touch-icon.png")
+    link(rel="icon", type="image/png", sizes="32x32", href="/images/favicon-32x32.png")
+    link(rel="icon", type="image/png", sizes="16x16", href="/images/favicon-16x16.png")
+    link(rel="manifest", href="/images/manifest.json")
+    link(rel="mask-icon", href="/images/safari-pinned-tab.svg")
+    link(rel="shortcut icon", href="/images/favicon.ico")
+    link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic|PT+Sans:400,400italic,700,700italic")
+    link(rel="stylesheet", href="/css/style.css")
+    title Template Inheritance – Pug
+  body
+    aside.menu.outside
+      // CSS gurus requested
+      a.toggle
+        img(src="/images/menu-tab.svg")
+      // nav placeholder
+      nav.nav.nav-pills.nav-stacked
+        div.advert
+        a.nav-link API
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="../api/getting-started.html") Getting Started
+          a.nav-link(href="../api/express.html") Express Integration
+          a.nav-link(href="../api/reference.html") Reference
+          a.nav-link(href="../api/migration-v2.html") Migrating to Pug 2
+          a.nav-link(href="../api/migration-v3.html") Migrating to Pug 3
+          a.nav-link(href="https://github.com/pugjs/babel-plugin-transform-react-pug") React Integration
+        a.nav-link Language Reference
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="attributes.html") Attributes
+          a.nav-link(href="case.html") Case
+          a.nav-link(href="code.html") Code
+          a.nav-link(href="comments.html") Comments
+          a.nav-link(href="conditionals.html") Conditionals
+          a.nav-link(href="doctype.html") Doctype
+          a.nav-link(href="filters.html") Filters
+          a.nav-link(href="includes.html") Includes
+          a.nav-link.active(href="inheritance.html") Inheritance: Extends and Block
+          a.nav-link(href="interpolation.html") Interpolation
+          a.nav-link(href="iteration.html") Iteration
+          a.nav-link(href="mixins.html") Mixins
+          a.nav-link(href="plain-text.html") Plain Text
+          a.nav-link(href="tags.html") Tags
+        a.nav-link Support
+        ul.nav.nav-pills.nav-stacked
+          a.nav-link(href="../support/community.html") Community Support
+          a.nav-link(href="../support/enterprise.html") Enterprise Support
+        div.nav-link
+          | Sponsors
+          a.sponsor(href="https://www.coinnewsspan.com/") coin news
+          a.sponsor(href="https://opencollective.com/pug/sponsor/0/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/0/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/1/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/1/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/2/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/2/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/3/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/3/avatar.svg", height="64")
+          a.sponsor(href="https://opencollective.com/pug/sponsor/4/website", target="_blank")
+            img(src="https://opencollective.com/pug/sponsor/4/avatar.svg", height="64")
+    nav.navbar.navbar-full.navbar-dark.bg-primary
+      div.container
+        a.navbar-brand(href="/") pug
+        ul.nav.navbar-nav
+          li.nav-item.active
+            a.nav-link(href="../api/getting-started.html") Docs
+          li.nav-item
+            a.nav-link(href="https://github.com/pugjs/pug") GitHub
+    div.container
+      nav.menu.inside
+        // nav placeholder
+        nav.nav.nav-pills.nav-stacked
+          div.advert
+          a.nav-link API
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="../api/getting-started.html") Getting Started
+            a.nav-link(href="../api/express.html") Express Integration
+            a.nav-link(href="../api/reference.html") Reference
+            a.nav-link(href="../api/migration-v2.html") Migrating to Pug 2
+            a.nav-link(href="../api/migration-v3.html") Migrating to Pug 3
+            a.nav-link(href="https://github.com/pugjs/babel-plugin-transform-react-pug") React Integration
+          a.nav-link Language Reference
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="attributes.html") Attributes
+            a.nav-link(href="case.html") Case
+            a.nav-link(href="code.html") Code
+            a.nav-link(href="comments.html") Comments
+            a.nav-link(href="conditionals.html") Conditionals
+            a.nav-link(href="doctype.html") Doctype
+            a.nav-link(href="filters.html") Filters
+            a.nav-link(href="includes.html") Includes
+            a.nav-link.active(href="inheritance.html") Inheritance: Extends and Block
+            a.nav-link(href="interpolation.html") Interpolation
+            a.nav-link(href="iteration.html") Iteration
+            a.nav-link(href="mixins.html") Mixins
+            a.nav-link(href="plain-text.html") Plain Text
+            a.nav-link(href="tags.html") Tags
+          a.nav-link Support
+          ul.nav.nav-pills.nav-stacked
+            a.nav-link(href="../support/community.html") Community Support
+            a.nav-link(href="../support/enterprise.html") Enterprise Support
+          div.nav-link
+            | Sponsors
+            a.sponsor(href="https://www.coinnewsspan.com/") coin news
+            a.sponsor(href="https://opencollective.com/pug/sponsor/0/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/0/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/1/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/1/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/2/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/2/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/3/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/3/avatar.svg", height="64")
+            a.sponsor(href="https://opencollective.com/pug/sponsor/4/website", target="_blank")
+              img(src="https://opencollective.com/pug/sponsor/4/avatar.svg", height="64")
+      article.main
+        h1 Template Inheritance
+        p
+          | Pug supports template inheritance. Template inheritance works via the
+          code block
+          | and
+          code extends
+          | keywords.
+        p
+          | In a template, a
+          code block
+          | is simply a “block” of Pug that a child template may replace. This process is recursive.
+        p
+          | Pug blocks can provide default content, if appropriate. Providing default content is purely optional, though. The example below defines
+          code block scripts
+          | ,
+          code block content
+          | , and
+          code block foot
+          | .
+        pre.cm-s-default
+          code
+            span.cm-comment //- layout.pug
+            span.cm-tag html
+            span.cm-indent
+            span.cm-tag head
+            span.cm-indent
+            span.cm-tag title
+            span.cm-string My Site - #{title}
+            span.cm-indent
+            span.cm-keyword block
+            span.cm-variable scripts
+            span.cm-indent
+            span.cm-tag script
+            span.cm-punctuation (
+            span.cm-attribute src
+            span.cm-operator =
+            span.cm-string '/jquery.js'
+            span.cm-punctuation )
+            span.cm-indent
+            span.cm-tag body
+            span.cm-indent
+            span.cm-keyword block
+            span.cm-variable content
+            span.cm-indent
+            span.cm-keyword block
+            span.cm-variable foot
+            span.cm-indent
+            span.cm-builtin #footer
+            span.cm-indent
+            span.cm-tag p
+            span.cm-string some footer content
+        p
+          | To extend this layout, create a new file and use the
+          code extends
+          | directive with a path to the parent template. (If no file extension is given,
+          code .pug
+          | is automatically appended to the file name.) Then, define one or more blocks to override the parent block content.
+        p
+          | Below, notice that the
+          code foot
+          | block is
+          em not
+          | redefined, so it will use the parent’s default and output “some footer content”.
+        pre.cm-s-default
+          code
+            span.cm-comment //- page-a.pug
+            span.cm-keyword extends
+            span.cm-string layout.pug
+            span.cm-keyword block
+            span.cm-variable scripts
+            span.cm-indent
+            span.cm-tag script
+            span.cm-punctuation (
+            span.cm-attribute src
+            span.cm-operator =
+            span.cm-string '/jquery.js'
+            span.cm-punctuation )
+            span.cm-indent
+            span.cm-tag script
+            span.cm-punctuation (
+            span.cm-attribute src
+            span.cm-operator =
+            span.cm-string '/pets.js'
+            span.cm-punctuation )
+            span.cm-keyword block
+            span.cm-variable content
+            span.cm-indent
+            span.cm-tag h1
+            span.cm-punctuation =
+            span.cm-variable title
+            span.cm-indent
+            span.cm-punctuation -
+            span.cm-keyword var
+            span.cm-def pets
+            span.cm-operator =
+            | [
+            span.cm-string 'cat'
+            | ,
+            span.cm-string 'dog'
+            | ]
+            span.cm-indent
+            span.cm-keyword each
+            span.cm-variable petName
+            span.cm-keyword in
+            span.cm-variable pets
+            span.cm-indent
+            span.cm-keyword include
+            span.cm-string pet.pug
+        pre.cm-s-default
+          code
+            span.cm-comment //- pet.pug
+            span.cm-tag p
+            span.cm-punctuation =
+            span.cm-variable petName
+        p
+          | It’s also possible to override a block to provide additional blocks, as shown in the following example. As it shows,
+          code content
+          | now exposes a
+          code sidebar
+          | and
+          code primary
+          | block for overriding. (Alternatively, the child template could override
+          code content
+          | altogether.)
+        pre.cm-s-default
+          code
+            span.cm-comment //- sub-layout.pug
+            span.cm-keyword extends
+            span.cm-string layout.pug
+            span.cm-keyword block
+            span.cm-variable content
+            span.cm-indent
+            span.cm-qualifier .sidebar
+            span.cm-indent
+            span.cm-keyword block
+            span.cm-variable sidebar
+            span.cm-indent
+            span.cm-tag p
+            span.cm-string nothing
+            span.cm-indent
+            span.cm-qualifier .primary
+            span.cm-indent
+            span.cm-keyword block
+            span.cm-variable primary
+            span.cm-indent
+            span.cm-tag p
+            span.cm-string nothing
+        pre.cm-s-default
+          code
+            span.cm-comment //- page-b.pug
+            span.cm-keyword extends
+            span.cm-string sub-layout.pug
+            span.cm-keyword block
+            span.cm-variable content
+            span.cm-indent
+            span.cm-qualifier .sidebar
+            span.cm-indent
+            span.cm-keyword block
+            span.cm-variable sidebar
+            span.cm-indent
+            span.cm-tag p
+            span.cm-string nothing
+            span.cm-indent
+            span.cm-qualifier .primary
+            span.cm-indent
+            span.cm-keyword block
+            span.cm-variable primary
+            span.cm-indent
+            span.cm-tag p
+            span.cm-string nothing
+        h2#block-append-prepend
+          | Block
+          code append
+          | /
+          code prepend
+          a.header-anchor(href="#block-append-prepend", aria-hidden="true") ¶
+        p
+          | Pug allows you to
+          code replace
+          | (default),
+          code prepend
+          | , or
+          code append
+          | blocks.
+        p
+          | Suppose you have default scripts in a
+          code head
+          | block that you wish to use on
+          em every
+          | page. You might do this:
+        pre.cm-s-default
+          code
+            span.cm-comment //- layout.pug
+            span.cm-tag html
+            span.cm-indent
+            span.cm-tag head
+            span.cm-indent
+            span.cm-keyword block
+            span.cm-variable head
+            span.cm-indent
+            span.cm-tag script
+            span.cm-punctuation (
+            span.cm-attribute src
+            span.cm-operator =
+            span.cm-string '/vendor/jquery.js'
+            span.cm-punctuation )
+            span.cm-indent
+            span.cm-tag script
+            span.cm-punctuation (
+            span.cm-attribute src
+            span.cm-operator =
+            span.cm-string '/vendor/caustic.js'
+            span.cm-punctuation )
+            span.cm-indent
+            span.cm-tag body
+            span.cm-indent
+            span.cm-keyword block
+            span.cm-variable content
+        p
+          | Now, consider a page of your JavaScript game. You want some game related scripts as well as these defaults. You can simply
+          code append
+          | the block:
+        pre.cm-s-default
+          code
+            span.cm-comment //- page.pug
+            span.cm-keyword extends
+            span.cm-string layout.pug
+            span.cm-keyword block append
+            span.cm-variable head
+            span.cm-indent
+            span.cm-tag script
+            span.cm-punctuation (
+            span.cm-attribute src
+            span.cm-operator =
+            span.cm-string '/vendor/three.js'
+            span.cm-punctuation )
+            span.cm-indent
+            span.cm-tag script
+            span.cm-punctuation (
+            span.cm-attribute src
+            span.cm-operator =
+            span.cm-string '/game.js'
+            span.cm-punctuation )
+        p
+          | When using
+          code block append
+          | or
+          code block prepend
+          | , the word “
+          code block
+          | ” is optional:
+        pre.cm-s-default
+          code
+            span.cm-comment //- page.pug
+            span.cm-keyword extends
+            span.cm-string layout
+            span.cm-keyword append
+            span.cm-variable head
+            span.cm-indent
+            span.cm-tag script
+            span.cm-punctuation (
+            span.cm-attribute src
+            span.cm-operator =
+            span.cm-string '/vendor/three.js'
+            span.cm-punctuation )
+            span.cm-indent
+            span.cm-tag script
+            span.cm-punctuation (
+            span.cm-attribute src
+            span.cm-operator =
+            span.cm-string '/game.js'
+            span.cm-punctuation )
+        h2#common-mistakes
+          | Common mistakes
+          a.header-anchor(href="#common-mistakes", aria-hidden="true") ¶
+        p Pug’s template inheritance is a powerful feature that allows you to split complex page template structures into smaller, simpler files. However, if you chain many, many templates together, you can make things a lot more complicated for yourself.
+        p
+          | Note that
+          strong only named blocks and mixin definitions
+          | can appear at the top (unindented) level of a child template. This is important! Parent templates define a page’s overall structure, and child templates can only
+          code append
+          | ,
+          code prepend
+          | , or replace specific blocks of markup and logic. If a child template tried to add content outside of a block, Pug would have no way of knowing where to put it in the final page.
+        p
+          | This includes
+          a(href="code.html#unbuffered-code") unbuffered code
+          | , which can also contain markup. If you need to define variables for use in a child template, you can do so a few different ways:
+        ul
+          li
+            | Add the variables to the Pug
+            a(href="../api/reference.html#options") options
+            | object, or define them in unbuffered code in a parent template. The child template will inherit these variables.
+          li
+            | Define the variables
+            em in a block
+            | in the child template. Extending templates must have at least one block, or it would be empty — just define your variables there.
+        p
+          | For the same reason, Pug’s
+          a(href="comments.html") buffered comments
+          | cannot appear at the top level of an extending template: they produce HTML comments which would have nowhere to go in the resulting HTML. (Unbuffered Pug comments, however, can still go anywhere.)
+        div(style="margin-top: 50px")
+          div.AW-Form-692213006
+    script(src="/js/pug.js")
+    script(src="/js/generic.js")
+    script.
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      
+      ga('create', 'UA-31798041-9', 'auto');
+      ga('send', 'pageview');
