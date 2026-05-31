@@ -71,3 +71,17 @@ fn preserves_raw_text_blocks_for_script_and_textarea() {
     "textarea.\n  line one\n    line two\nscript.\n  console.log('hi');\n"
   );
 }
+
+#[test]
+fn supports_tab_indentation() {
+  let output = convert_html_to_pug(
+    "<div><p>Hello</p></div>",
+    &ConvertOptions {
+      trim_outer_document: true,
+      use_tabs: true,
+      ..Default::default()
+    },
+  );
+
+  assert_eq!(output, "div\n\tp Hello\n");
+}

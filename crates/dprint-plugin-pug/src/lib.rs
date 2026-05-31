@@ -32,12 +32,19 @@ impl SyncPluginHandler<Configuration> for PugPluginHandler {
   fn resolve_config(
     &mut self,
     config: ConfigKeyMap,
-    _global_config: &GlobalConfiguration,
+    global_config: &GlobalConfiguration,
   ) -> PluginResolveConfigurationResult<Configuration> {
-    let mut resolved = Configuration::default();
+    let mut resolved = Configuration {
+      indent_width: global_config.indent_width.map(|value| value as usize),
+      use_tabs: global_config.use_tabs,
+    };
 
     if let Some(value) = config.get("indentWidth").and_then(|value| value.as_number()) {
       resolved.indent_width = Some(value as usize);
+    }
+
+    if let Some(value) = config.get("useTabs").and_then(|value| value.as_bool()) {
+      resolved.use_tabs = Some(value);
     }
 
     PluginResolveConfigurationResult {
@@ -95,6 +102,22 @@ mod tests {
     let formatted = formatter::format(&document, &Configuration::default());
 
     assert_eq!(formatted, "div#app.main\n  p   hello world\n    span.label  neat\n");
+  }
+
+  #[test]
+  fn formats_with_tabs_when_requested() {
+    let source = "div\n  span hello\n";
+    let lexed = lexer::lex(source);
+    let document = parser::parse(&lexed);
+    let formatted = formatter::format(
+      &document,
+      &Configuration {
+        use_tabs: Some(true),
+        indent_width: Some(2),
+      },
+    );
+
+    assert_eq!(formatted, "div\n\tspan hello\n");
   }
 
   #[test]

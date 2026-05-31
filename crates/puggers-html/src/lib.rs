@@ -10,6 +10,8 @@ pub struct ConvertOptions {
   pub trim_outer_document: bool,
   pub collapse_single_nested: bool,
   pub keep_comments: bool,
+  pub indent_width: usize,
+  pub use_tabs: bool,
 }
 
 impl Default for ConvertOptions {
@@ -20,6 +22,8 @@ impl Default for ConvertOptions {
       trim_outer_document: false,
       collapse_single_nested: false,
       keep_comments: true,
+      indent_width: 2,
+      use_tabs: false,
     }
   }
 }
@@ -187,16 +191,18 @@ fn render_nodes(nodes: &[Node], depth: usize, options: &ConvertOptions) -> Strin
 
 fn render_node(node: &Node, depth: usize, options: &ConvertOptions) -> String {
   match node {
-    Node::Doctype(name) if name.eq_ignore_ascii_case("html") => format!("{}doctype html", indent(depth)),
-    Node::Doctype(name) => format!("{}doctype {}", indent(depth), name.trim()),
-    Node::Comment(comment) => format!("{}// {}", indent(depth), comment.trim()),
-    Node::Text(text) => format!("{}| {}", indent(depth), text.trim()),
+    Node::Doctype(name) if name.eq_ignore_ascii_case("html") => {
+      format!("{}doctype html", indent(depth, options))
+    }
+    Node::Doctype(name) => format!("{}doctype {}", indent(depth, options), name.trim()),
+    Node::Comment(comment) => format!("{}// {}", indent(depth, options), comment.trim()),
+    Node::Text(text) => format!("{}| {}", indent(depth, options), text.trim()),
     Node::Element(element) => render_element(element, depth, options),
   }
 }
 
 fn render_element(element: &ElementNode, depth: usize, options: &ConvertOptions) -> String {
-  let mut line = format!("{}{}", indent(depth), element.tag);
+  let mut line = format!("{}{}", indent(depth, options), element.tag);
   let mut trailing_attributes = Vec::new();
 
   for attribute in &element.attributes {
@@ -237,7 +243,7 @@ fn render_element(element: &ElementNode, depth: usize, options: &ConvertOptions)
     output.push('.');
     for raw_line in raw_text.lines() {
       output.push('\n');
-      output.push_str(&indent(depth + 1));
+      output.push_str(&indent(depth + 1, options));
       output.push_str(raw_line);
     }
     return output;
@@ -272,8 +278,12 @@ fn escape_attr_value(value: &str) -> String {
   value.replace('\\', "\\\\").replace('"', "\\\"")
 }
 
-fn indent(depth: usize) -> String {
-  "  ".repeat(depth)
+fn indent(depth: usize, options: &ConvertOptions) -> String {
+  if options.use_tabs {
+    "\t".repeat(depth)
+  } else {
+    " ".repeat(depth * options.indent_width)
+  }
 }
 
 fn is_shorthand_compatible(value: &str) -> bool {

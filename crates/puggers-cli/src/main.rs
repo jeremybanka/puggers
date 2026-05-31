@@ -22,6 +22,8 @@ fn run() -> Result<(), String> {
   let mut trim_outer_document = false;
   let mut collapse_single_nested = false;
   let mut keep_comments = true;
+  let mut indent_width = 2;
+  let mut use_tabs = false;
   let mut input_path = None;
 
   while let Some(argument) = args.next() {
@@ -35,6 +37,15 @@ fn run() -> Result<(), String> {
       "--trim-outer-document" => trim_outer_document = true,
       "--collapse-single-nested" => collapse_single_nested = true,
       "--drop-comments" => keep_comments = false,
+      "--use-tabs" => use_tabs = true,
+      "--indent-width" => {
+        let value = args
+          .next()
+          .ok_or_else(|| String::from("missing value after --indent-width"))?;
+        indent_width = value
+          .parse::<usize>()
+          .map_err(|error| format!("invalid --indent-width value {value}: {error}"))?;
+      }
       "--help" | "-h" => {
         print_help();
         return Ok(());
@@ -68,6 +79,8 @@ fn run() -> Result<(), String> {
       trim_outer_document,
       collapse_single_nested,
       keep_comments,
+      indent_width,
+      use_tabs,
       ..Default::default()
     },
   );
@@ -84,9 +97,11 @@ fn print_help() {
      \n\
      Options:\n\
        --allow-attr <name>          Keep an attribute during conversion\n\
+       --indent-width <count>       Set the indentation width for space mode\n\
        --trim-outer-document        Emit body children instead of html/head/body\n\
        --collapse-single-nested     Collapse anonymous nested div wrappers\n\
        --drop-comments              Remove HTML comments\n\
+       --use-tabs                   Indent with tabs instead of spaces\n\
        -h, --help                   Show this help text"
   );
 }
