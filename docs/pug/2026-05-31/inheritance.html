@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="msapplication-config" content="/images/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png"><link rel="manifest" href="/images/manifest.json"><link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5"><link rel="shortcut icon" href="/images/favicon.ico"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic|PT+Sans:400,400italic,700,700italic"><link rel="stylesheet" href="/css/style.css"><title>Template Inheritance &ndash; Pug</title></head><body><aside class="menu outside"><!-- CSS gurus requested--><a class="toggle"><img src="/images/menu-tab.svg"></a><!-- nav placeholder--><nav class="nav nav-pills nav-stacked"><div class="advert"></div><a class="nav-link">API</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../api/getting-started.html">Getting Started</a><a class="nav-link" href="../api/express.html">Express Integration</a><a class="nav-link" href="../api/reference.html">Reference</a><a class="nav-link" href="../api/migration-v2.html">Migrating to Pug 2</a><a class="nav-link" href="../api/migration-v3.html">Migrating to Pug 3</a><a class="nav-link" href="https://github.com/pugjs/babel-plugin-transform-react-pug">React Integration</a></ul><a class="nav-link">Language Reference</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="attributes.html">Attributes</a><a class="nav-link" href="case.html">Case</a><a class="nav-link" href="code.html">Code</a><a class="nav-link" href="comments.html">Comments</a><a class="nav-link" href="conditionals.html">Conditionals</a><a class="nav-link" href="doctype.html">Doctype</a><a class="nav-link" href="filters.html">Filters</a><a class="nav-link" href="includes.html">Includes</a><a class="nav-link active" href="inheritance.html">Inheritance: Extends and Block</a><a class="nav-link" href="interpolation.html">Interpolation</a><a class="nav-link" href="iteration.html">Iteration</a><a class="nav-link" href="mixins.html">Mixins</a><a class="nav-link" href="plain-text.html">Plain Text</a><a class="nav-link" href="tags.html">Tags</a></ul><a class="nav-link">Support</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../support/community.html">Community Support</a><a class="nav-link" href="../support/enterprise.html">Enterprise Support</a></ul><div class="nav-link">Sponsors<a class="sponsor" href="https://www.coinnewsspan.com/">coin news</a><a class="sponsor" href="https://opencollective.com/pug/sponsor/0/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/0/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/1/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/1/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/2/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/2/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/3/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/3/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/4/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/4/avatar.svg" height="64"></a></div></nav></aside><nav class="navbar navbar-full navbar-dark bg-primary"><div class="container"><a class="navbar-brand" href="/">pug</a><ul class="nav navbar-nav"><li class="nav-item active"><a class="nav-link" href="../api/getting-started.html">Docs</a></li><li class="nav-item"><a class="nav-link" href="https://github.com/pugjs/pug">GitHub</a></li></ul></div></nav><div class="container"><nav class="menu inside"><!-- nav placeholder--><nav class="nav nav-pills nav-stacked"><div class="advert"></div><a class="nav-link">API</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../api/getting-started.html">Getting Started</a><a class="nav-link" href="../api/express.html">Express Integration</a><a class="nav-link" href="../api/reference.html">Reference</a><a class="nav-link" href="../api/migration-v2.html">Migrating to Pug 2</a><a class="nav-link" href="../api/migration-v3.html">Migrating to Pug 3</a><a class="nav-link" href="https://github.com/pugjs/babel-plugin-transform-react-pug">React Integration</a></ul><a class="nav-link">Language Reference</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="attributes.html">Attributes</a><a class="nav-link" href="case.html">Case</a><a class="nav-link" href="code.html">Code</a><a class="nav-link" href="comments.html">Comments</a><a class="nav-link" href="conditionals.html">Conditionals</a><a class="nav-link" href="doctype.html">Doctype</a><a class="nav-link" href="filters.html">Filters</a><a class="nav-link" href="includes.html">Includes</a><a class="nav-link active" href="inheritance.html">Inheritance: Extends and Block</a><a class="nav-link" href="interpolation.html">Interpolation</a><a class="nav-link" href="iteration.html">Iteration</a><a class="nav-link" href="mixins.html">Mixins</a><a class="nav-link" href="plain-text.html">Plain Text</a><a class="nav-link" href="tags.html">Tags</a></ul><a class="nav-link">Support</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../support/community.html">Community Support</a><a class="nav-link" href="../support/enterprise.html">Enterprise Support</a></ul><div class="nav-link">Sponsors<a class="sponsor" href="https://www.coinnewsspan.com/">coin news</a><a class="sponsor" href="https://opencollective.com/pug/sponsor/0/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/0/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/1/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/1/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/2/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/2/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/3/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/3/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/4/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/4/avatar.svg" height="64"></a></div></nav></nav><article class="main"><h1>Template Inheritance</h1>
+<p>Pug supports template inheritance. Template inheritance works via the <code>block</code> and <code>extends</code> keywords.</p>
+<p>In a template, a <code>block</code> is simply a “block” of Pug that a child template may replace. This process is recursive.</p>
+<p>Pug blocks can provide default content, if appropriate. Providing default content is purely optional, though. The example below defines <code>block scripts</code>, <code>block content</code>, and <code>block foot</code>.</p>
+<pre class="cm-s-default"><code><span class="cm-comment">//- layout.pug</span>
+<span class="cm-tag">html</span>
+<span class="cm-indent">  </span><span class="cm-tag">head</span>
+<span class="cm-indent">    </span><span class="cm-tag">title</span><span class="cm-string"> My Site - #{title}</span>
+<span class="cm-indent">    </span><span class="cm-keyword">block </span><span class="cm-variable">scripts</span>
+<span class="cm-indent">      </span><span class="cm-tag">script</span><span class="cm-punctuation">(</span><span class="cm-attribute">src</span><span class="cm-operator">=</span><span class="cm-string">'/jquery.js'</span><span class="cm-punctuation">)</span>
+<span class="cm-indent">  </span><span class="cm-tag">body</span>
+<span class="cm-indent">    </span><span class="cm-keyword">block </span><span class="cm-variable">content</span>
+<span class="cm-indent">    </span><span class="cm-keyword">block </span><span class="cm-variable">foot</span>
+<span class="cm-indent">      </span><span class="cm-builtin">#footer</span>
+<span class="cm-indent">        </span><span class="cm-tag">p</span><span class="cm-string"> some footer content</span>
+</code></pre>
+<p>To extend this layout, create a new file and use the <code>extends</code> directive with a path to the parent template. (If no file extension is given, <code>.pug</code> is automatically appended to the file name.) Then, define one or more blocks to override the parent block content.</p>
+<p>Below, notice that the <code>foot</code> block is <em>not</em> redefined, so it will use the parent’s default and output “some footer content”.</p>
+<pre class="cm-s-default"><code><span class="cm-comment">//- page-a.pug</span>
+<span class="cm-keyword">extends</span><span class="cm-string"> layout.pug</span>
+
+<span class="cm-keyword">block </span><span class="cm-variable">scripts</span>
+<span class="cm-indent">  </span><span class="cm-tag">script</span><span class="cm-punctuation">(</span><span class="cm-attribute">src</span><span class="cm-operator">=</span><span class="cm-string">'/jquery.js'</span><span class="cm-punctuation">)</span>
+<span class="cm-indent">  </span><span class="cm-tag">script</span><span class="cm-punctuation">(</span><span class="cm-attribute">src</span><span class="cm-operator">=</span><span class="cm-string">'/pets.js'</span><span class="cm-punctuation">)</span>
+
+<span class="cm-keyword">block </span><span class="cm-variable">content</span>
+<span class="cm-indent">  </span><span class="cm-tag">h1</span><span class="cm-punctuation">=</span> <span class="cm-variable">title</span>
+<span class="cm-indent">  </span><span class="cm-punctuation">-</span> <span class="cm-keyword">var</span> <span class="cm-def">pets</span> <span class="cm-operator">=</span> [<span class="cm-string">'cat'</span>, <span class="cm-string">'dog'</span>]
+<span class="cm-indent">  </span><span class="cm-keyword">each</span><span class="cm-variable"> petName</span><span class="cm-keyword"> in</span> <span class="cm-variable">pets</span>
+<span class="cm-indent">    </span><span class="cm-keyword">include</span><span class="cm-string"> pet.pug</span>
+</code></pre>
+<pre class="cm-s-default"><code><span class="cm-comment">//- pet.pug</span>
+<span class="cm-tag">p</span><span class="cm-punctuation">=</span> <span class="cm-variable">petName</span>
+</code></pre>
+<p>It’s also possible to override a block to provide additional blocks, as shown in the following example. As it shows, <code>content</code> now exposes a <code>sidebar</code> and <code>primary</code> block for overriding. (Alternatively, the child template could override <code>content</code> altogether.)</p>
+<pre class="cm-s-default"><code><span class="cm-comment">//- sub-layout.pug</span>
+<span class="cm-keyword">extends</span><span class="cm-string"> layout.pug</span>
+
+<span class="cm-keyword">block </span><span class="cm-variable">content</span>
+<span class="cm-indent">  </span><span class="cm-qualifier">.sidebar</span>
+<span class="cm-indent">    </span><span class="cm-keyword">block </span><span class="cm-variable">sidebar</span>
+<span class="cm-indent">      </span><span class="cm-tag">p</span><span class="cm-string"> nothing</span>
+<span class="cm-indent">  </span><span class="cm-qualifier">.primary</span>
+<span class="cm-indent">    </span><span class="cm-keyword">block </span><span class="cm-variable">primary</span>
+<span class="cm-indent">      </span><span class="cm-tag">p</span><span class="cm-string"> nothing</span>
+</code></pre>
+<pre class="cm-s-default"><code><span class="cm-comment">//- page-b.pug</span>
+<span class="cm-keyword">extends</span><span class="cm-string"> sub-layout.pug</span>
+
+<span class="cm-keyword">block </span><span class="cm-variable">content</span>
+<span class="cm-indent">  </span><span class="cm-qualifier">.sidebar</span>
+<span class="cm-indent">    </span><span class="cm-keyword">block </span><span class="cm-variable">sidebar</span>
+<span class="cm-indent">      </span><span class="cm-tag">p</span><span class="cm-string"> nothing</span>
+<span class="cm-indent">  </span><span class="cm-qualifier">.primary</span>
+<span class="cm-indent">    </span><span class="cm-keyword">block </span><span class="cm-variable">primary</span>
+<span class="cm-indent">      </span><span class="cm-tag">p</span><span class="cm-string"> nothing</span>
+</code></pre>
+<h2 id="block-append-prepend">Block <code>append</code> / <code>prepend</code> <a class="header-anchor" href="#block-append-prepend" aria-hidden="true">¶</a></h2>
+<p>Pug allows you to <code>replace</code> (default), <code>prepend</code>, or <code>append</code> blocks.</p>
+<p>Suppose you have default scripts in a <code>head</code> block that you wish to use on <em>every</em> page. You might do this:</p>
+<pre class="cm-s-default"><code><span class="cm-comment">//- layout.pug</span>
+<span class="cm-tag">html</span>
+<span class="cm-indent">  </span><span class="cm-tag">head</span>
+<span class="cm-indent">    </span><span class="cm-keyword">block </span><span class="cm-variable">head</span>
+<span class="cm-indent">      </span><span class="cm-tag">script</span><span class="cm-punctuation">(</span><span class="cm-attribute">src</span><span class="cm-operator">=</span><span class="cm-string">'/vendor/jquery.js'</span><span class="cm-punctuation">)</span>
+<span class="cm-indent">      </span><span class="cm-tag">script</span><span class="cm-punctuation">(</span><span class="cm-attribute">src</span><span class="cm-operator">=</span><span class="cm-string">'/vendor/caustic.js'</span><span class="cm-punctuation">)</span>
+<span class="cm-indent">  </span><span class="cm-tag">body</span>
+<span class="cm-indent">    </span><span class="cm-keyword">block </span><span class="cm-variable">content</span>
+</code></pre>
+<p>Now, consider a page of your JavaScript game. You want some game related scripts as well as these defaults. You can simply <code>append</code> the block:</p>
+<pre class="cm-s-default"><code><span class="cm-comment">//- page.pug</span>
+<span class="cm-keyword">extends</span><span class="cm-string"> layout.pug</span>
+
+<span class="cm-keyword">block append</span><span class="cm-variable"> head</span>
+<span class="cm-indent">  </span><span class="cm-tag">script</span><span class="cm-punctuation">(</span><span class="cm-attribute">src</span><span class="cm-operator">=</span><span class="cm-string">'/vendor/three.js'</span><span class="cm-punctuation">)</span>
+<span class="cm-indent">  </span><span class="cm-tag">script</span><span class="cm-punctuation">(</span><span class="cm-attribute">src</span><span class="cm-operator">=</span><span class="cm-string">'/game.js'</span><span class="cm-punctuation">)</span>
+</code></pre>
+<p>When using <code>block append</code> or <code>block prepend</code>, the word “<code>block</code>” is optional:</p>
+<pre class="cm-s-default"><code><span class="cm-comment">//- page.pug</span>
+<span class="cm-keyword">extends</span><span class="cm-string"> layout</span>
+
+<span class="cm-keyword">append</span><span class="cm-variable"> head</span>
+<span class="cm-indent">  </span><span class="cm-tag">script</span><span class="cm-punctuation">(</span><span class="cm-attribute">src</span><span class="cm-operator">=</span><span class="cm-string">'/vendor/three.js'</span><span class="cm-punctuation">)</span>
+<span class="cm-indent">  </span><span class="cm-tag">script</span><span class="cm-punctuation">(</span><span class="cm-attribute">src</span><span class="cm-operator">=</span><span class="cm-string">'/game.js'</span><span class="cm-punctuation">)</span>
+</code></pre>
+<h2 id="common-mistakes">Common mistakes <a class="header-anchor" href="#common-mistakes" aria-hidden="true">¶</a></h2>
+<p>Pug’s template inheritance is a powerful feature that allows you to split complex page template structures into smaller, simpler files. However, if you chain many, many templates together, you can make things a lot more complicated for yourself.</p>
+<p>Note that <strong>only named blocks and mixin definitions</strong> can appear at the top (unindented) level of a child template. This is important! Parent templates define a page’s overall structure, and child templates can only <code>append</code>, <code>prepend</code>, or replace specific blocks of markup and logic. If a child template tried to add content outside of a block, Pug would have no way of knowing where to put it in the final page.</p>
+<p>This includes <a href="code.html#unbuffered-code">unbuffered code</a>, which can also contain markup. If you need to define variables for use in a child template, you can do so a few different ways:</p>
+<ul>
+<li>Add the variables to the Pug <a href="../api/reference.html#options">options</a> object, or define them in unbuffered code in a parent template. The child template will inherit these variables.</li>
+<li>Define the variables <em>in a block</em> in the child template. Extending templates must have at least one block, or it would be empty — just define your variables there.</li>
+</ul>
+<p>For the same reason, Pug’s <a href="comments.html">buffered comments</a> cannot appear at the top level of an extending template: they produce HTML comments which would have nowhere to go in the resulting HTML. (Unbuffered Pug comments, however, can still go anywhere.)</p>
+<div style="margin-top: 50px"><div class="AW-Form-692213006"></div></div></article></div><script src="/js/pug.js"></script><script src="/js/generic.js"></script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-31798041-9', 'auto');
+ga('send', 'pageview');</script></body></html>

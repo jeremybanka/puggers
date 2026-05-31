@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="msapplication-config" content="/images/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png"><link rel="manifest" href="/images/manifest.json"><link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5"><link rel="shortcut icon" href="/images/favicon.ico"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic|PT+Sans:400,400italic,700,700italic"><link rel="stylesheet" href="/css/style.css"><title>Comments &ndash; Pug</title></head><body><aside class="menu outside"><!-- CSS gurus requested--><a class="toggle"><img src="/images/menu-tab.svg"></a><!-- nav placeholder--><nav class="nav nav-pills nav-stacked"><div class="advert"></div><a class="nav-link">API</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../api/getting-started.html">Getting Started</a><a class="nav-link" href="../api/express.html">Express Integration</a><a class="nav-link" href="../api/reference.html">Reference</a><a class="nav-link" href="../api/migration-v2.html">Migrating to Pug 2</a><a class="nav-link" href="../api/migration-v3.html">Migrating to Pug 3</a><a class="nav-link" href="https://github.com/pugjs/babel-plugin-transform-react-pug">React Integration</a></ul><a class="nav-link">Language Reference</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="attributes.html">Attributes</a><a class="nav-link" href="case.html">Case</a><a class="nav-link" href="code.html">Code</a><a class="nav-link active" href="comments.html">Comments</a><a class="nav-link" href="conditionals.html">Conditionals</a><a class="nav-link" href="doctype.html">Doctype</a><a class="nav-link" href="filters.html">Filters</a><a class="nav-link" href="includes.html">Includes</a><a class="nav-link" href="inheritance.html">Inheritance: Extends and Block</a><a class="nav-link" href="interpolation.html">Interpolation</a><a class="nav-link" href="iteration.html">Iteration</a><a class="nav-link" href="mixins.html">Mixins</a><a class="nav-link" href="plain-text.html">Plain Text</a><a class="nav-link" href="tags.html">Tags</a></ul><a class="nav-link">Support</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../support/community.html">Community Support</a><a class="nav-link" href="../support/enterprise.html">Enterprise Support</a></ul><div class="nav-link">Sponsors<a class="sponsor" href="https://www.coinnewsspan.com/">coin news</a><a class="sponsor" href="https://opencollective.com/pug/sponsor/0/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/0/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/1/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/1/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/2/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/2/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/3/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/3/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/4/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/4/avatar.svg" height="64"></a></div></nav></aside><nav class="navbar navbar-full navbar-dark bg-primary"><div class="container"><a class="navbar-brand" href="/">pug</a><ul class="nav navbar-nav"><li class="nav-item active"><a class="nav-link" href="../api/getting-started.html">Docs</a></li><li class="nav-item"><a class="nav-link" href="https://github.com/pugjs/pug">GitHub</a></li></ul></div></nav><div class="container"><nav class="menu inside"><!-- nav placeholder--><nav class="nav nav-pills nav-stacked"><div class="advert"></div><a class="nav-link">API</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../api/getting-started.html">Getting Started</a><a class="nav-link" href="../api/express.html">Express Integration</a><a class="nav-link" href="../api/reference.html">Reference</a><a class="nav-link" href="../api/migration-v2.html">Migrating to Pug 2</a><a class="nav-link" href="../api/migration-v3.html">Migrating to Pug 3</a><a class="nav-link" href="https://github.com/pugjs/babel-plugin-transform-react-pug">React Integration</a></ul><a class="nav-link">Language Reference</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="attributes.html">Attributes</a><a class="nav-link" href="case.html">Case</a><a class="nav-link" href="code.html">Code</a><a class="nav-link active" href="comments.html">Comments</a><a class="nav-link" href="conditionals.html">Conditionals</a><a class="nav-link" href="doctype.html">Doctype</a><a class="nav-link" href="filters.html">Filters</a><a class="nav-link" href="includes.html">Includes</a><a class="nav-link" href="inheritance.html">Inheritance: Extends and Block</a><a class="nav-link" href="interpolation.html">Interpolation</a><a class="nav-link" href="iteration.html">Iteration</a><a class="nav-link" href="mixins.html">Mixins</a><a class="nav-link" href="plain-text.html">Plain Text</a><a class="nav-link" href="tags.html">Tags</a></ul><a class="nav-link">Support</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../support/community.html">Community Support</a><a class="nav-link" href="../support/enterprise.html">Enterprise Support</a></ul><div class="nav-link">Sponsors<a class="sponsor" href="https://www.coinnewsspan.com/">coin news</a><a class="sponsor" href="https://opencollective.com/pug/sponsor/0/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/0/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/1/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/1/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/2/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/2/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/3/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/3/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/4/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/4/avatar.svg" height="64"></a></div></nav></nav><article class="main"><h1>Comments</h1>
+<p>Buffered comments look the same as single-line JavaScript comments. They act sort of like markup tags, producing <em>HTML</em> comments in the rendered page.</p>
+<p>Like tags, buffered comments must appear on their own line.</p>
+<div class="preview-wrapper" data-control="interactive" data-index=0><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="1605404495"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">// just some paragraphs
+p foo
+p bar</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;!-- just some paragraphs--&gt;
+&lt;p&gt;foo&lt;/p&gt;
+&lt;p&gt;bar&lt;/p&gt;</textarea></div></div></div></div>
+<p>Pug also supports unbuffered comments. Simply add a hyphen (<code>-</code>) to the start of the comment.</p>
+<p>These are only for commenting on the Pug code itself, and <em>do not</em> appear in the rendered HTML.</p>
+<div class="preview-wrapper" data-control="interactive" data-index=1><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="-612204649"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">//- will not output within markup
+p foo
+p bar</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;p&gt;foo&lt;/p&gt;
+&lt;p&gt;bar&lt;/p&gt;</textarea></div></div></div></div>
+<h2 id="block-comments">Block Comments <a class="header-anchor" href="#block-comments" aria-hidden="true">¶</a></h2>
+<p>Block comments work, too:</p>
+<div class="preview-wrapper" data-control="interactive" data-index=2><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="1971303801"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">body
+  //-
+    Comments for your template writers.
+    Use as much text as you want.
+  //
+    Comments for your HTML readers.
+    Use as much text as you want.</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;body&gt;
+  &lt;!--Comments for your HTML readers.
+Use as much text as you want.--&gt;
+&lt;/body&gt;</textarea></div></div></div></div>
+<h2 id="conditional-comments">Conditional Comments <a class="header-anchor" href="#conditional-comments" aria-hidden="true">¶</a></h2>
+<p>Pug does not have any special syntax for conditional comments. (Conditional comments are a peculiar method of adding fallback markup for old versions of Internet Explorer.)</p>
+<p>However, since all lines beginning with <code>&lt;</code> are treated as <a href="plain-text.html">plain text</a>, normal HTML-style conditional comments work just fine.</p>
+<div class="preview-wrapper" data-control="interactive" data-index=3><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="-1482941674"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">doctype html
+
+&lt;!--[if IE 8]&gt;
+&lt;html lang=&quot;en&quot; class=&quot;lt-ie9&quot;&gt;
+&lt;![endif]--&gt;
+&lt;!--[if gt IE 8]&gt;&lt;!--&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;!--&lt;![endif]--&gt;
+
+body
+  p Supporting old web browsers is a pain.
+
+&lt;/html&gt;</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;!DOCTYPE html&gt;
+&lt;!--[if IE 8]&gt;
+&lt;html lang=&quot;en&quot; class=&quot;lt-ie9&quot;&gt;
+&lt;![endif]--&gt;
+&lt;!--[if gt IE 8]&gt;&lt;!--&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;!--&lt;![endif]--&gt;
+
+&lt;body&gt;
+  &lt;p&gt;Supporting old web browsers is a pain.&lt;/p&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;</textarea></div></div></div></div>
+<div style="margin-top: 50px"><div class="AW-Form-692213006"></div></div></article></div><script>var demos=[{"files":[{"name":"index.pug","mode":"pug","contents":"\u002F\u002F just some paragraphs\np foo\np bar"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"\u002F\u002F- will not output within markup\np foo\np bar"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"body\n  \u002F\u002F-\n    Comments for your template writers.\n    Use as much text as you want.\n  \u002F\u002F\n    Comments for your HTML readers.\n    Use as much text as you want."}]},{"files":[{"name":"index.pug","mode":"pug","contents":"doctype html\n\n\u003C!--[if IE 8]\u003E\n\u003Chtml lang=\"en\" class=\"lt-ie9\"\u003E\n\u003C![endif]--\u003E\n\u003C!--[if gt IE 8]\u003E\u003C!--\u003E\n\u003Chtml lang=\"en\"\u003E\n\u003C!--\u003C![endif]--\u003E\n\nbody\n  p Supporting old web browsers is a pain.\n\n\u003C\u002Fhtml\u003E"}]}];</script><script src="/js/pug.js"></script><script src="/js/language.js"></script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-31798041-9', 'auto');
+ga('send', 'pageview');</script></body></html>

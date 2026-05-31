@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="msapplication-config" content="/images/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png"><link rel="manifest" href="/images/manifest.json"><link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5"><link rel="shortcut icon" href="/images/favicon.ico"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic|PT+Sans:400,400italic,700,700italic"><link rel="stylesheet" href="/css/style.css"><title>Filters &ndash; Pug</title></head><body><aside class="menu outside"><!-- CSS gurus requested--><a class="toggle"><img src="/images/menu-tab.svg"></a><!-- nav placeholder--><nav class="nav nav-pills nav-stacked"><div class="advert"></div><a class="nav-link">API</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../api/getting-started.html">Getting Started</a><a class="nav-link" href="../api/express.html">Express Integration</a><a class="nav-link" href="../api/reference.html">Reference</a><a class="nav-link" href="../api/migration-v2.html">Migrating to Pug 2</a><a class="nav-link" href="../api/migration-v3.html">Migrating to Pug 3</a><a class="nav-link" href="https://github.com/pugjs/babel-plugin-transform-react-pug">React Integration</a></ul><a class="nav-link">Language Reference</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="attributes.html">Attributes</a><a class="nav-link" href="case.html">Case</a><a class="nav-link" href="code.html">Code</a><a class="nav-link" href="comments.html">Comments</a><a class="nav-link" href="conditionals.html">Conditionals</a><a class="nav-link" href="doctype.html">Doctype</a><a class="nav-link active" href="filters.html">Filters</a><a class="nav-link" href="includes.html">Includes</a><a class="nav-link" href="inheritance.html">Inheritance: Extends and Block</a><a class="nav-link" href="interpolation.html">Interpolation</a><a class="nav-link" href="iteration.html">Iteration</a><a class="nav-link" href="mixins.html">Mixins</a><a class="nav-link" href="plain-text.html">Plain Text</a><a class="nav-link" href="tags.html">Tags</a></ul><a class="nav-link">Support</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../support/community.html">Community Support</a><a class="nav-link" href="../support/enterprise.html">Enterprise Support</a></ul><div class="nav-link">Sponsors<a class="sponsor" href="https://www.coinnewsspan.com/">coin news</a><a class="sponsor" href="https://opencollective.com/pug/sponsor/0/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/0/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/1/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/1/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/2/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/2/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/3/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/3/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/4/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/4/avatar.svg" height="64"></a></div></nav></aside><nav class="navbar navbar-full navbar-dark bg-primary"><div class="container"><a class="navbar-brand" href="/">pug</a><ul class="nav navbar-nav"><li class="nav-item active"><a class="nav-link" href="../api/getting-started.html">Docs</a></li><li class="nav-item"><a class="nav-link" href="https://github.com/pugjs/pug">GitHub</a></li></ul></div></nav><div class="container"><nav class="menu inside"><!-- nav placeholder--><nav class="nav nav-pills nav-stacked"><div class="advert"></div><a class="nav-link">API</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../api/getting-started.html">Getting Started</a><a class="nav-link" href="../api/express.html">Express Integration</a><a class="nav-link" href="../api/reference.html">Reference</a><a class="nav-link" href="../api/migration-v2.html">Migrating to Pug 2</a><a class="nav-link" href="../api/migration-v3.html">Migrating to Pug 3</a><a class="nav-link" href="https://github.com/pugjs/babel-plugin-transform-react-pug">React Integration</a></ul><a class="nav-link">Language Reference</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="attributes.html">Attributes</a><a class="nav-link" href="case.html">Case</a><a class="nav-link" href="code.html">Code</a><a class="nav-link" href="comments.html">Comments</a><a class="nav-link" href="conditionals.html">Conditionals</a><a class="nav-link" href="doctype.html">Doctype</a><a class="nav-link active" href="filters.html">Filters</a><a class="nav-link" href="includes.html">Includes</a><a class="nav-link" href="inheritance.html">Inheritance: Extends and Block</a><a class="nav-link" href="interpolation.html">Interpolation</a><a class="nav-link" href="iteration.html">Iteration</a><a class="nav-link" href="mixins.html">Mixins</a><a class="nav-link" href="plain-text.html">Plain Text</a><a class="nav-link" href="tags.html">Tags</a></ul><a class="nav-link">Support</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../support/community.html">Community Support</a><a class="nav-link" href="../support/enterprise.html">Enterprise Support</a></ul><div class="nav-link">Sponsors<a class="sponsor" href="https://www.coinnewsspan.com/">coin news</a><a class="sponsor" href="https://opencollective.com/pug/sponsor/0/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/0/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/1/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/1/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/2/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/2/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/3/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/3/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/4/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/4/avatar.svg" height="64"></a></div></nav></nav><article class="main"><h1>Filters</h1>
+<p>Filters let you use other languages in Pug templates.  They take a block of plain text as an input.</p>
+<p>To pass options to the filter, add them inside parentheses after the filter name (just as you would do with <a href="attributes.html">tag attributes</a>): <code>:less(ieCompat=false)</code>.</p>
+<p>All <a href="https://www.npmjs.com/browse/keyword/jstransformer">JSTransformer modules</a> can be used as Pug filters. Popular filters include <code>:babel</code>, <code>:uglify-js</code>, <code>:scss</code>, and <code>:markdown-it</code>. Check out the documentation for the JSTransformer for the options supported for the specific filter.</p>
+<p>If you can’t find an appropriate filter for your use case, you can write your own <a href="#custom-filters">custom filter</a>.</p>
+<p>For example, if you want to be able to use CoffeeScript and Markdown (using Markdown-it renderer) in your Pug template, you would first make sure that these features are installed:</p>
+<pre class="cm-s-default"><code><span class="cm-def">$ npm</span> install <span class="cm-attribute">--save</span> jstransformer-coffee-script
+<span class="cm-def">$ npm</span> install <span class="cm-attribute">--save</span> jstransformer-markdown-it
+</code></pre>
+<p>Now, you should be able to render the following template:</p>
+<div class="preview-wrapper" data-control="interactive" data-index=0><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="-843964034"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">:markdown-it(linkify langPrefix=&#x27;highlight-&#x27;)
+  # Markdown
+
+  Markdown document with http://links.com and
+
+  ```js
+  var codeBlocks;
+  ```
+script
+  :coffee-script
+    console.log &#x27;This is coffee script&#x27;</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;h1&gt;Markdown&lt;/h1&gt;
+&lt;p&gt;Markdown document with &lt;a href=&quot;http://links.com&quot;&gt;http://links.com&lt;/a&gt; and&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;highlight-js&quot;&gt;var codeBlocks;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;script&gt;
+  (function() {
+    console.log(&#x27;This is coffee script&#x27;);
+
+  }).call(this);
+&lt;/script&gt;</textarea></div></div></div></div>
+<div class="alert alert-warning"><h6> Warning</h6><p><strong>Filters are rendered at compile time.</strong>  This makes them fast, but it also means that they cannot support dynamic content or options.</p>
+<p>By default, compilation in the browser does not have access to JSTransformer-based filters, unless the JSTransformer modules are explicitly packed and made available through a CommonJS platform (such as Browserify or Webpack). In fact, the page you are reading right now uses Browserify to make the filters available in the browser.</p>
+<p>Templates pre-compiled on the server do not have this limitation.</p>
+</div>
+<h2 id="inline-syntax">Inline Syntax <a class="header-anchor" href="#inline-syntax" aria-hidden="true">¶</a></h2>
+<p>If the content of the filter is short, one can even use filters as if they are tags:</p>
+<div class="preview-wrapper" data-control="interactive" data-index=1><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="1562366064"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">p
+  :markdown-it(inline) **BOLD TEXT**
+
+p.
+  In the midst of a large amount of plain
+  text, suddenly a wild #[:markdown-it(inline) *Markdown*]
+  appeared.</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;p&gt;&lt;strong&gt;BOLD TEXT&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;In the midst of a large amount of plain
+  text, suddenly a wild &lt;em&gt;Markdown&lt;/em&gt;
+  appeared.&lt;/p&gt;</textarea></div></div></div></div>
+<h2 id="filtered-includes">Filtered Includes <a class="header-anchor" href="#filtered-includes" aria-hidden="true">¶</a></h2>
+<p>You can also apply filters to external files, using the <a href="includes.html#including-filtered-text">include syntax</a>.</p>
+<h2 id="nested-filters">Nested Filters <a class="header-anchor" href="#nested-filters" aria-hidden="true">¶</a></h2>
+<p>You can apply multiple filters on the same block of text. To do so, simply specify the filters on the same line.</p>
+<p>The filters are applied in reverse order. The text is first passed to the last filter; then, the result is passed to the second last filter, and so on.</p>
+<p>In the following example, the script is first transformed by <code>babel</code>, and then by <code>cdata-js</code>.</p>
+<div class="preview-wrapper" data-control="interactive" data-index=2><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="-685458541"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">script
+  :cdata-js:babel(presets=[&#x27;es2015&#x27;])
+    const myFunc = () =&gt; `This is ES2015 in a CD${&#x27;ATA&#x27;}`;</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;script&gt;
+  //&lt;![CDATA[
+  &#x27;use strict&#x27;;
+
+  var myFunc = function myFunc() {
+    return &#x27;This is ES2015 in a CD&#x27; + &#x27;ATA&#x27;;
+  };
+  //]]&gt;
+&lt;/script&gt;</textarea></div></div></div></div>
+<h2 id="custom-filters">Custom Filters <a class="header-anchor" href="#custom-filters" aria-hidden="true">¶</a></h2>
+<p>You can add your own filters to Pug via the <a href="../api/reference.html#options"><code>filters</code> option</a>.</p>
+<div><div class="row"><div class="col-lg-6"><pre class="cm-s-default"><code><span class="cm-variable">options</span>.<span class="cm-property">filters</span> <span class="cm-operator">=</span> {
+  <span class="cm-string cm-property">'my-own-filter'</span>: <span class="cm-keyword">function</span> (<span class="cm-def">text</span>, <span class="cm-def">options</span>) {
+    <span class="cm-keyword">if</span> (<span class="cm-variable-2">options</span>.<span class="cm-property">addStart</span>) <span class="cm-variable-2">text</span> <span class="cm-operator">=</span> <span class="cm-string">'Start\n'</span> <span class="cm-operator">+</span> <span class="cm-variable-2">text</span>;
+    <span class="cm-keyword">if</span> (<span class="cm-variable-2">options</span>.<span class="cm-property">addEnd</span>)   <span class="cm-variable-2">text</span> <span class="cm-operator">=</span> <span class="cm-variable-2">text</span> <span class="cm-operator">+</span> <span class="cm-string">'\nEnd'</span>;
+    <span class="cm-keyword">return</span> <span class="cm-variable-2">text</span>;
+  }
+};</code></pre><pre class="cm-s-default"><code><span class="cm-tag">p</span>
+<span class="cm-indent">  </span><span class="cm-atom">:my-own-filter</span><span class="cm-punctuation">(</span><span class="cm-attribute">addStart addEnd</span><span class="cm-punctuation">)</span>
+<span class="cm-string">    Filter</span>
+<span class="cm-string">    Body</span></code></pre></div><div class="col-lg-6"><pre class="cm-s-default"><code><span class="cm-tag cm-bracket">&lt;</span><span class="cm-tag">p</span><span class="cm-tag cm-bracket">&gt;</span>
+  Start
+  Filter
+  Body
+  End
+<span class="cm-tag cm-bracket">&lt;/</span><span class="cm-tag">p</span><span class="cm-tag cm-bracket">&gt;</span></code></pre></div></div></div>
+<div style="margin-top: 50px"><div class="AW-Form-692213006"></div></div></article></div><script>var demos=[{"files":[{"name":"index.pug","mode":"pug","contents":":markdown-it(linkify langPrefix='highlight-')\n  # Markdown\n\n  Markdown document with http:\u002F\u002Flinks.com and\n\n  ```js\n  var codeBlocks;\n  ```\nscript\n  :coffee-script\n    console.log 'This is coffee script'"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"p\n  :markdown-it(inline) **BOLD TEXT**\n\np.\n  In the midst of a large amount of plain\n  text, suddenly a wild #[:markdown-it(inline) *Markdown*]\n  appeared."}]},{"files":[{"name":"index.pug","mode":"pug","contents":"script\n  :cdata-js:babel(presets=['es2015'])\n    const myFunc = () =\u003E `This is ES2015 in a CD${'ATA'}`;"}]}];</script><script src="/js/pug.js"></script><script src="/js/filters.js"></script><script src="/js/language.js"></script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-31798041-9', 'auto');
+ga('send', 'pageview');</script></body></html>

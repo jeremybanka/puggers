@@ -1,0 +1,163 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="msapplication-config" content="/images/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png"><link rel="manifest" href="/images/manifest.json"><link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5"><link rel="shortcut icon" href="/images/favicon.ico"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic|PT+Sans:400,400italic,700,700italic"><link rel="stylesheet" href="/css/style.css"><title>Attributes &ndash; Pug</title></head><body><aside class="menu outside"><!-- CSS gurus requested--><a class="toggle"><img src="/images/menu-tab.svg"></a><!-- nav placeholder--><nav class="nav nav-pills nav-stacked"><div class="advert"></div><a class="nav-link">API</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../api/getting-started.html">Getting Started</a><a class="nav-link" href="../api/express.html">Express Integration</a><a class="nav-link" href="../api/reference.html">Reference</a><a class="nav-link" href="../api/migration-v2.html">Migrating to Pug 2</a><a class="nav-link" href="../api/migration-v3.html">Migrating to Pug 3</a><a class="nav-link" href="https://github.com/pugjs/babel-plugin-transform-react-pug">React Integration</a></ul><a class="nav-link">Language Reference</a><ul class="nav nav-pills nav-stacked"><a class="nav-link active" href="attributes.html">Attributes</a><a class="nav-link" href="case.html">Case</a><a class="nav-link" href="code.html">Code</a><a class="nav-link" href="comments.html">Comments</a><a class="nav-link" href="conditionals.html">Conditionals</a><a class="nav-link" href="doctype.html">Doctype</a><a class="nav-link" href="filters.html">Filters</a><a class="nav-link" href="includes.html">Includes</a><a class="nav-link" href="inheritance.html">Inheritance: Extends and Block</a><a class="nav-link" href="interpolation.html">Interpolation</a><a class="nav-link" href="iteration.html">Iteration</a><a class="nav-link" href="mixins.html">Mixins</a><a class="nav-link" href="plain-text.html">Plain Text</a><a class="nav-link" href="tags.html">Tags</a></ul><a class="nav-link">Support</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../support/community.html">Community Support</a><a class="nav-link" href="../support/enterprise.html">Enterprise Support</a></ul><div class="nav-link">Sponsors<a class="sponsor" href="https://www.coinnewsspan.com/">coin news</a><a class="sponsor" href="https://opencollective.com/pug/sponsor/0/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/0/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/1/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/1/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/2/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/2/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/3/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/3/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/4/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/4/avatar.svg" height="64"></a></div></nav></aside><nav class="navbar navbar-full navbar-dark bg-primary"><div class="container"><a class="navbar-brand" href="/">pug</a><ul class="nav navbar-nav"><li class="nav-item active"><a class="nav-link" href="../api/getting-started.html">Docs</a></li><li class="nav-item"><a class="nav-link" href="https://github.com/pugjs/pug">GitHub</a></li></ul></div></nav><div class="container"><nav class="menu inside"><!-- nav placeholder--><nav class="nav nav-pills nav-stacked"><div class="advert"></div><a class="nav-link">API</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../api/getting-started.html">Getting Started</a><a class="nav-link" href="../api/express.html">Express Integration</a><a class="nav-link" href="../api/reference.html">Reference</a><a class="nav-link" href="../api/migration-v2.html">Migrating to Pug 2</a><a class="nav-link" href="../api/migration-v3.html">Migrating to Pug 3</a><a class="nav-link" href="https://github.com/pugjs/babel-plugin-transform-react-pug">React Integration</a></ul><a class="nav-link">Language Reference</a><ul class="nav nav-pills nav-stacked"><a class="nav-link active" href="attributes.html">Attributes</a><a class="nav-link" href="case.html">Case</a><a class="nav-link" href="code.html">Code</a><a class="nav-link" href="comments.html">Comments</a><a class="nav-link" href="conditionals.html">Conditionals</a><a class="nav-link" href="doctype.html">Doctype</a><a class="nav-link" href="filters.html">Filters</a><a class="nav-link" href="includes.html">Includes</a><a class="nav-link" href="inheritance.html">Inheritance: Extends and Block</a><a class="nav-link" href="interpolation.html">Interpolation</a><a class="nav-link" href="iteration.html">Iteration</a><a class="nav-link" href="mixins.html">Mixins</a><a class="nav-link" href="plain-text.html">Plain Text</a><a class="nav-link" href="tags.html">Tags</a></ul><a class="nav-link">Support</a><ul class="nav nav-pills nav-stacked"><a class="nav-link" href="../support/community.html">Community Support</a><a class="nav-link" href="../support/enterprise.html">Enterprise Support</a></ul><div class="nav-link">Sponsors<a class="sponsor" href="https://www.coinnewsspan.com/">coin news</a><a class="sponsor" href="https://opencollective.com/pug/sponsor/0/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/0/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/1/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/1/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/2/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/2/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/3/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/3/avatar.svg" height="64"></a><a class="sponsor" href="https://opencollective.com/pug/sponsor/4/website" target="_blank"><img src="https://opencollective.com/pug/sponsor/4/avatar.svg" height="64"></a></div></nav></nav><article class="main"><h1>Attributes</h1>
+<p>Tag attributes look similar to HTML (with optional commas), but their values are just regular JavaScript.</p>
+<p>(NOTE: Examples on this page use the pipe character (<code>|</code>) for <a href="plain-text.html#whitespace-control">whitespace control</a>.)</p>
+<div class="preview-wrapper" data-control="interactive" data-index=0><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="-1872174260"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">a(href=&#x27;//google.com&#x27;) Google
+|
+|
+a(class=&#x27;button&#x27; href=&#x27;//google.com&#x27;) Google
+|
+|
+a(class=&#x27;button&#x27;, href=&#x27;//google.com&#x27;) Google</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;a href=&quot;//google.com&quot;&gt;Google&lt;/a&gt;
+&lt;a class=&quot;button&quot; href=&quot;//google.com&quot;&gt;Google&lt;/a&gt;
+&lt;a class=&quot;button&quot; href=&quot;//google.com&quot;&gt;Google&lt;/a&gt;</textarea></div></div></div></div>
+<p>Normal JavaScript expressions work fine, too:</p>
+<div class="preview-wrapper" data-control="interactive" data-index=1><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="-1070755619"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">- var authenticated = true
+body(class=authenticated ? &#x27;authed&#x27; : &#x27;anon&#x27;)</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;body class=&quot;authed&quot;&gt;&lt;/body&gt;</textarea></div></div></div></div>
+<h2 id="multiline-attributes">Multiline Attributes <a class="header-anchor" href="#multiline-attributes" aria-hidden="true">¶</a></h2>
+<p>If you have many attributes, you can also spread them across many lines:</p>
+<div class="preview-wrapper" data-control="interactive" data-index=2><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="1568381676"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">input(
+  type=&#x27;checkbox&#x27;
+  name=&#x27;agreement&#x27;
+  checked
+)</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;input type=&quot;checkbox&quot; name=&quot;agreement&quot; checked=&quot;checked&quot; /&gt;</textarea></div></div></div></div>
+<p>If your JavaScript runtime supports ES2015 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals">template strings</a> (including Node.js/io.js 1.0.0 and later), you can use that syntax for attributes. This is really useful for attributes with really long values:</p>
+<div class="preview-wrapper" data-control="interactive" data-index=3><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="-179719284"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">input(data-json=`
+  {
+    &quot;very-long&quot;: &quot;piece of &quot;,
+    &quot;data&quot;: true
+  }
+`)</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;input data-json=&quot;
+  {
+    &amp;quot;very-long&amp;quot;: &amp;quot;piece of &amp;quot;,
+    &amp;quot;data&amp;quot;: true
+  }
+&quot; /&gt;</textarea></div></div></div></div>
+<h2 id="quoted-attributes">Quoted Attributes <a class="header-anchor" href="#quoted-attributes" aria-hidden="true">¶</a></h2>
+<p>If your attribute name contains odd characters that might interfere with JavaScript syntax, either quote it using <code>&quot;&quot;</code> or <code>''</code>, or use commas to separate different attributes. Examples of such characters include <code>[]</code> and <code>()</code> (frequently used in Angular 2).</p>
+<div class="preview-wrapper" data-control="interactive" data-index=4><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="1667884468"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">//- In this case, `(click)` is treated as a
+//- function call instead of a attribute name,
+//- resulting in the unusual error.
+div(class=&#x27;div-class&#x27; (click)=&#x27;play()&#x27;)</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">index.pug:4:11
+    2| //- function call instead of a attribute name,
+    3| //- resulting in the unusual error.
+  &gt; 4| div(class=&#x27;div-class&#x27; (click)=&#x27;play()&#x27;)
+-----------------^
+
+Syntax Error: Assigning to rvalue</textarea></div></div></div></div>
+<div class="preview-wrapper" data-control="interactive" data-index=5><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="1450229221"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">div(class=&#x27;div-class&#x27;, (click)=&#x27;play()&#x27;)
+div(class=&#x27;div-class&#x27; &#x27;(click)&#x27;=&#x27;play()&#x27;)</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;div class=&quot;div-class&quot; (click)=&quot;play()&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;div-class&quot; (click)=&quot;play()&quot;&gt;&lt;/div&gt;</textarea></div></div></div></div>
+<h2 id="attribute-interpolation">Attribute Interpolation <a class="header-anchor" href="#attribute-interpolation" aria-hidden="true">¶</a></h2>
+<div class="alert alert-danger"><h6> Caution</h6><p>Previous versions of Pug/Jade supported an interpolation syntax such as:</p>
+<pre class="cm-s-default"><code><span class="cm-tag">a</span><span class="cm-punctuation">(</span><span class="cm-attribute">href</span><span class="cm-operator">=</span><span class="cm-string">&quot;/#{url}&quot;</span><span class="cm-punctuation">)</span><span class="cm-string"> Link</span>
+</code></pre>
+<p>This syntax is <strong>no longer supported.</strong> Alternatives are found below. (Check our <a href="../api/migration-v2.html">migration guide</a> for more information on other incompatibilities between Pug v2 and previous versions.)</p>
+</div>
+<p>Here are some alternatives you can use to include variables in your attribute:</p>
+<ol>
+<li>
+<p>Simply write the attribute in JavaScript:</p>
+<div class="preview-wrapper" data-control="interactive" data-index=6><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="1906882382"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">- var url = &#x27;pug-test.html&#x27;;
+a(href=&#x27;/&#x27; + url) Link
+|
+|
+- url = &#x27;https://example.com/&#x27;
+a(href=url) Another link</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;a href=&quot;/pug-test.html&quot;&gt;Link&lt;/a&gt;
+&lt;a href=&quot;https://example.com/&quot;&gt;Another link&lt;/a&gt;</textarea></div></div></div></div>
+</li>
+<li>
+<p>If your JavaScript runtime supports ES2015 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals">template strings</a> (including Node.js/io.js 1.0.0 and later), you can also use its syntax to simplify your attributes:</p>
+<div class="preview-wrapper" data-control="interactive" data-index=7><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="-575148380"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">- var btnType = &#x27;info&#x27;
+- var btnSize = &#x27;lg&#x27;
+button(type=&#x27;button&#x27; class=&#x27;btn btn-&#x27; + btnType + &#x27; btn-&#x27; + btnSize)
+|
+|
+button(type=&#x27;button&#x27; class=`btn btn-${btnType} btn-${btnSize}`)</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;button class=&quot;btn btn-info btn-lg&quot; type=&quot;button&quot;&gt;&lt;/button&gt;
+&lt;button class=&quot;btn btn-info btn-lg&quot; type=&quot;button&quot;&gt;&lt;/button&gt;</textarea></div></div></div></div>
+</li>
+</ol>
+<h2 id="unescaped-attributes">Unescaped Attributes <a class="header-anchor" href="#unescaped-attributes" aria-hidden="true">¶</a></h2>
+<p>By default, all attributes are escaped—that is,special characters are replaced with escape sequences—to prevent attacks (such as cross site scripting).  If you need to use special characters, use <code>!=</code> instead of <code>=</code>.</p>
+<div class="preview-wrapper" data-control="interactive" data-index=8><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="-1114462472"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">div(escaped=&quot;&lt;code&gt;&quot;)
+div(unescaped!=&quot;&lt;code&gt;&quot;)</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;div escaped=&quot;&amp;lt;code&amp;gt;&quot;&gt;&lt;/div&gt;
+&lt;div unescaped=&quot;&lt;code&gt;&quot;&gt;&lt;/div&gt;</textarea></div></div></div></div>
+<div class="alert alert-danger"><h6> Caution</h6><p><strong>Unescaped buffered code can be dangerous.</strong> You must be sure to sanitize any user inputs to avoid <a href="https://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a>.</p>
+</div>
+<h2 id="boolean-attributes">Boolean Attributes <a class="header-anchor" href="#boolean-attributes" aria-hidden="true">¶</a></h2>
+<p>Boolean attributes are mirrored by Pug. Boolean values (<code>true</code> and <code>false</code>) are accepted. When no value is specified <code>true</code> is assumed.</p>
+<div class="preview-wrapper" data-control="interactive" data-index=9><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="-2120286922"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">input(type=&#x27;checkbox&#x27; checked)
+|
+|
+input(type=&#x27;checkbox&#x27; checked=true)
+|
+|
+input(type=&#x27;checkbox&#x27; checked=false)
+|
+|
+input(type=&#x27;checkbox&#x27; checked=true.toString())</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;input type=&quot;checkbox&quot; checked=&quot;checked&quot; /&gt;
+&lt;input type=&quot;checkbox&quot; checked=&quot;checked&quot; /&gt;
+&lt;input type=&quot;checkbox&quot; /&gt;
+&lt;input type=&quot;checkbox&quot; checked=&quot;true&quot; /&gt;</textarea></div></div></div></div>
+<p>If the doctype is <code>html</code>, Pug knows not to mirror the attribute, and instead uses the terse style (understood by all browsers).</p>
+<div class="preview-wrapper" data-control="interactive" data-index=10><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="147783694"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">doctype html
+|
+|
+input(type=&#x27;checkbox&#x27; checked)
+|
+|
+input(type=&#x27;checkbox&#x27; checked=true)
+|
+|
+input(type=&#x27;checkbox&#x27; checked=false)
+|
+|
+input(type=&#x27;checkbox&#x27; checked=true &amp;&amp; &#x27;checked&#x27;)</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;!DOCTYPE html&gt;
+&lt;input type=&quot;checkbox&quot; checked&gt;
+&lt;input type=&quot;checkbox&quot; checked&gt;
+&lt;input type=&quot;checkbox&quot;&gt;
+&lt;input type=&quot;checkbox&quot; checked=&quot;checked&quot;&gt;</textarea></div></div></div></div>
+<h2 id="style-attributes">Style Attributes <a class="header-anchor" href="#style-attributes" aria-hidden="true">¶</a></h2>
+<p>The <code>style</code> attribute can be a string, like any normal attribute; but it can also be an object, which is handy when styles are generated by JavaScript.</p>
+<div class="preview-wrapper" data-control="interactive" data-index=11><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="838896838"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">a(style={color: &#x27;red&#x27;, background: &#x27;green&#x27;})</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;a style=&quot;color:red;background:green;&quot;&gt;&lt;/a&gt;</textarea></div></div></div></div>
+<h2 id="class-attributes">Class Attributes <a class="header-anchor" href="#class-attributes" aria-hidden="true">¶</a></h2>
+<p>The <code>class</code> attribute can be a string, like any normal attribute; but it can also be an array of class names, which is handy when generated from JavaScript.</p>
+<div class="preview-wrapper" data-control="interactive" data-index=12><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="-1501576047"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">- var classes = [&#x27;foo&#x27;, &#x27;bar&#x27;, &#x27;baz&#x27;]
+a(class=classes)
+|
+|
+//- the class attribute may also be repeated to merge arrays
+a.bang(class=classes class=[&#x27;bing&#x27;])</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;a class=&quot;foo bar baz&quot;&gt;&lt;/a&gt;
+&lt;a class=&quot;bang foo bar baz bing&quot;&gt;&lt;/a&gt;</textarea></div></div></div></div>
+<p>It can also be an object which maps class names to <code>true</code> or <code>false</code> values. This is useful for applying conditional classes</p>
+<div class="preview-wrapper" data-control="interactive" data-index=13><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="2000143768"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">- var currentUrl = &#x27;/about&#x27;
+a(class={active: currentUrl === &#x27;/&#x27;} href=&#x27;/&#x27;) Home
+|
+|
+a(class={active: currentUrl === &#x27;/about&#x27;} href=&#x27;/about&#x27;) About</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;a href=&quot;/&quot;&gt;Home&lt;/a&gt;
+&lt;a class=&quot;active&quot; href=&quot;/about&quot;&gt;About&lt;/a&gt;</textarea></div></div></div></div>
+<h2 id="class-literal">Class Literal <a class="header-anchor" href="#class-literal" aria-hidden="true">¶</a></h2>
+<p>Classes may be defined using a <code>.classname</code> syntax:</p>
+<div class="preview-wrapper" data-control="interactive" data-index=14><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="-356158522"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">a.button</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;a class=&quot;button&quot;&gt;&lt;/a&gt;</textarea></div></div></div></div>
+<p>Since <code>div</code>'s are such a common choice of tag, it is the default if you omit the tag name:</p>
+<div class="preview-wrapper" data-control="interactive" data-index=15><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="1213953511"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">.content</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;div class=&quot;content&quot;&gt;&lt;/div&gt;</textarea></div></div></div></div>
+<h2 id="id-literal">ID Literal <a class="header-anchor" href="#id-literal" aria-hidden="true">¶</a></h2>
+<p>IDs may be defined using a <code>#idname</code> syntax:</p>
+<div class="preview-wrapper" data-control="interactive" data-index=16><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="256078906"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">a#main-link</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;a id=&quot;main-link&quot;&gt;&lt;/a&gt;</textarea></div></div></div></div>
+<p>Since <code>div</code>'s are such a common choice of tag, it is the default if you omit the tag name:</p>
+<div class="preview-wrapper" data-control="interactive" data-index=17><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="-821529453"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">#content</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;div id=&quot;content&quot;&gt;&lt;/div&gt;</textarea></div></div></div></div>
+<h2 id="attributes">&amp;attributes <a class="header-anchor" href="#attributes" aria-hidden="true">¶</a></h2>
+<p>Pronounced as “and attributes”, the <code>&amp;attributes</code> syntax can be used to explode an object into attributes of an element.</p>
+<div class="preview-wrapper" data-control="interactive" data-index=18><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="1245617865"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">div#foo(data-bar=&quot;foo&quot;)&amp;attributes({&#x27;data-foo&#x27;: &#x27;bar&#x27;})</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;div id=&quot;foo&quot; data-bar=&quot;foo&quot; data-foo=&quot;bar&quot;&gt;&lt;/div&gt;</textarea></div></div></div></div>
+<p>The above example uses an object literal. But you can also use a variable whose value is an object, too. (See also: <a href="mixins.html#mixin-attributes">Mixin Attributes</a>).</p>
+<div class="preview-wrapper" data-control="interactive" data-index=19><div class="row" data-reactroot="" data-reactid="1" data-react-checksum="968731221"><div class="col-lg-6" data-reactid="2"><div data-reactid="3"><textarea data-reactid="4">- var attributes = {};
+- attributes.class = &#x27;baz&#x27;;
+div#foo(data-bar=&quot;foo&quot;)&amp;attributes(attributes)</textarea></div></div><div class="col-lg-6" data-reactid="5"><div data-reactid="6"><textarea readonly="" data-reactid="7">&lt;div class=&quot;baz&quot; id=&quot;foo&quot; data-bar=&quot;foo&quot;&gt;&lt;/div&gt;</textarea></div></div></div></div>
+<div class="alert alert-danger"><h6> Caution</h6><p><strong>Attributes applied using <code>&amp;attributes</code> are not automatically escaped.</strong> You must be sure to sanitize any user inputs to avoid <a href="https://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting</a> (XSS). If passing in <code>attributes</code> from a mixin call, this is done automatically.</p>
+</div>
+<div style="margin-top: 50px"><div class="AW-Form-692213006"></div></div></article></div><script>var demos=[{"files":[{"name":"index.pug","mode":"pug","contents":"a(href='\u002F\u002Fgoogle.com') Google\n|\n|\na(class='button' href='\u002F\u002Fgoogle.com') Google\n|\n|\na(class='button', href='\u002F\u002Fgoogle.com') Google"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"- var authenticated = true\nbody(class=authenticated ? 'authed' : 'anon')"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"input(\n  type='checkbox'\n  name='agreement'\n  checked\n)"}]},{"features":["templatestrings"],"files":[{"name":"index.pug","mode":"pug","contents":"input(data-json=`\n  {\n    \"very-long\": \"piece of \",\n    \"data\": true\n  }\n`)"}],"output":"\u003Cinput data-json=\"\n  {\n    &quot;very-long&quot;: &quot;piece of &quot;,\n    &quot;data&quot;: true\n  }\n\" \u002F\u003E"},{"files":[{"name":"index.pug","mode":"pug","contents":"\u002F\u002F- In this case, `(click)` is treated as a\n\u002F\u002F- function call instead of a attribute name,\n\u002F\u002F- resulting in the unusual error.\ndiv(class='div-class' (click)='play()')"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"div(class='div-class', (click)='play()')\ndiv(class='div-class' '(click)'='play()')"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"- var url = 'pug-test.html';\na(href='\u002F' + url) Link\n|\n|\n- url = 'https:\u002F\u002Fexample.com\u002F'\na(href=url) Another link"}]},{"features":["templatestrings"],"files":[{"name":"index.pug","mode":"pug","contents":"- var btnType = 'info'\n- var btnSize = 'lg'\nbutton(type='button' class='btn btn-' + btnType + ' btn-' + btnSize)\n|\n|\nbutton(type='button' class=`btn btn-${btnType} btn-${btnSize}`)"}],"output":"\u003Cbutton class=\"btn btn-info btn-lg\" type=\"button\"\u003E\u003C\u002Fbutton\u003E\n\u003Cbutton class=\"btn btn-info btn-lg\" type=\"button\"\u003E\u003C\u002Fbutton\u003E"},{"files":[{"name":"index.pug","mode":"pug","contents":"div(escaped=\"\u003Ccode\u003E\")\ndiv(unescaped!=\"\u003Ccode\u003E\")"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"input(type='checkbox' checked)\n|\n|\ninput(type='checkbox' checked=true)\n|\n|\ninput(type='checkbox' checked=false)\n|\n|\ninput(type='checkbox' checked=true.toString())"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"doctype html\n|\n|\ninput(type='checkbox' checked)\n|\n|\ninput(type='checkbox' checked=true)\n|\n|\ninput(type='checkbox' checked=false)\n|\n|\ninput(type='checkbox' checked=true && 'checked')"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"a(style={color: 'red', background: 'green'})"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"- var classes = ['foo', 'bar', 'baz']\na(class=classes)\n|\n|\n\u002F\u002F- the class attribute may also be repeated to merge arrays\na.bang(class=classes class=['bing'])"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"- var currentUrl = '\u002Fabout'\na(class={active: currentUrl === '\u002F'} href='\u002F') Home\n|\n|\na(class={active: currentUrl === '\u002Fabout'} href='\u002Fabout') About"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"a.button"}]},{"files":[{"name":"index.pug","mode":"pug","contents":".content"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"a#main-link"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"#content"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"div#foo(data-bar=\"foo\")&attributes({'data-foo': 'bar'})"}]},{"files":[{"name":"index.pug","mode":"pug","contents":"- var attributes = {};\n- attributes.class = 'baz';\ndiv#foo(data-bar=\"foo\")&attributes(attributes)"}]}];</script><script src="/js/pug.js"></script><script src="/js/language.js"></script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-31798041-9', 'auto');
+ga('send', 'pageview');</script></body></html>
