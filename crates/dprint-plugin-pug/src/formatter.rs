@@ -2,88 +2,96 @@ use crate::ast::{Document, Node, RawTextNode, StatementNode};
 use crate::config::Configuration;
 
 pub fn format(document: &Document, config: &Configuration) -> String {
-  let mut output = String::new();
+    let mut output = String::new();
 
-  for (index, node) in document.children.iter().enumerate() {
-    if index > 0 {
-      output.push('\n');
+    for (index, node) in document.children.iter().enumerate() {
+        if index > 0 {
+            output.push('\n');
+        }
+        write_node(
+            &mut output,
+            node,
+            0,
+            config.indent_width(),
+            config.use_tabs(),
+        );
     }
-    write_node(&mut output, node, 0, config.indent_width(), config.use_tabs());
-  }
 
-  if !output.ends_with('\n') {
-    output.push('\n');
-  }
+    if !output.ends_with('\n') {
+        output.push('\n');
+    }
 
-  output
+    output
 }
 
 fn write_node(output: &mut String, node: &Node, depth: usize, indent_width: usize, use_tabs: bool) {
-  match node {
-    Node::Statement(statement) => write_statement(output, statement, depth, indent_width, use_tabs),
-    Node::Comment(text) => {
-      write_indent(output, depth, indent_width, use_tabs);
-      output.push_str("// ");
-      output.push_str(text.trim());
+    match node {
+        Node::Statement(statement) => {
+            write_statement(output, statement, depth, indent_width, use_tabs)
+        }
+        Node::Comment(text) => {
+            write_indent(output, depth, indent_width, use_tabs);
+            output.push_str("// ");
+            output.push_str(text.trim());
+        }
+        Node::Text(text) => {
+            write_indent(output, depth, indent_width, use_tabs);
+            output.push('|');
+            output.push_str(text);
+        }
+        Node::RawText(text) => write_raw_text(output, text, depth, indent_width, use_tabs),
     }
-    Node::Text(text) => {
-      write_indent(output, depth, indent_width, use_tabs);
-      output.push('|');
-      output.push_str(text);
-    }
-    Node::RawText(text) => write_raw_text(output, text, depth, indent_width, use_tabs),
-  }
 }
 
 fn write_statement(
-  output: &mut String,
-  element: &StatementNode,
-  depth: usize,
-  indent_width: usize,
-  use_tabs: bool,
+    output: &mut String,
+    element: &StatementNode,
+    depth: usize,
+    indent_width: usize,
+    use_tabs: bool,
 ) {
-  write_indent(output, depth, indent_width, use_tabs);
-  output.push_str(element.content.trim());
+    write_indent(output, depth, indent_width, use_tabs);
+    output.push_str(element.content.trim());
 
-  for child in &element.children {
-    output.push('\n');
-    write_node(output, child, depth + 1, indent_width, use_tabs);
-  }
+    for child in &element.children {
+        output.push('\n');
+        write_node(output, child, depth + 1, indent_width, use_tabs);
+    }
 }
 
 fn write_raw_text(
-  output: &mut String,
-  text: &RawTextNode,
-  depth: usize,
-  indent_width: usize,
-  use_tabs: bool,
+    output: &mut String,
+    text: &RawTextNode,
+    depth: usize,
+    indent_width: usize,
+    use_tabs: bool,
 ) {
-  write_indent(output, depth, indent_width, use_tabs);
-  for _ in 0..text.extra_indent {
-    output.push(' ');
-  }
-  output.push_str(&text.content);
+    write_indent(output, depth, indent_width, use_tabs);
+    for _ in 0..text.extra_indent {
+        output.push(' ');
+    }
+    output.push_str(&text.content);
 }
 
 fn write_indent(output: &mut String, depth: usize, indent_width: usize, use_tabs: bool) {
-  if depth == 0 {
-    return;
-  }
+    if depth == 0 {
+        return;
+    }
 
-  if use_tabs {
+    if use_tabs {
+        for _ in 0..depth {
+            output.push('\t');
+        }
+        return;
+    }
+
+    if indent_width == 0 {
+        return;
+    }
+
     for _ in 0..depth {
-      output.push('\t');
+        for _ in 0..indent_width {
+            output.push(' ');
+        }
     }
-    return;
-  }
-
-  if indent_width == 0 {
-    return;
-  }
-
-  for _ in 0..depth {
-    for _ in 0..indent_width {
-      output.push(' ');
-    }
-  }
 }
