@@ -1,19 +1,50 @@
-use crate::ast::{Document, ElementNode, Node};
+use crate::ast::{Document, Node, RawTextNode, StatementNode};
 use crate::lexer::LexedLine;
 
 pub fn parse(lines: &[LexedLine]) -> Document {
-  let (children, _) = parse_block(lines, 0, 0);
+  let (children, _) = parse_block(lines, 0, 0, ParseMode::Normal);
   Document { children }
 }
 
-fn parse_block(lines: &[LexedLine], mut index: usize, current_indent: usize) -> (Vec<Node>, usize) {
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ParseMode {
+  Normal,
+  RawText,
+}
+
+fn parse_block(
+  lines: &[LexedLine],
+  mut index: usize,
+  current_indent: usize,
+  mode: ParseMode,
+) -> (Vec<Node>, usize) {
   let mut nodes = Vec::new();
 
   while index < lines.len() {
     let line = &lines[index];
 
+    if line.is_blank {
+      if mode == ParseMode::RawText {
+        nodes.push(Node::RawText(RawTextNode {
+          extra_indent: line.indent.saturating_sub(current_indent),
+          content: String::new(),
+        }));
+      }
+      index += 1;
+      continue;
+    }
+
     if line.indent < current_indent {
       break;
+    }
+
+    if mode == ParseMode::RawText {
+      nodes.push(Node::RawText(RawTextNode {
+        extra_indent: line.indent.saturating_sub(current_indent),
+        content: line.content.clone(),
+      }));
+      index += 1;
+      continue;
     }
 
     if line.indent > current_indent {
@@ -21,19 +52,37 @@ fn parse_block(lines: &[LexedLine], mut index: usize, current_indent: usize) -> 
       continue;
     }
 
-    if let Some(comment) = line.content.strip_prefix("//") {
+    let content = line.content.trim_start();
+
+    if let Some(comment) = content.strip_prefix("//") {
       nodes.push(Node::Comment(comment.trim().to_string()));
       index += 1;
       continue;
     }
 
-    let mut node = parse_node(&line.content);
+    if let Some(text) = content.strip_prefix('|') {
+      nodes.push(Node::Text(text.to_string()));
+      index += 1;
+      continue;
+    }
+
+    let mut node = Node::Statement(StatementNode {
+      content: content.trim().to_string(),
+      is_text_block: is_text_block(content),
+      children: Vec::new(),
+    });
     let next_index = index + 1;
 
     if next_index < lines.len() && lines[next_index].indent > current_indent {
-      if let Node::Element(element) = &mut node {
-        let (children, consumed_index) = parse_block(lines, next_index, lines[next_index].indent);
-        element.children = children;
+      if let Node::Statement(statement) = &mut node {
+        let next_mode = if statement.is_text_block {
+          ParseMode::RawText
+        } else {
+          ParseMode::Normal
+        };
+        let (children, consumed_index) =
+          parse_block(lines, next_index, lines[next_index].indent, next_mode);
+        statement.children = children;
         index = consumed_index;
       } else {
         index = next_index;
@@ -48,94 +97,6 @@ fn parse_block(lines: &[LexedLine], mut index: usize, current_indent: usize) -> 
   (nodes, index)
 }
 
-fn parse_node(content: &str) -> Node {
-  let first = content.chars().next();
-  if matches!(first, Some('|')) {
-    return Node::Text(content[1..].trim().to_string());
-  }
-
-  let mut tag = String::from("div");
-  let mut id = None;
-  let mut classes = Vec::new();
-  let mut text = None;
-  let mut chars = content.char_indices().peekable();
-  let mut saw_head = false;
-  let mut text_start = None;
-
-  while let Some((index, ch)) = chars.next() {
-    match ch {
-      '#' => {
-        let value = consume_ident(content, &mut chars);
-        if !value.is_empty() {
-          id = Some(value);
-        }
-      }
-      '.' => {
-        let value = consume_ident(content, &mut chars);
-        if !value.is_empty() {
-          classes.push(value);
-        }
-      }
-      ' ' | '\t' => {
-        text_start = Some(index + ch.len_utf8());
-        break;
-      }
-      _ => {
-        if !saw_head && is_ident_char(ch) {
-          let mut end = index + ch.len_utf8();
-          while let Some((next_index, next_char)) = chars.peek().copied() {
-            if !is_ident_char(next_char) {
-              break;
-            }
-            end = next_index + next_char.len_utf8();
-            chars.next();
-          }
-          tag = content[index..end].to_string();
-          saw_head = true;
-        }
-      }
-    }
-  }
-
-  if let Some(start) = text_start {
-    let value = content[start..].trim();
-    if !value.is_empty() {
-      text = Some(value.to_string());
-    }
-  }
-
-  Node::Element(ElementNode {
-    tag,
-    id,
-    classes,
-    text,
-    children: Vec::new(),
-  })
+fn is_text_block(content: &str) -> bool {
+  content.ends_with('.') && !matches!(content, "." | "..")
 }
-
-fn consume_ident(
-  source: &str,
-  chars: &mut std::iter::Peekable<std::str::CharIndices<'_>>,
-) -> String {
-  let mut start = None;
-  let mut end = None;
-
-  while let Some((index, ch)) = chars.peek().copied() {
-    if !is_ident_char(ch) {
-      break;
-    }
-    start.get_or_insert(index);
-    end = Some(index + ch.len_utf8());
-    chars.next();
-  }
-
-  match (start, end) {
-    (Some(start), Some(end)) => source[start..end].to_string(),
-    _ => String::new(),
-  }
-}
-
-fn is_ident_char(ch: char) -> bool {
-  ch.is_ascii_alphanumeric() || matches!(ch, '-' | '_')
-}
-

@@ -81,6 +81,9 @@ generate_plugin_code!(PugPluginHandler, PugPluginHandler);
 
 #[cfg(test)]
 mod tests {
+  use std::fs;
+  use std::path::PathBuf;
+
   use super::{formatter, lexer, parser};
   use crate::config::Configuration;
 
@@ -91,7 +94,7 @@ mod tests {
     let document = parser::parse(&lexed);
     let formatted = formatter::format(&document, &Configuration::default());
 
-    assert_eq!(formatted, "div#app.main\n  p hello world\n    span.label neat\n");
+    assert_eq!(formatted, "div#app.main\n  p   hello world\n    span.label  neat\n");
   }
 
   #[test]
@@ -101,6 +104,60 @@ mod tests {
     let document = parser::parse(&lexed);
     let formatted = formatter::format(&document, &Configuration::default());
 
-    assert_eq!(formatted, "// note\nhello\n");
+    assert_eq!(formatted, "// note\n|  hello\n");
+  }
+
+  #[test]
+  fn preserves_attributes_and_text_blocks() {
+    let source = "doctype html\nhtml(lang=\"en\")\n  body\n    textarea(data-x=\"1\").\n      line one\n        line two\n    a.link(href=\"/docs\") Docs\n";
+    let lexed = lexer::lex(source);
+    let document = parser::parse(&lexed);
+    let formatted = formatter::format(&document, &Configuration::default());
+
+    assert_eq!(
+      formatted,
+      "doctype html\nhtml(lang=\"en\")\n  body\n    textarea(data-x=\"1\").\n      line one\n        line two\n    a.link(href=\"/docs\") Docs\n"
+    );
+  }
+
+  #[test]
+  fn formats_generated_docs_idempotently() {
+    let docs_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+      .join("../../docs/pug/2026-05-31");
+
+    for entry in fs::read_dir(&docs_dir).expect("docs directory should exist") {
+      let entry = entry.expect("directory entry should load");
+      let path = entry.path();
+      if path.extension().and_then(|ext| ext.to_str()) != Some("pug") {
+        continue;
+      }
+
+      let source = fs::read_to_string(&path).expect("pug file should read");
+      let lexed = lexer::lex(&source);
+      let document = parser::parse(&lexed);
+      let formatted = formatter::format(&document, &Configuration::default());
+
+      assert_same_text(&formatted, &source, &format!("formatter changed {}", path.display()));
+    }
+  }
+
+  fn assert_same_text(actual: &str, expected: &str, context: &str) {
+    if actual == expected {
+      return;
+    }
+
+    let mismatch = actual
+      .chars()
+      .zip(expected.chars())
+      .position(|(left, right)| left != right)
+      .unwrap_or_else(|| actual.len().min(expected.len()));
+
+    let actual_snippet: String = actual.chars().skip(mismatch).take(120).collect();
+    let expected_snippet: String = expected.chars().skip(mismatch).take(120).collect();
+
+    panic!(
+      "{context}\nfirst mismatch at char {mismatch}\nactual:   {:?}\nexpected: {:?}",
+      actual_snippet, expected_snippet
+    );
   }
 }

@@ -2,22 +2,19 @@
 pub struct LexedLine {
   pub indent: usize,
   pub content: String,
+  pub is_blank: bool,
 }
 
 pub fn lex(source: &str) -> Vec<LexedLine> {
   source
     .lines()
-    .filter_map(|line| {
-      if line.trim().is_empty() {
-        return None;
-      }
-
+    .map(|line| {
       let indent = line.chars().take_while(|ch| *ch == ' ').count();
-      Some(LexedLine {
+      LexedLine {
         indent,
-        content: line.trim().to_string(),
-      })
+        content: line[indent..].to_string(),
+        is_blank: line.trim().is_empty(),
+      }
     })
     .collect()
 }
-

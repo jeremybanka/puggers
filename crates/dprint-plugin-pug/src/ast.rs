@@ -5,17 +5,21 @@ pub struct Document {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Node {
-  Element(ElementNode),
+  Statement(StatementNode),
   Comment(String),
   Text(String),
+  RawText(RawTextNode),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ElementNode {
-  pub tag: String,
-  pub id: Option<String>,
-  pub classes: Vec<String>,
-  pub text: Option<String>,
+pub struct StatementNode {
+  pub content: String,
+  pub is_text_block: bool,
   pub children: Vec<Node>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RawTextNode {
+  pub extra_indent: usize,
+  pub content: String,
+}
