@@ -3,16 +3,16 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Configuration {
-  pub indent_width: Option<usize>,
-  pub use_tabs: Option<bool>,
+    pub indent_width: Option<usize>,
+    pub use_tabs: Option<bool>,
 }
 
 impl Configuration {
-  pub fn indent_width(&self) -> usize {
-    self.indent_width.unwrap_or(2)
-  }
+    pub fn indent_width(&self) -> usize {
+        self.indent_width.unwrap_or(2)
+    }
 
-  pub fn use_tabs(&self) -> bool {
-    self.use_tabs.unwrap_or(false)
-  }
+    pub fn use_tabs(&self) -> bool {
+        self.use_tabs.unwrap_or(false)
+    }
 }
