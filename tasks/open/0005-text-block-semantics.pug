@@ -1,0 +1,24 @@
+issue(id="0005" status="open")
+  title Distinguish prose blocks, raw blocks, and whitespace-sensitive text forms
+  user-story
+    as-a maintainer of the puggers formatter
+    i-want text-bearing Pug constructs modeled more precisely
+    so-that formatting can improve readability without breaking rendered output
+  premise.
+    Text handling is the most semantically dangerous area in Pug because
+    whitespace can be meaningful in multiple ways. Today the formatter uses a
+    broad dotted-block heuristic and preserves piped text lines largely as-is,
+    while the HTML converter has a short whitelist of raw-text HTML tags. Before
+    introducing line width or broader text normalization, the tool needs a
+    clearer distinction between prose-like blocks, code-like raw blocks, piped
+    text, and literal HTML or interpolation-heavy content.
+  acceptance-criteria
+    criterion Define explicit categories for dotted blocks, piped text, inline text, and code-like raw blocks.
+    criterion Preserve blank lines, leading spaces, and trailing spaces where they are semantically significant.
+    criterion Add tests that cover whitespace-control examples, interpolation-heavy prose, and raw blocks such as `script.` and `textarea.`.
+    criterion Document which text forms may eventually participate in width-aware formatting and which are excluded by design.
+  review-items
+    item(status="open") Decide whether dotted prose blocks should be identified by tag whitelist, by syntax context, or by explicit opt-in only.
+    item(status="open") Confirm whether literal HTML inside text contexts deserves its own treatment instead of falling under generic raw text handling.
+    item(status="open") Keep the docs corpus examples central because they already expose whitespace-sensitive edge cases.
+

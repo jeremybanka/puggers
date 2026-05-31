@@ -1,0 +1,23 @@
+issue(id="0006" status="open")
+  title Add distinct handling for Pug comments and filter blocks
+  user-story
+    as-a maintainer of the puggers formatter
+    i-want comments and filters modeled explicitly
+    so-that the formatter can preserve intent and eventually apply syntax-aware rules to those constructs
+  premise.
+    The formatter currently flattens comments into a simple `//` form and uses a
+    generic dotted-block rule for many block-like constructs. That loses the
+    distinction between buffered versus unbuffered Pug comments and leaves
+    filter blocks like `:markdown` or `:javascript` without a real syntax model.
+    These are common enough in the language that they deserve explicit
+    representation before the formatter grows more aggressive policies.
+  acceptance-criteria
+    criterion Represent `//` and `//-` distinctly in the AST and formatter behavior.
+    criterion Introduce explicit handling for filter blocks such as `:markdown`, `:css`, and `:javascript`.
+    criterion Preserve filter payloads losslessly even if embedded-language formatting is out of scope initially.
+    criterion Add tests covering comments at different nesting levels and representative filter blocks from real-world Pug usage.
+  review-items
+    item(status="open") Decide whether any filters should eventually delegate to host formatters or remain opaque payloads permanently.
+    item(status="open") Confirm whether comment normalization should preserve authored spacing more strictly than it does today.
+    item(status="open") Avoid letting the generic dotted-block heuristic remain the long-term implementation for filter syntax.
+

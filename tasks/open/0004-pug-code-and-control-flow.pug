@@ -1,0 +1,24 @@
+issue(id="0004" status="open")
+  title Model Pug code forms and control-flow constructs
+  user-story
+    as-a maintainer of the puggers formatter
+    i-want code and control-flow syntax represented explicitly
+    so-that the formatter can understand Pug programs instead of only nested markup-like lines
+  premise.
+    Pug includes significant non-markup syntax: buffered and unbuffered code,
+    conditionals, loops, case statements, includes, inheritance, and mixins.
+    Right now the formatter mostly preserves those lines as opaque statements,
+    which works for idempotence but leaves no room for syntax-aware formatting
+    or validation. Once statement heads and attributes are structured, the next
+    major frontier is modeling the control-flow and code-bearing forms that make
+    real Pug files more than HTML written with indentation.
+  acceptance-criteria
+    criterion Add explicit AST coverage for the major operator-prefixed code forms such as `-`, `=`, and `!=`.
+    criterion Add syntax-aware handling for core block constructs such as `if`/`else`, `case`/`when`, `each`, and `while`.
+    criterion Decide how includes, extends, blocks, and mixin declarations or calls fit into the same model or into adjacent statement categories.
+    criterion Add tests that cover representative examples from the docs corpus without regressing lossless behavior on unsupported subforms.
+  review-items
+    item(status="open") Decide whether template inheritance and include syntax should land in the same task or be split once the AST shape becomes clearer.
+    item(status="open") Confirm when the formatter should diagnose malformed code structure versus preserving it as opaque syntax.
+    item(status="open") Keep expression parsing scope realistic; we likely want to preserve JavaScript expressions as opaque payloads at first.
+

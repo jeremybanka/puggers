@@ -1,0 +1,25 @@
+issue(id="0002" status="open")
+  title Add structured parsing for Pug statement heads
+  user-story
+    as-a maintainer of the puggers formatter
+    i-want statement heads parsed into structured syntax
+    so-that formatting decisions can be based on actual Pug constructs instead of opaque line strings
+  premise.
+    The formatter currently preserves most non-comment, non-piped, non-raw
+    lines as opaque statement text. That has been a good bootstrap strategy,
+    but it blocks nearly every meaningful formatting improvement. A structured
+    statement model should separate operator prefixes, tag names, shorthand id
+    and classes, inline text, and attribute payloads while still preserving an
+    escape hatch for syntax we do not yet understand. The goal is not to fully
+    parse all of Pug in one step, but to establish a real statement AST that
+    later tasks can build on safely.
+  acceptance-criteria
+    criterion Introduce a structured AST node for statement heads instead of storing most statements as opaque strings.
+    criterion Parse tag names, shorthand ids/classes, and obvious inline text in a way that preserves existing idempotence on the generated docs corpus.
+    criterion Preserve an explicit raw or unknown branch for syntax that is not yet modeled so the formatter can remain lossless while coverage grows.
+    criterion Add focused tests covering plain tags, shorthand-only divs, doctype-like statements, and representative edge cases from the docs corpus.
+  review-items
+    item(status="open") Decide where operator-prefixed statements such as `-`, `=`, and `!=` fit in the statement AST versus later control-flow parsing.
+    item(status="open") Confirm how much whitespace around inline text should be normalized once statement heads are no longer opaque strings.
+    item(status="open") Keep a clear separation between syntactic structure and later formatting policy so future width-related changes stay localized.
+

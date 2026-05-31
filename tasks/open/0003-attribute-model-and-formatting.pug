@@ -1,0 +1,24 @@
+issue(id="0003" status="open")
+  title Add a real attribute model and attribute formatting rules
+  user-story
+    as-a maintainer of the puggers formatter
+    i-want attributes parsed and formatted structurally
+    so-that spacing, quoting, booleans, and multiline layout can be normalized safely
+  premise.
+    Attributes are currently preserved as part of opaque statement strings in
+    the formatter and emitted from a simple allowlist-based structure in the
+    HTML converter. This prevents the tool from normalizing spacing, choosing
+    multiline layout, or reasoning about booleans and quoting consistently. A
+    structured attribute model is the natural next layer after statement-head
+    parsing and is also the clearest non-text place where line width can add
+    value later.
+  acceptance-criteria
+    criterion Parse attribute lists into structured entries with explicit names, values, and boolean or terse forms.
+    criterion Preserve attribute ordering by default unless there is an explicit and well-justified normalization rule.
+    criterion Add formatting rules for commas, spacing, quoting preservation or normalization, and multiline attribute layout.
+    criterion Cover repeated class-like inputs, boolean attrs, empty attrs, and representative complex expressions with tests.
+  review-items
+    item(status="open") Decide whether quote style should remain authored, be normalized, or stay outside initial scope.
+    item(status="open") Confirm how to treat syntactically unusual attribute names such as `(click)` and `data-*` without regressing docs examples.
+    item(status="open") Evaluate whether attribute wrapping should be the first place line width is enforced because it is less semantically risky than prose reflow.
+

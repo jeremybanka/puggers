@@ -1,0 +1,25 @@
+issue(id="0010" status="open")
+  title Stress test aggressive whitespace compaction
+  user-story
+    as-a maintainer of puggers
+    i-want a focused stress suite for whitespace compaction
+    so-that we can measure how far normalization can go before semantics or readability break
+  premise.
+    Several future formatter improvements will be tempted to compact whitespace:
+    collapsing redundant spaces, flattening indentation-adjacent text, trimming
+    blank lines, or minimizing raw-text payloads. In Pug, those moves can be
+    deceptively dangerous because whitespace carries meaning in piped text,
+    dotted blocks, inline tag adjacency, and interpolation-heavy prose. A
+    dedicated stress test task should push compaction hard on representative and
+    adversarial fixtures so we can identify the exact boundaries where
+    normalization stops being safe.
+  acceptance-criteria
+    criterion Add a fixture suite that exercises aggressive whitespace compaction across inline text, piped text, dotted blocks, raw blocks, comments, and interpolation-heavy examples.
+    criterion Record which compaction transforms are safe, conditionally safe, or clearly unsafe, with examples for each category.
+    criterion Include cases where compaction changes rendered output, not just source appearance, so regressions are obvious.
+    criterion Produce a short summary of compaction findings that later formatting tasks can treat as policy input rather than rediscovering ad hoc.
+  review-items
+    item(status="open") Decide whether compaction testing should include HTML-imported fixtures, hand-authored Pug fixtures, or both.
+    item(status="open") Confirm whether blank-line compaction belongs in the same policy bucket as inline space compaction or should be evaluated separately.
+    item(status="open") Make sure examples cover both “safe to compact” cases and “must preserve exactly” cases so the suite does not become one-sided.
+

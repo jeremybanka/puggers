@@ -1,0 +1,28 @@
+issue(id="0001" status="open")
+  title Explore lineWidth support for Pug formatting
+  user-story
+    as-a maintainer of the puggers formatter
+    i-want line width to improve readability where it is semantically safe
+    so-that long Pug files can be normalized without accidentally changing rendered whitespace
+  premise.
+    Pug is indentation-sensitive and often whitespace-sensitive, so line width is
+    not as broadly applicable here as it is in HTML, Markdown, or JavaScript.
+    The clearest first use case is multiline prose-like text, especially dotted
+    text blocks such as `p.`, `li.`, or `blockquote.` where the author intends a
+    text block rather than code. Even there, wrapping must be conservative
+    because `script.`, `style.`, `textarea.`, and literal examples inside docs
+    often depend on exact line breaks and spaces. A second promising use case is
+    width-aware breaking of long attribute lists, because that changes source
+    layout more than rendered output. Past that point the value of line width
+    gets murky quickly because inline text, piped text, interpolation, and
+    significant leading or trailing spaces can all change meaning.
+  acceptance-criteria
+    criterion Decide and document which Pug constructs are eligible for line-width-driven wrapping and which are explicitly excluded.
+    criterion If multiline text wrapping is implemented, limit it to cases that are demonstrably safe and avoid reflowing code-like or example-like raw text blocks.
+    criterion Consider long attribute lists as a separate width-aware formatting rule, with examples showing when attributes should stay inline versus split across lines.
+    criterion Thread lineWidth through the dprint plugin and standalone converter configuration only after the supported behaviors are defined.
+  review-items
+    item(status="open") Confirm whether multiline prose should preserve author-provided hard breaks by default instead of eagerly reflowing them.
+    item(status="open") Identify a reliable heuristic, whitelist, or explicit mode switch for prose-like dotted blocks versus code-like dotted blocks.
+    item(status="open") Decide whether piped text lines (`|`) should be excluded entirely because leading and trailing spaces are often significant.
+    item(status="open") Evaluate attribute wrapping as the other main place where lineWidth is likely to be useful without changing semantics.

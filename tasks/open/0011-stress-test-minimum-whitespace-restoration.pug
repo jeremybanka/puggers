@@ -1,0 +1,24 @@
+issue(id="0011" status="open")
+  title Stress test minimum whitespace restoration
+  user-story
+    as-a maintainer of puggers
+    i-want a focused stress suite for restoring the minimum necessary whitespace
+    so-that formatter output stays readable without inventing spaces that change meaning
+  premise.
+    The inverse problem to compaction is restoration: when the formatter has
+    normalized structure or reflowed content, what is the minimum whitespace it
+    must reintroduce so tags, text, and prose still read correctly? Pug makes
+    this tricky because sometimes touching is correct, sometimes one space is
+    required, and sometimes preserved authored spacing is the only safe choice.
+    A dedicated restoration stress suite should validate the smallest safe
+    whitespace footprint across examples where missing spaces, extra spaces, or
+    misplaced line breaks visibly alter output.
+  acceptance-criteria
+    criterion Add fixtures that exercise minimum-whitespace restoration for adjacent tags and text, punctuation boundaries, piped lines, interpolation, and prose-like dotted blocks.
+    criterion Define expected output for cases where restored whitespace must be zero, one space, one blank line, or exact authored spacing.
+    criterion Include adversarial examples where a naive “always add one space” rule would be wrong.
+    criterion Produce guidance that later text-formatting and line-width tasks can use when deciding whether and how to restore spacing.
+  review-items
+    item(status="open") Decide whether minimum whitespace restoration should be evaluated from rendered HTML expectations, source readability expectations, or both.
+    item(status="open") Confirm whether restoration policy differs between inline text and block-oriented prose contexts.
+    item(status="open") Keep examples from the whitespace-control docs prominent because they capture real user expectations better than abstract synthetic cases alone.
