@@ -2,6 +2,11 @@
 members = [
   "crates/dprint-plugin-pug",
   "crates/puggers-cli",
-  "crates/puggers-html",
+  "crates/puggers-core",
 ]
 resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+license = "MIT"
+repository = "https://github.com/jeremybanka/puggers"

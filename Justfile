@@ -14,7 +14,7 @@ install-cargo:
 r:
     just run
 run *args:
-    cargo run -p puggers-cli --bin puggers -- {{ args }}
+    cargo run -p puggers --bin puggers -- {{ args }}
 
 # TEST
 t:
@@ -56,3 +56,20 @@ build-cargo:
     cargo build --workspace
 build-wasm:
     cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release
+
+# RELEASE SYSTEM
+n:
+    just notes
+notes:
+    knope document-change
+
+version:
+    knope version
+
+publish:
+    just publish-crates
+
+publish-crates:
+    cargo publish -p puggers-core
+    cargo publish -p puggers
+    cargo publish -p dprint-plugin-pug
