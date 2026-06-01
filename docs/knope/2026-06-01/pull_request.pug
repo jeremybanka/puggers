@@ -1,0 +1,586 @@
+doctype html
+html
+  head
+    // Book generated using mdBook
+    meta
+    title Pull request releases - Knope
+    // Custom HTML head
+    meta
+    meta
+    meta
+    link
+    link
+    link
+    link
+    link
+    link
+    // Fonts
+    link
+    link
+    // Highlight.js Stylesheets
+    link
+    link
+    link
+    // Custom theme stylesheets
+    link
+  body
+    div
+      // Provide site root to javascript
+      script.
+        var path_to_root = "../";
+                    var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+      // Work around some values being stored in localStorage wrapped in quotes
+      script.
+        try {
+                        var theme = localStorage.getItem('mdbook-theme');
+                        var sidebar = localStorage.getItem('mdbook-sidebar');
+        
+                        if (theme.startsWith('"') && theme.endsWith('"')) {
+                            localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                        }
+        
+                        if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                            localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                        }
+                    } catch (e) { }
+      // Set the theme before any content is loaded, prevents flash
+      script.
+        var theme;
+                    try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+                    if (theme === null || theme === undefined) { theme = default_theme; }
+                    var html = document.querySelector('html');
+                    html.classList.remove('light')
+                    html.classList.add(theme);
+                    var body = document.querySelector('body');
+                    body.classList.remove('no-js')
+                    body.classList.add('js');
+      input
+      // Hide / unhide sidebar before it is displayed
+      script.
+        var body = document.querySelector('body');
+                    var sidebar = null;
+                    var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+                    if (document.body.clientWidth >= 1080) {
+                        try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                        sidebar = sidebar || 'visible';
+                    } else {
+                        sidebar = 'hidden';
+                    }
+                    sidebar_toggle.checked = sidebar === 'visible';
+                    body.classList.remove('sidebar-visible');
+                    body.classList.add("sidebar-" + sidebar);
+      nav
+        div
+          ol
+            li
+              a
+                strong 1.
+                | Introduction
+            li
+              a
+                strong 2.
+                | Installation
+            li
+              a
+                strong 3.
+                | Default Workflows
+            li
+              a
+                strong 4.
+                | knope.toml
+            li
+              ol
+                li
+                  a
+                    strong 4.1.
+                    | Workflows
+                li
+                  a
+                    strong 4.2.
+                    | Steps
+                li
+                  ol
+                    li
+                      a
+                        strong 4.2.1.
+                        | CreateChangeFile
+                    li
+                      a
+                        strong 4.2.2.
+                        | CreatePullRequest
+                    li
+                      a
+                        strong 4.2.3.
+                        | PrepareRelease
+                    li
+                      a
+                        strong 4.2.4.
+                        | Release
+                    li
+                      a
+                        strong 4.2.5.
+                        | BumpVersion
+                    li
+                      a
+                        strong 4.2.6.
+                        | Command
+                    li
+                      a
+                        strong 4.2.7.
+                        | SelectJiraIssue
+                    li
+                      a
+                        strong 4.2.8.
+                        | TransitionJiraIssue
+                    li
+                      a
+                        strong 4.2.9.
+                        | SelectGitHubIssue
+                    li
+                      a
+                        strong 4.2.10.
+                        | SelectIssueFromBranch
+                    li
+                      a
+                        strong 4.2.11.
+                        | SwitchBranches
+                    li
+                      a
+                        strong 4.2.12.
+                        | RebaseBranch
+                li
+                  a
+                    strong 4.3.
+                    | Variables
+                li
+                  a
+                    strong 4.4.
+                    | Packages
+                li
+                  a
+                    strong 4.5.
+                    | Jira
+                li
+                  a
+                    strong 4.6.
+                    | GitHub
+            li
+              a
+                strong 5.
+                | GitHub Actions
+            li
+              ol
+                li
+                  a
+                    strong 5.1.
+                    | Workflow dispatch releases
+                li
+                  a
+                    strong 5.2.
+                    | Pull request releases
+        div
+      // Track and set sidebar scroll position
+      script.
+        var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+                    sidebarScrollbox.addEventListener('click', function(e) {
+                        if (e.target.tagName === 'A') {
+                            sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                        }
+                    }, { passive: true });
+                    var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+                    sessionStorage.removeItem('sidebar-scroll');
+                    if (sidebarScrollTop) {
+                        // preserve sidebar scroll position when navigating via links within sidebar
+                        sidebarScrollbox.scrollTop = sidebarScrollTop;
+                    } else {
+                        // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                        var activeSection = document.querySelector('#sidebar .active');
+                        if (activeSection) {
+                            activeSection.scrollIntoView({ block: 'center' });
+                        }
+                    }
+      div
+        div
+          div
+          div
+            div
+              label
+                i
+              button
+                i
+              ul
+                li
+                  button Light
+                li
+                  button Rust
+                li
+                  button Coal
+                li
+                  button Navy
+                li
+                  button Ayu
+              button
+                i
+            h1 Knope
+            div
+              a
+                i
+          div
+            form
+              input
+            div
+              div
+              ul
+          // Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM
+          script.
+            document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                                document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                                Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                                    link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                                });
+          div
+            main
+              h1
+                a Pull Request Driven Releases
+              p This recipe keeps an open pull request at all times previewing the changes the Knope will include in the next release. This pull request will let you see the next version, the changes to versioned files, and the changelog. When you merge that pull request, Knope will create a new release with the changes from the pull request.
+              p
+                | This is the recipe that Knope uses for its own releases (at the time of writing), so let's walk through the two GitHub Actions workflows and the
+                code knope.toml
+                | that make it work.
+              h2
+                a
+                  code knope.toml
+              p We're going to walk through this in pieces for easier explanation, but all of these TOML snippets exist in the same file.
+              h3
+                a
+                  code [package]
+              pre
+                code [package] versioned_files = ["Cargo.toml"] changelog = "CHANGELOG.md"
+              p
+                | This first piece defines the package,
+                code Cargo.toml
+                | is both the source of the current version of the package and a place we'd like to place new version numbers. You can add more
+                code versioned_files
+                | (for example, if you also released this as a Python package with
+                code pyproject.toml
+                | ).
+                code CHANGELOG.md
+                | is where we want to document changes in the source code—this is in
+                em addition
+                | to GitHub releases.
+              div
+                div
+                  p Warning
+                  p
+                    a
+                div
+                  p
+                    | You cannot use this recipe right now with multiple packages due to limitations on
+                    a variables
+                    | . Instead, you can check out the
+                    a workflow dispatch workflow
+                    | .
+              h3
+                a
+                  code [[package.assets]]
+              pre
+                code [[package.assets]] path = "artifact/knope-x86_64-unknown-linux-musl.tgz" [[package.assets]] path = "artifact/knope-x86_64-pc-windows-msvc.tgz" [[package.assets]] path = "artifact/knope-x86_64-apple-darwin.tgz" [[package.assets]] path = "artifact/knope-aarch64-apple-darwin.tgz"
+              p
+                code package.assets
+                | let us define a list of files to upload to GitHub releases. You can also upload them under a different name if you don't want to use the file name by setting
+                code name
+                | in the asset definition.
+              h3
+                a
+                  code prepare-release
+                  | workflow
+              pre
+                code [[workflows]] name = "prepare-release" [[workflows.steps]] type = "Command" command = "git switch -c release" [[workflows.steps]] type = "PrepareRelease" [[workflows.steps]] type = "Command" command = "git commit -m \"chore: prepare release $version\" && git push --force --set-upstream origin release" [workflows.steps.variables] "$version" = "Version" [[workflows.steps]] type = "CreatePullRequest" base = "main" [workflows.steps.title] template = "chore: prepare release $version" variables = { "$version" = "Version" } [workflows.steps.body] template = "This PR was created by Knope. Merging it will create a new release\n\n$changelog" variables = { "$changelog" = "ChangelogEntry" }
+              p
+                | The first workflow is called
+                code prepare-release
+                | , so it can be executed by running
+                code knope prepare-release
+                | (as we'll see later in the GitHub Actions workflow). First, it creates a new branch from the current one called
+                code release
+                | , then it runs the
+                a
+                  code PrepareRelease
+                | step which updates our package based on the changes that have been made since the last release. It also stages all of those changes with Git (like
+                code git add
+                | ).
+              p
+                | Next, we commit the changes that
+                a
+                  code PrepareRelease
+                | made—things like:
+              ul
+                li
+                  | Updating the version in
+                  code Cargo.toml
+                li
+                  | Adding a new section to
+                  code CHANGELOG.md
+                  | with the latest release notes
+                li Deleting any changesets that have been processed
+              p
+                | This commit is pushed to the
+                code release
+                | branch, using the
+                code --force
+                | flag in this case because we don't care about the history of that branch, only the very next release. The
+                a
+                  code CreatePullRequest
+                | step then creates a pull request from the current branch (
+                code release
+                | ) to the specified base branch (
+                code main
+                | ). We can set the title and body of this pull request using templated strings containing
+                a variables
+                | . In this case, the title contains the new
+                code Version
+                | and the body contains the new
+                code ChangelogEntry
+                | .
+              p The pull request that this creates looks something like this:
+              p
+                img
+              p
+                | All we have to do now is run this
+                code prepare-release
+                | workflow in GitHub Actions whenever we want a new release preview—we'll take a look at that once we finish going through the
+                code knope.toml
+                | file.
+              h3
+                a
+                  code release
+                  | workflow
+              pre
+                code [[workflows]] name = "release" [[workflows.steps]] type = "Release"
+              p
+                | The
+                code release
+                | workflow is a single
+                a
+                  code Release
+                | step—this creates a GitHub release for the latest version (if it hasn't already been released) and uploads any
+                a assets
+                | . In this case, it'll create a release for whatever the
+                code prepare-release
+                | workflow made earlier. We'll end up running
+                em this
+                | workflow whenever the pull request is merged.
+              h3
+                a
+                  code document-change
+                  | workflow
+              p
+                | This isn't super relevant to the recipe, but it's useful to have. Changesets are what let us have really descriptive, rich text in changelogs to describe
+                em exactly
+                | how the latest changes impact our users. Running
+                code knope document-change
+                | executes the
+                a
+                  code CreateChangeFile
+                | workflow to help us make changesets. A future iteration of this recipe may convert pull request comments into changesets 🤞.
+              pre
+                code [[workflows]] name = "document-change" [[workflows.steps]] type = "CreateChangeFile"
+              h3
+                a
+                  code [github]
+              p The last piece is to tell Knope which GitHub repo to use for creating pull requests and releases.
+              pre
+                code [github] owner = "knope-dev" repo = "knope"
+              h2
+                a
+                  code prepare_release.yml
+              p
+                | There are two GitHub Actions workflows that we're going to use for this recipe—the first one goes in
+                code .github/workflows/prepare_release.yml
+                | and it creates a fresh release preview pull request on every push to the
+                code main
+                | branch:
+              pre
+                code on: push: branches: [main] name: Create Release PR jobs: prepare-release: if: "!contains(github.event.head_commit.message, 'chore: prepare release')" # Skip merges from releases runs-on: ubuntu-latest steps: - uses: actions/checkout@v4 with: fetch-depth: 0 token: ${{ secrets.PAT }} - name: Configure Git run: | git config --global user.name GitHub Actions git config user.email github-actions@github.com - uses: knope-dev/action@v2.0.0 with: version: 0.11.0 - run: knope prepare-release --verbose env: GITHUB_TOKEN: ${{ secrets.PAT }} continue-on-error: true
+              div
+                div
+                  p Note
+                  p
+                    a
+                div
+                  p
+                    | This workflow runs by default on
+                    em every
+                    | push to main, that includes when the previous release PR merges! There is an
+                    code if:
+                    | clause here in the first job that skips it if the commits matches the commit message that we use in the
+                    a
+                      code prepare-release
+                      | workflow
+                    | . If you change that message, you'll need to update this
+                    code if:
+                    | clause as well.
+              p The steps here:
+              ol
+                li
+                  | Check out the
+                  em entire
+                  | history of the repo (so that
+                  a
+                    code PrepareRelease
+                  | can use tags and conventional commits to determine the next version). This requires a
+                  a personal access token
+                  | with permission to
+                  strong read
+                  | the
+                  strong contents
+                  | of the repo.
+                li
+                  | Configure Git so that we can commit changes (within Knope's
+                  code prepare-release
+                  | workflow)
+                li Install Knope
+                li
+                  | Run
+                  a
+                    | the
+                    code prepare-release
+                    | workflow described above
+                  | .
+                  em This
+                  | requires a
+                  a personal access token
+                  | with permission to
+                  strong write
+                  | the
+                  strong pull requests
+                  | of the repo.
+              div
+                div
+                  p Note
+                  p
+                    a
+                div
+                  p
+                    | We add the
+                    code continue-on-error
+                    | attribute so that even if this step fails, the workflow will be marked as passing. This is because we want to be able to run this workflow on every push to
+                    code main
+                    | , but we don't want it to fail when there's nothing to release. However, this doesn't differentiate between legitimate errors and "nothing to release". You may want to instead use the
+                    a
+                      code allow_empty
+                      | option
+                    | in
+                    code knope.toml
+                    | and split the rest of the steps into a second workflow. Then, you can use some scripting in GitHub Actions to skip the rest of the workflow if there's nothing to release.
+              p
+                | In the case of this action, we're using the same
+                a personal access token
+                | for both steps, but you could use different ones if you wanted to.
+              h2
+                a
+                  code release.yml
+              p
+                | Now that we're set up to create pull requests previewing the next release on every push to
+                code main
+                | , we need to automatically release those changes when the pull request merges. This is the job of the
+                code release
+                | workflow, which goes in
+                code .github/workflows/release.yml
+                | .
+              div
+                div
+                  p Warning
+                  p
+                    a
+                div
+                  p
+                    | YAML is very sensitive to white space and very easy to mess up copy/pasting—so I recommend copying the whole file at
+                    em the end
+                    | , not the individual pieces I'm using to describe functionality.
+              p To start off, we only want to run this workflow when our release preview pull requests merge—there are several pieces of config that handle this. First:
+              pre
+                code on: pull_request: types: [closed] branches: [main]
+              p
+                | Will cause GitHub Actions to only trigger anything at all when a pull request which targets
+                code main
+                | closes. Then, in our
+                em first
+                | job, we can use this an
+                code if
+                | to narrow that down further to only our release preview pull requests, and only when they
+                em merge
+                | (not close for other reasons):
+              pre
+                code if: github.head_ref == 'release' && github.event.pull_request.merged == true
+              p
+                | For Knope's own workflows, this first job is
+                code build-artifacts
+                | , which builds the
+                a package assets
+                | that will be uploaded when releasing. Skipping on past that job (since it probably will be different for you), we come to the
+                code release
+                | job:
+              pre
+                code release: needs: [build-artifacts] runs-on: ubuntu-latest steps: - uses: actions/checkout@v4 - uses: actions/download-artifact@v3 with: name: ${{ env.archive_name }} - uses: knope-dev/action@v2.0.0 with: version: 0.11.0 - run: knope release env: GITHUB_TOKEN: ${{ secrets.PAT }} - run: gh workflow run "Deploy Book to GitHub Pages" env: GITHUB_TOKEN: ${{ secrets.PAT }}
+              p
+                | The
+                code release
+                | job follows these steps:
+              ol
+                li Check out the repo at the commit that the pull request merged
+                li
+                  | Download the artifacts that were built in the
+                  code build-artifacts
+                  | job
+                li Install Knope
+                li
+                  | Run
+                  a
+                    | the
+                    code release
+                    | workflow described above
+                  | . This requires a
+                  a personal access token
+                  | with permission to
+                  strong write
+                  | the
+                  strong contents
+                  | of the repo.
+                li
+                  | Kick off another workflow which updates these docs that you're reading 👋. That requires a
+                  a personal access token
+                  | with permission to
+                  strong write
+                  | the
+                  strong actions
+                  | of the repo.
+              p Finally, Knope's workflow publishes to crates.io—meaning the whole workflow looks like this:
+              pre
+                code name: Release on: pull_request: types: [closed] branches: [main] jobs: build-artifacts: if: github.head_ref == 'release' && github.event.pull_request.merged == true strategy: fail-fast: false matrix: include: - target: x86_64-unknown-linux-musl os: ubuntu-latest - target: x86_64-apple-darwin os: macos-latest - target: aarch64-apple-darwin os: macos-latest - target: x86_64-pc-windows-msvc os: windows-latest runs-on: ${{ matrix.os }} name: ${{ matrix.target }} steps: - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4 - uses: Swatinem/rust-cache@v2 - name: Install host target run: rustup target add ${{ matrix.target }} - name: Install musl-tools if: ${{ matrix.target == 'x86_64-unknown-linux-musl' }} run: sudo apt-get install -y musl-tools - name: Build run: cargo build --release --target ${{ matrix.target }} - name: Set Archive Name (Non-Windows) id: archive run: echo "archive_name=knope-${{ matrix.target }}" >> $GITHUB_ENV - name: Set Archive Name (Windows) if: ${{ matrix.os == 'windows-latest' }} run: echo "archive_name=knope-${{ matrix.target }}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append - name: Create Archive Folder run: mkdir ${{ env.archive_name }} - name: Copy Unix Artifact if: ${{ matrix.os != 'windows-latest' }} run: cp target/${{ matrix.target }}/release/knope ${{ env.archive_name }} - name: Copy Windows Artifact if: ${{ matrix.os == 'windows-latest' }} run: cp target/${{ matrix.target }}/release/knope.exe ${{ env.archive_name }} - name: Create Tar Archive run: tar -czf ${{ env.archive_name }}.tgz ${{ env.archive_name }} - name: Upload Artifact uses: actions/upload-artifact@v3 with: path: ${{ env.archive_name }}.tgz if-no-files-found: error release: needs: [build-artifacts] runs-on: ubuntu-latest steps: - uses: actions/checkout@v4 - uses: actions/download-artifact@v3 - uses: knope-dev/action@v2.0.0 with: version: 0.11.0 - run: knope release env: GITHUB_TOKEN: ${{ secrets.PAT }} - run: gh workflow run "Deploy Book to GitHub Pages" env: GITHUB_TOKEN: ${{ secrets.PAT }} publish-crate: needs: [release] runs-on: ubuntu-latest steps: - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4 - uses: Swatinem/rust-cache@v2 - uses: katyo/publish-crates@v2 with: registry-token: ${{ secrets.CARGO_TOKEN }}
+              h2
+                a Conclusion
+              p Just to summarize, what we get with all of this is a process that:
+              ol
+                li
+                  | Automatically creates a pull request in GitHub every time a new commit is pushed to
+                  code main
+                  | . That pull request contains a preview of the next release.
+                li Automatically releases the package every time a release preview's pull request is merged.
+            nav
+              // Mobile navigation buttons
+              a
+                i
+              div
+        nav
+          a
+            i
+      script.
+        window.playground_copyable = true;
+      script
+      script
+      script
+      script
+      script
+      script
+      // Custom JS scripts

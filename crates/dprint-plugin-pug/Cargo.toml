@@ -1,10 +1,10 @@
 [package]
 name = "dprint-plugin-pug"
-version = "0.1.0"
+version.workspace = true
 edition = "2024"
 description = "A super minimal Pug formatter plugin for dprint."
-license = "MIT"
-repository = "https://example.com/dprint-plugin-pug"
+license.workspace = true
+repository.workspace = true
 
 [lib]
 crate-type = ["cdylib", "rlib"]

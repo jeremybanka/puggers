@@ -1,0 +1,10 @@
+[package]
+name = "puggers-core"
+version.workspace = true
+edition = "2024"
+description = "Shared conversion and utility library for puggers."
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+kuchikiki = "0.8.2"

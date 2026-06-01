@@ -1,6 +1,6 @@
 use std::collections::BTreeSet;
 
-use puggers_html::{ConvertOptions, convert_html_to_pug};
+use puggers_core::{ConvertOptions, convert_html_to_pug};
 
 fn options_with_attributes(attributes: &[&str]) -> ConvertOptions {
     ConvertOptions {

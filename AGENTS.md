@@ -13,7 +13,7 @@
 ## Testing Policy
 
 - Prefer focused test suites in separate files instead of growing large inline test modules.
-- For Rust integration coverage, put tests under the owning crate's `tests/` directory, for example `crates/puggers-html/tests/html_import.rs`.
+- For Rust integration coverage, put tests under the owning crate's `tests/` directory, for example `crates/puggers-core/tests/html_import.rs`.
 - Use one file per feature or behavior slice so suites stay easy to scan and easy to run.
 - Prefer names like `tests/<feature>.rs` over `tests/<feature>.test.rs`.
 - `tests/<feature>.test.rs` may be technically possible, but it adds no value here and leads to less clean target names and conventions.

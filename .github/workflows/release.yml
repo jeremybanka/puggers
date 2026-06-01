@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches: ["main"]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  release:
+    if: github.head_ref == 'release' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
+        with:
+          client-id: ${{ vars.CHANGESETS_APP_CLIENT_ID }}
+          private-key: ${{ secrets.CHANGESETS_APP_PK_SN0ZHPLIA }}
+          owner: jeremybanka
+          repositories: puggers
+          permission-contents: write
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+      - uses: ./.github/actions/setup
+      - uses: knope-dev/action@v2.1.2
+        with:
+          version: 0.23.0
+      - uses: rust-lang/crates-io-auth-action@v1
+        id: crates-io-auth
+      - run: cargo publish -p puggers-core --locked
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
+      - name: Wait For puggers-core And Publish puggers
+        run: |
+          for attempt in {1..20}; do
+            if cargo publish -p puggers --dry-run --locked >/dev/null 2>&1; then
+              cargo publish -p puggers --locked
+              exit 0
+            fi
+            echo "Waiting for puggers-core to propagate to crates.io (attempt ${attempt}/20)..."
+            sleep 15
+          done
+          echo "Timed out waiting for puggers-core to become visible on crates.io." >&2
+          exit 1
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
+      - run: cargo publish -p dprint-plugin-pug --locked
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
+      - run: knope release --verbose
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
