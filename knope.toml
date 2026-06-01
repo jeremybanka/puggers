@@ -34,7 +34,7 @@ name = "prepare-release"
 
 [[workflows.steps]]
 type = "Command"
-command = "git switch -C knope/release"
+command = "git switch -C release"
 
 [[workflows.steps]]
 type = "PrepareRelease"
@@ -45,7 +45,7 @@ command = "git commit -m \"chore: prepare release $version\""
 
 [[workflows.steps]]
 type = "Command"
-command = "git push --force --set-upstream origin knope/release"
+command = "git push --force --set-upstream origin release"
 
 [[workflows.steps]]
 type = "CreatePullRequest"
@@ -55,7 +55,7 @@ base = "main"
 template = "chore: prepare release $version"
 
 [workflows.steps.body]
-template = "This PR was created by Knope. Merging it will publish the new release.\n\n$changelog"
+template = "This PR was created by Knope. Merging it will publish a new release.\n\n$changelog"
 
 [[workflows]]
 name = "release"

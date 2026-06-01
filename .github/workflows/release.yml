@@ -4,7 +4,6 @@ on:
   pull_request:
     types: [closed]
     branches: ["main"]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -19,8 +18,8 @@ defaults:
     shell: bash
 
 jobs:
-  Release:
-    if: (github.head_ref == 'knope/release' && github.event.pull_request.merged == true) || github.event_name == 'workflow_dispatch'
+  release:
+    if: github.head_ref == 'release' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -37,7 +36,9 @@ jobs:
           fetch-depth: 0
           token: ${{ steps.app-token.outputs.token }}
       - uses: ./.github/actions/setup
-      - run: mise exec cargo:knope -- knope --validate
+      - uses: knope-dev/action@v2.1.2
+        with:
+          version: 0.23.0
       - uses: rust-lang/crates-io-auth-action@v1
         id: crates-io-auth
       - run: cargo publish -p puggers-core --locked
@@ -60,6 +61,6 @@ jobs:
       - run: cargo publish -p dprint-plugin-pug --locked
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
-      - run: mise exec cargo:knope -- knope release --verbose
+      - run: knope release --verbose
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

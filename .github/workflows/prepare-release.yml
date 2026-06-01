@@ -1,4 +1,4 @@
-name: Prepare Release
+name: Create Release PR
 
 on:
   push:
@@ -16,7 +16,7 @@ defaults:
     shell: bash
 
 jobs:
-  PrepareRelease:
+  prepare-release:
     if: "!contains(github.event.head_commit.message, 'chore: prepare release')"
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -34,13 +34,14 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ steps.app-token.outputs.token }}
-      - name: Use Git as Bot 
+      - name: Configure Git
         run: |
-          git config --global user.name "jeremybanka-changesets-worker[bot]"
-          git config --global user.email "jeremybanka-changesets-worker[bot]@users.noreply.github.com"
-      - uses: ./.github/actions/setup
-      - run: mise exec cargo:knope -- knope --validate
-      - run: mise exec cargo:knope -- knope prepare-release --verbose
+          git config user.name "jeremybanka-release-bot[bot]"
+          git config user.email "jeremybanka-release-bot[bot]@users.noreply.github.com"
+      - uses: knope-dev/action@v2.1.2
+        with:
+          version: 0.23.0
+      - run: knope prepare-release --verbose
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

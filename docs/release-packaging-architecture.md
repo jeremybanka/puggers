@@ -72,11 +72,11 @@ That runs Knope's release preparation workflow to:
 - refresh `Cargo.lock`
 - append the release entry to `CHANGELOG.md`
 
-For automated releases, the `Prepare Release` GitHub Actions workflow runs on
+For automated releases, the `Create Release PR` GitHub Actions workflow runs on
 pushes to `main` and executes Knope's `prepare-release` workflow with a GitHub
-App token. That workflow:
+App token and the official `knope-dev/action` installer. That workflow:
 
-- creates or resets the `knope/release` branch
+- creates or resets the `release` branch
 - prepares the version and changelog changes
 - commits and pushes the branch
 - opens a release pull request against `main`
@@ -101,6 +101,8 @@ Publish order matters:
 That order keeps downstream crates from referencing a version that has not been
 published yet.
 
-In CI, the `Release` workflow uses crates.io trusted publishing through GitHub
-Actions OIDC. The first release still needs to be published manually before the
-trusted publisher relationship can be used.
+In CI, the `Release` workflow runs when the `release` pull request merges. It
+uses crates.io trusted publishing through GitHub Actions OIDC for the ordered
+crate publish steps, then runs `knope release` to create the GitHub release.
+The first release still needs to be published manually before the trusted
+publisher relationship can be used.
