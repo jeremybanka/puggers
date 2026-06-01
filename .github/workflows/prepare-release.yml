@@ -1,7 +1,8 @@
 name: Prepare Release
 
 on:
-  workflow_dispatch:
+  push:
+    branches: ["main"]
 
 permissions:
   contents: read
@@ -16,6 +17,7 @@ defaults:
 
 jobs:
   PrepareRelease:
+    if: "!contains(github.event.head_commit.message, 'chore: prepare release')"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -32,14 +34,13 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ steps.app-token.outputs.token }}
-      - name: Configure Git
+      - name: Use Git as Bot 
         run: |
-          git config --global user.name "jeremybanka-release-bot[bot]"
-          git config --global user.email "jeremybanka-release-bot[bot]@users.noreply.github.com"
+          git config --global user.name "jeremybanka-changesets-worker[bot]"
+          git config --global user.email "jeremybanka-changesets-worker[bot]@users.noreply.github.com"
       - uses: ./.github/actions/setup
-      - name: Validate Knope Config
-        run: mise exec cargo:knope -- knope --validate
-      - name: Prepare Release Pull Request
-        run: mise exec cargo:knope -- knope prepare-release --verbose
+      - run: mise exec cargo:knope -- knope --validate
+      - run: mise exec cargo:knope -- knope prepare-release --verbose
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

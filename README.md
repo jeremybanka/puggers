@@ -45,5 +45,6 @@ Release notes live in `.changeset/`, the coordinated changelog lives in
 `CHANGELOG.md`, and the release architecture and workflow are documented in
 `docs/release-packaging-architecture.md` and `docs/release-notes-workflow.md`.
 
-After the initial manual publish, GitHub Actions can prepare release PRs and
-publish via crates.io trusted publishing (OIDC).
+After the initial manual publish, GitHub Actions automatically prepares release
+PRs from pushes to `main` and publishes via crates.io trusted publishing
+(OIDC).

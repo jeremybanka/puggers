@@ -22,9 +22,10 @@ That command runs `knope version`, which reads the pending change files,
 updates the shared workspace version, rewrites dependent version references, and
 updates `CHANGELOG.md`.
 
-The GitHub Actions `Prepare Release` workflow runs the richer
-`knope prepare-release` bot workflow, which also commits those changes,
-pushes `knope/release`, and opens the release pull request automatically.
+The GitHub Actions `Prepare Release` workflow runs automatically on pushes to
+`main`. It runs the richer `knope prepare-release` bot workflow, which also
+commits those changes, pushes `knope/release`, and opens the release pull
+request automatically.
 
 ## Publish
 

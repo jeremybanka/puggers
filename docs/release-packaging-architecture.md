@@ -72,13 +72,17 @@ That runs Knope's release preparation workflow to:
 - refresh `Cargo.lock`
 - append the release entry to `CHANGELOG.md`
 
-For automated releases, the `Prepare Release` GitHub Actions workflow runs
-Knope's `prepare-release` workflow with a GitHub App token. That workflow:
+For automated releases, the `Prepare Release` GitHub Actions workflow runs on
+pushes to `main` and executes Knope's `prepare-release` workflow with a GitHub
+App token. That workflow:
 
 - creates or resets the `knope/release` branch
 - prepares the version and changelog changes
 - commits and pushes the branch
 - opens a release pull request against `main`
+
+The workflow skips commits whose message already starts with the release-prep
+commit shape so merging the release PR does not immediately create another one.
 
 ### Publishing
 
