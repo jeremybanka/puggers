@@ -1,9 +1,9 @@
 [package]
 name = "puggers-cli"
-version = "0.1.0"
+version.workspace = true
 edition = "2024"
 description = "CLI for converting HTML to Pug."
-license = "MIT"
+license.workspace = true
 repository.workspace = true
 
 [[bin]]

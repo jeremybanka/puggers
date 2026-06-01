@@ -56,3 +56,20 @@ build-cargo:
     cargo build --workspace
 build-wasm:
     cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release
+
+# RELEASE SYSTEM
+n:
+    just notes
+notes:
+    knope document-change
+
+version:
+    knope prepare-release
+
+publish:
+    just publish-crates
+
+publish-crates:
+    cargo publish -p puggers-html
+    cargo publish -p puggers-cli
+    cargo publish -p dprint-plugin-pug

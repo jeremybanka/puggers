@@ -1,9 +1,9 @@
 [package]
 name = "dprint-plugin-pug"
-version = "0.1.0"
+version.workspace = true
 edition = "2024"
 description = "A super minimal Pug formatter plugin for dprint."
-license = "MIT"
+license.workspace = true
 repository.workspace = true
 
 [lib]

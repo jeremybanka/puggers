@@ -1,0 +1,38 @@
+# Release Notes Workflow
+
+This repository uses [Knope](https://knope.tech/) for declarative release
+notes and coordinated versioning.
+
+## Create A Change File
+
+```sh
+just notes
+```
+
+That command runs `knope document-change` and writes a small markdown file in
+`.changeset/` describing the user-facing change and its semver impact.
+
+## Prepare A Release
+
+```sh
+just version
+```
+
+That command runs `knope prepare-release`, which reads the pending change files,
+updates the shared workspace version, rewrites dependent version references, and
+updates `CHANGELOG.md`.
+
+## Publish
+
+```sh
+just publish
+```
+
+Publishing remains explicit and ordered:
+
+1. `puggers-html`
+2. `puggers-cli`
+3. `dprint-plugin-pug`
+
+Knope is the source of truth for release intent and changelog generation.
+Cargo remains the actual publisher.

@@ -1,9 +1,9 @@
 [package]
 name = "puggers-html"
-version = "0.1.0"
+version.workspace = true
 edition = "2024"
 description = "Convert HTML documents into Pug."
-license = "MIT"
+license.workspace = true
 repository.workspace = true
 
 [dependencies]

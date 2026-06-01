@@ -30,3 +30,17 @@ cargo run -p puggers-cli -- \
 ```sh
 cargo test
 ```
+
+## Releases
+
+Puggers uses a declarative release-note workflow with Knope.
+
+```sh
+just notes
+just version
+just publish
+```
+
+Release notes live in `.changeset/`, the coordinated changelog lives in
+`CHANGELOG.md`, and the release architecture and workflow are documented in
+`docs/release-packaging-architecture.md` and `docs/release-notes-workflow.md`.
