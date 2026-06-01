@@ -38,6 +38,8 @@ Knope is responsible for:
 - maintaining `CHANGELOG.md`
 
 Knope is not the publisher. Publishing stays explicit in `Justfile`.
+GitHub Actions automates that explicit publish order for tagged release PRs
+using crates.io trusted publishing.
 
 ## Release Workflow
 
@@ -70,6 +72,14 @@ That runs Knope's release preparation workflow to:
 - refresh `Cargo.lock`
 - append the release entry to `CHANGELOG.md`
 
+For automated releases, the `Prepare Release` GitHub Actions workflow runs
+Knope's `prepare-release` workflow with a GitHub App token. That workflow:
+
+- creates or resets the `knope/release` branch
+- prepares the version and changelog changes
+- commits and pushes the branch
+- opens a release pull request against `main`
+
 ### Publishing
 
 After version preparation is reviewed and merged:
@@ -86,3 +96,7 @@ Publish order matters:
 
 That order keeps downstream crates from referencing a version that has not been
 published yet.
+
+In CI, the `Release` workflow uses crates.io trusted publishing through GitHub
+Actions OIDC. The first release still needs to be published manually before the
+trusted publisher relationship can be used.

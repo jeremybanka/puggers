@@ -1,0 +1,45 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  PrepareRelease:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
+        with:
+          client-id: ${{ vars.CHANGESETS_APP_CLIENT_ID }}
+          private-key: ${{ secrets.CHANGESETS_APP_PK_SN0ZHPLIA }}
+          owner: jeremybanka
+          repositories: puggers
+          permission-contents: write
+          permission-pull-requests: write
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+      - name: Configure Git
+        run: |
+          git config --global user.name "jeremybanka-release-bot[bot]"
+          git config --global user.email "jeremybanka-release-bot[bot]@users.noreply.github.com"
+      - uses: ./.github/actions/setup
+      - name: Validate Knope Config
+        run: mise exec cargo:knope -- knope --validate
+      - name: Prepare Release Pull Request
+        run: mise exec cargo:knope -- knope prepare-release --verbose
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

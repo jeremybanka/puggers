@@ -24,10 +24,38 @@ name = "document-change"
 type = "CreateChangeFile"
 
 [[workflows]]
-name = "prepare-release"
+name = "version"
 
 [[workflows.steps]]
 type = "PrepareRelease"
+
+[[workflows]]
+name = "prepare-release"
+
+[[workflows.steps]]
+type = "Command"
+command = "git switch -C knope/release"
+
+[[workflows.steps]]
+type = "PrepareRelease"
+
+[[workflows.steps]]
+type = "Command"
+command = "git commit -m \"chore: prepare release $version\""
+
+[[workflows.steps]]
+type = "Command"
+command = "git push --force --set-upstream origin knope/release"
+
+[[workflows.steps]]
+type = "CreatePullRequest"
+base = "main"
+
+[workflows.steps.title]
+template = "chore: prepare release $version"
+
+[workflows.steps.body]
+template = "This PR was created by Knope. Merging it will publish the new release.\n\n$changelog"
 
 [[workflows]]
 name = "release"

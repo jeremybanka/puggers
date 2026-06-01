@@ -18,9 +18,13 @@ That command runs `knope document-change` and writes a small markdown file in
 just version
 ```
 
-That command runs `knope prepare-release`, which reads the pending change files,
+That command runs `knope version`, which reads the pending change files,
 updates the shared workspace version, rewrites dependent version references, and
 updates `CHANGELOG.md`.
+
+The GitHub Actions `Prepare Release` workflow runs the richer
+`knope prepare-release` bot workflow, which also commits those changes,
+pushes `knope/release`, and opens the release pull request automatically.
 
 ## Publish
 
@@ -36,3 +40,6 @@ Publishing remains explicit and ordered:
 
 Knope is the source of truth for release intent and changelog generation.
 Cargo remains the actual publisher.
+
+After the initial manual publish, GitHub Actions publishes with crates.io
+trusted publishing instead of a long-lived crates.io token.

@@ -64,7 +64,7 @@ notes:
     knope document-change
 
 version:
-    knope prepare-release
+    knope version
 
 publish:
     just publish-crates
