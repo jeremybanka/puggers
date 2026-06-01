@@ -30,7 +30,7 @@ just publish
 
 Publishing remains explicit and ordered:
 
-1. `puggers-html`
+1. `puggers-core`
 2. `puggers`
 3. `dprint-plugin-pug`
 

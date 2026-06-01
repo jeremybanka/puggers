@@ -70,6 +70,6 @@ publish:
     just publish-crates
 
 publish-crates:
-    cargo publish -p puggers-html
+    cargo publish -p puggers-core
     cargo publish -p puggers
     cargo publish -p dprint-plugin-pug

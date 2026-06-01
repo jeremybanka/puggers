@@ -2,7 +2,7 @@
 members = [
   "crates/dprint-plugin-pug",
   "crates/puggers-cli",
-  "crates/puggers-html",
+  "crates/puggers-core",
 ]
 resolver = "2"
 

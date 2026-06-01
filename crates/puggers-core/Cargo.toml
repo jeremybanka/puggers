@@ -1,8 +1,8 @@
 [package]
-name = "puggers-html"
+name = "puggers-core"
 version.workspace = true
 edition = "2024"
-description = "Convert HTML documents into Pug."
+description = "Shared conversion and utility library for puggers."
 license.workspace = true
 repository.workspace = true
 

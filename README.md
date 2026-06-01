@@ -5,8 +5,8 @@ Workspace for a small family of Pug tools.
 ## Crates
 
 - `crates/dprint-plugin-pug`: the existing tiny `dprint` formatter plugin
-- `crates/puggers-html`: Rust library for converting HTML into Pug
-- `crates/puggers-cli`: the `puggers` CLI package built on top of `puggers-html`
+- `crates/puggers-core`: shared Rust library for conversion and other reusable logic
+- `crates/puggers-cli`: the `puggers` CLI package built on top of `puggers-core`
 
 ## CLI
 

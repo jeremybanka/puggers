@@ -510,11 +510,11 @@ dependencies = [
 name = "puggers"
 version = "0.1.0"
 dependencies = [
- "puggers-html",
+ "puggers-core",
 ]
 
 [[package]]
-name = "puggers-html"
+name = "puggers-core"
 version = "0.1.0"
 dependencies = [
  "kuchikiki",

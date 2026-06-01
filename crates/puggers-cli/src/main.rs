@@ -4,7 +4,7 @@ use std::fs;
 use std::io::{self, Read};
 use std::process::ExitCode;
 
-use puggers_html::{ConvertOptions, convert_html_to_pug};
+use puggers_core::{ConvertOptions, convert_html_to_pug};
 
 fn main() -> ExitCode {
     match run() {

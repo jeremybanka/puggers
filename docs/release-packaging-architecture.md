@@ -2,8 +2,8 @@
 
 Puggers is a Rust workspace with a small family of related Pug tools:
 
-- `puggers-html`: HTML-to-Pug conversion library
-- `puggers`: CLI built on top of `puggers-html`
+- `puggers-core`: shared conversion and utility library
+- `puggers`: CLI built on top of `puggers-core`
 - `dprint-plugin-pug`: dprint formatter plugin
 
 ## Product Principles
@@ -66,7 +66,7 @@ just version
 That runs Knope's release preparation workflow to:
 
 - update `workspace.package.version`
-- keep the CLI's dependency on `puggers-html` aligned
+- keep the CLI's dependency on `puggers-core` aligned
 - refresh `Cargo.lock`
 - append the release entry to `CHANGELOG.md`
 
@@ -80,7 +80,7 @@ just publish
 
 Publish order matters:
 
-1. `puggers-html`
+1. `puggers-core`
 2. `puggers`
 3. `dprint-plugin-pug`
 
