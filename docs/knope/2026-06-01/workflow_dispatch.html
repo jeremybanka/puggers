@@ -1,0 +1,419 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Workflow dispatch releases - Knope</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../mdbook-admonish.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../installation.html"><strong aria-hidden="true">2.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../default_workflows.html"><strong aria-hidden="true">3.</strong> Default Workflows</a></li><li class="chapter-item expanded "><a href="../config/config.html"><strong aria-hidden="true">4.</strong> knope.toml</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../config/workflow.html"><strong aria-hidden="true">4.1.</strong> Workflows</a></li><li class="chapter-item expanded "><a href="../config/step/step.html"><strong aria-hidden="true">4.2.</strong> Steps</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../config/step/CreateChangeFile.html"><strong aria-hidden="true">4.2.1.</strong> CreateChangeFile</a></li><li class="chapter-item expanded "><a href="../config/step/CreatePullRequest.html"><strong aria-hidden="true">4.2.2.</strong> CreatePullRequest</a></li><li class="chapter-item expanded "><a href="../config/step/PrepareRelease.html"><strong aria-hidden="true">4.2.3.</strong> PrepareRelease</a></li><li class="chapter-item expanded "><a href="../config/step/Release.html"><strong aria-hidden="true">4.2.4.</strong> Release</a></li><li class="chapter-item expanded "><a href="../config/step/BumpVersion.html"><strong aria-hidden="true">4.2.5.</strong> BumpVersion</a></li><li class="chapter-item expanded "><a href="../config/step/Command.html"><strong aria-hidden="true">4.2.6.</strong> Command</a></li><li class="chapter-item expanded "><a href="../config/step/SelectJiraIssue.html"><strong aria-hidden="true">4.2.7.</strong> SelectJiraIssue</a></li><li class="chapter-item expanded "><a href="../config/step/TransitionJiraIssue.html"><strong aria-hidden="true">4.2.8.</strong> TransitionJiraIssue</a></li><li class="chapter-item expanded "><a href="../config/step/SelectGitHubIssue.html"><strong aria-hidden="true">4.2.9.</strong> SelectGitHubIssue</a></li><li class="chapter-item expanded "><a href="../config/step/SelectIssueFromBranch.html"><strong aria-hidden="true">4.2.10.</strong> SelectIssueFromBranch</a></li><li class="chapter-item expanded "><a href="../config/step/SwitchBranches.html"><strong aria-hidden="true">4.2.11.</strong> SwitchBranches</a></li><li class="chapter-item expanded "><a href="../config/step/RebaseBranch.html"><strong aria-hidden="true">4.2.12.</strong> RebaseBranch</a></li></ol></li><li class="chapter-item expanded "><a href="../config/variables.html"><strong aria-hidden="true">4.3.</strong> Variables</a></li><li class="chapter-item expanded "><a href="../config/packages.html"><strong aria-hidden="true">4.4.</strong> Packages</a></li><li class="chapter-item expanded "><a href="../config/jira.html"><strong aria-hidden="true">4.5.</strong> Jira</a></li><li class="chapter-item expanded "><a href="../config/github.html"><strong aria-hidden="true">4.6.</strong> GitHub</a></li></ol></li><li class="chapter-item expanded "><a href="../github_actions/github_actions.html"><strong aria-hidden="true">5.</strong> GitHub Actions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../github_actions/workflow_dispatch.html" class="active"><strong aria-hidden="true">5.1.</strong> Workflow dispatch releases</a></li><li class="chapter-item expanded "><a href="../github_actions/pull_request.html"><strong aria-hidden="true">5.2.</strong> Pull request releases</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Knope</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="workflow-dispatch-releases"><a class="header" href="#workflow-dispatch-releases">Workflow Dispatch Releases</a></h1>
+<p>This recipe allows you to trigger the entire release process manually by either clicking a button in GitHub Actions or by using the GitHub CLI. Once that trigger occurs:</p>
+<ol>
+<li>A new version of the project is calculated (using <a href="../config/step/PrepareRelease.html"><code>PrepareRelease</code></a>) and versioned files and changelogs are updated.</li>
+<li>The changes are committed back to the branch and pushed.</li>
+<li>The new commit is used to build assets.</li>
+<li>A release is created on GitHub with the new version, changelog, and assets.</li>
+</ol>
+<div id="admonition-note" class="admonition admonish-note">
+<div class="admonition-title">
+<p>Note</p>
+<p><a class="admonition-anchor-link" href="#admonition-note"></a></p>
+</div>
+<div>
+<p>You should also check out the <a href="./pull_request.html">Pull Request Releases</a> recipe which is similar, but allows you to preview the release in a pull request before accepting it.</p>
+</div>
+</div>
+<div id="admonition-info" class="admonition admonish-info">
+<div class="admonition-title">
+<p>Info</p>
+<p><a class="admonition-anchor-link" href="#admonition-info"></a></p>
+</div>
+<div>
+<p>All of the examples in this recipe are for a project with a single Rust binary to release—you'll need to adapt some specifics to your use-case.</p>
+</div>
+</div>
+<p>First, let's walk through the GitHub Actions workflow file:</p>
+<pre><code class="language-yaml">name: Release
+
+on: workflow_dispatch
+
+jobs:
+  prepare-release:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.commit.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        name: Fetch entire history (for conventional commits)
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT }}
+      - name: Configure Git
+        run: |
+          git config --global user.name GitHub Actions
+          git config user.email github-actions@github.com
+      - name: Install Knope
+        uses: knope-dev/action@v2.0.0
+        with:
+          version: 0.11.0
+      - run: knope prepare-release --verbose
+        name: Update versioned files and changelog
+      - name: Store commit
+        id: commit
+        run: echo &quot;sha=$(git rev-parse HEAD)&quot; &gt;&gt; $GITHUB_OUTPUT
+
+  build-artifacts:
+    needs: prepare-release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+          - target: x86_64-apple-darwin
+            os: macos-latest
+          - target: aarch64-apple-darwin
+            os: macos-latest
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.target }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare-release.outputs.sha }}
+
+      - name: Install host target
+        run: rustup target add ${{ matrix.target }}
+
+      - name: Install musl-tools
+        if: ${{ matrix.target == 'x86_64-unknown-linux-musl' }}
+        run: sudo apt-get install -y musl-tools
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Set Archive Name (Non-Windows)
+        id: archive
+        run: echo &quot;archive_name=test-${{ matrix.target }}&quot; &gt;&gt; $GITHUB_ENV
+
+      - name: Set Archive Name (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: echo &quot;archive_name=test-${{ matrix.target }}&quot; | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Create Archive Folder
+        run: mkdir ${{ env.archive_name }}
+
+      - name: Copy Unix Artifact
+        if: ${{ matrix.os != 'windows-latest' }}
+        run: cp target/${{ matrix.target }}/release/test ${{ env.archive_name }}
+
+      - name: Copy Windows Artifact
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: cp target/${{ matrix.target }}/release/test.exe ${{ env.archive_name }}
+
+      - name: Create Tar Archive
+        run: tar -czf ${{ env.archive_name }}.tgz ${{ env.archive_name }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ env.archive_name }}.tgz
+          if-no-files-found: error
+
+  release:
+    needs: [build-artifacts, prepare-release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare-release.outputs.sha }}
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.archive_name }}
+      - name: Install the latest Knope
+        uses: knope-dev/action@v2.0.0
+        with:
+          version: 0.11.0
+      - run: knope release --verbose
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+</code></pre>
+<p>There are three jobs here:</p>
+<ol>
+<li><code>prepare-release</code> runs the <code>prepare-release</code> Knope workflow and saves the new commit as an output for use later.</li>
+<li><code>build-artifacts</code> builds the assets for the release from the new commit that <code>prepare-release</code> created.</li>
+<li><code>release</code> runs the <code>release</code> Knope workflow which creates the GitHub Release.</li>
+</ol>
+<p>Throughout, there is use of a <code>${{ secrets.PAT }}</code>, this is a GitHub Token with write permissions to &quot;contents&quot; which must be stored in GitHub Actions secrets. For the minimum-possible required privileges, you should <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token">create a fine-grained access token</a> with read/write to &quot;contents&quot; for only this repo.</p>
+<p>Now let's look at the Knope config which enables this GitHub workflow to work. For the sake of example, here's Knope's actual config from when this recipe was used (Knope now uses the <a href="./pull_request.html">Pull Request Releases</a> recipe):</p>
+<pre><code class="language-toml">[package]
+versioned_files = [&quot;Cargo.toml&quot;]
+changelog = &quot;CHANGELOG.md&quot;
+
+[[package.assets]]
+path = &quot;artifact/knope-x86_64-unknown-linux-musl.tgz&quot;
+
+[[package.assets]]
+path = &quot;artifact/knope-x86_64-pc-windows-msvc.tgz&quot;
+
+[[package.assets]]
+path = &quot;artifact/knope-x86_64-apple-darwin.tgz&quot;
+
+[[package.assets]]
+path = &quot;artifact/knope-aarch64-apple-darwin.tgz&quot;
+
+[[workflows]]
+name = &quot;prepare-release&quot;
+
+[[workflows.steps]]
+type = &quot;PrepareRelease&quot;
+
+[[workflows.steps]]
+type = &quot;Command&quot;
+command = &quot;git commit -m \&quot;chore: prepare release $version\&quot; &amp;&amp; git push&quot;
+
+[workflows.steps.variables]
+&quot;$version&quot; = &quot;Version&quot;
+
+[[workflows]]
+name = &quot;release&quot;
+
+[[workflows.steps]]
+type = &quot;Release&quot;
+
+[[workflows]]
+name = &quot;document-change&quot;
+
+[[workflows.steps]]
+type = &quot;CreateChangeFile&quot;
+
+[github]
+owner = &quot;knope-dev&quot;
+repo = &quot;knope&quot;
+</code></pre>
+<p>There is a single <code>[package]</code>, but this pattern should also work for multi-package setups, just make sure all of your assets are ready at the same time. In this case, we have one versioned file <code>Cargo.toml</code> and one changelog <code>CHANGELOG.md</code>. We also have four assets, one for each platform we want to support. The name of each asset is omitted because we want to use the path as the name.</p>
+<p>There are two relevant workflows here, the third (<code>document-change</code>) is used for creating changesets during development. <code>prepare-release</code> starts by running the <a href="../config/step/PrepareRelease.html"><code>PrepareRelease</code></a> step, which does the work of updating <code>Cargo.toml</code> and <code>CHANGELOG.md</code> based on any conventional commits or changesets. We then run a command to commit the changes and push them back to the current branch (note that using the <code>Version</code> variable is not supported for multi-package setups at this time). Once this workflow runs, the project is ready to build assets.</p>
+<p>When ready, GitHub Actions calls into the <code>release</code> workflow which runs a single step: <a href="../config/step/Release.html"><code>Release</code></a>. This will compare the latest stable tagged release to the version in <code>Cargo.toml</code> (or any other <code>versioned_files</code>) and create releases as needed by parsing the contents of <code>CHANGELOG.md</code> for the release's body. The release is initially created as a draft, then assets are uploaded before the release is published (so your subscribers won't be notified until it's all ready).</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../github_actions/github_actions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../github_actions/pull_request.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../github_actions/github_actions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../github_actions/pull_request.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
