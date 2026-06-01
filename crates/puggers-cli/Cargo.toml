@@ -4,11 +4,11 @@ version = "0.1.0"
 edition = "2024"
 description = "CLI for converting HTML to Pug."
 license = "MIT"
-repository = "https://example.com/puggers-cli"
+repository.workspace = true
 
 [[bin]]
 name = "puggers"
 path = "src/main.rs"
 
 [dependencies]
-puggers-html = { path = "../puggers-html" }
+puggers-html = { version = "0.1.0", path = "../puggers-html" }
