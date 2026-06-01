@@ -12,10 +12,10 @@ versioned_files = [
   "Cargo.toml",
   { path = "crates/puggers-cli/Cargo.toml", dependency = "puggers-html" },
   { path = "Cargo.lock", dependency = "puggers-html" },
-  { path = "Cargo.lock", dependency = "puggers-cli" },
+  { path = "Cargo.lock", dependency = "puggers" },
   { path = "Cargo.lock", dependency = "dprint-plugin-pug" },
 ]
-scopes = ["puggers", "puggers-html", "puggers-cli", "dprint-plugin-pug"]
+scopes = ["puggers", "puggers-html", "dprint-plugin-pug"]
 
 [[workflows]]
 name = "document-change"

@@ -3,7 +3,7 @@
 Puggers is a Rust workspace with a small family of related Pug tools:
 
 - `puggers-html`: HTML-to-Pug conversion library
-- `puggers-cli`: CLI built on top of `puggers-html`
+- `puggers`: CLI built on top of `puggers-html`
 - `dprint-plugin-pug`: dprint formatter plugin
 
 ## Product Principles
@@ -81,7 +81,7 @@ just publish
 Publish order matters:
 
 1. `puggers-html`
-2. `puggers-cli`
+2. `puggers`
 3. `dprint-plugin-pug`
 
 That order keeps downstream crates from referencing a version that has not been

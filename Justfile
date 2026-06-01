@@ -14,7 +14,7 @@ install-cargo:
 r:
     just run
 run *args:
-    cargo run -p puggers-cli --bin puggers -- {{ args }}
+    cargo run -p puggers --bin puggers -- {{ args }}
 
 # TEST
 t:
@@ -71,5 +71,5 @@ publish:
 
 publish-crates:
     cargo publish -p puggers-html
-    cargo publish -p puggers-cli
+    cargo publish -p puggers
     cargo publish -p dprint-plugin-pug

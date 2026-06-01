@@ -6,18 +6,18 @@ Workspace for a small family of Pug tools.
 
 - `crates/dprint-plugin-pug`: the existing tiny `dprint` formatter plugin
 - `crates/puggers-html`: Rust library for converting HTML into Pug
-- `crates/puggers-cli`: standalone CLI built on top of `puggers-html`
+- `crates/puggers-cli`: the `puggers` CLI package built on top of `puggers-html`
 
 ## CLI
 
 ```sh
-cargo run -p puggers-cli -- --help
+cargo run -p puggers -- --help
 ```
 
 Example:
 
 ```sh
-cargo run -p puggers-cli -- \
+cargo run -p puggers -- \
   --trim-outer-document \
   --allow-attr id \
   --allow-attr class \

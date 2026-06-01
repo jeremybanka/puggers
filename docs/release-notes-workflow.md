@@ -31,7 +31,7 @@ just publish
 Publishing remains explicit and ordered:
 
 1. `puggers-html`
-2. `puggers-cli`
+2. `puggers`
 3. `dprint-plugin-pug`
 
 Knope is the source of truth for release intent and changelog generation.
