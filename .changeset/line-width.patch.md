@@ -2,10 +2,12 @@
 puggers: patch
 ---
 
-### Add initial `lineWidth` support for long attribute lists
+### Add conservative `lineWidth` support for Pug formatting
 
 The `dprint-plugin-pug` formatter now reads `lineWidth` from configuration and
-uses it for a conservative first wrapping rule: long tag attribute lists can be
-split across multiple lines when they exceed the configured width. Text blocks,
-piped text, interpolation-heavy inline text, and other whitespace-sensitive
-forms remain excluded from width-driven reflow for now.
+uses it for conservative wrapping in two places: long tag attribute lists can be
+split across multiple lines when they exceed the configured width, and plain
+low-risk dotted prose blocks can be reflowed to fit the configured width.
+Piped text, interpolation-heavy inline text, literal HTML text, and raw dotted
+blocks such as `script.`, `style.`, `pre.`, and `textarea.` remain excluded
+from width-driven reflow.
