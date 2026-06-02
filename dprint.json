@@ -1,0 +1,14 @@
+{
+  "$schema": "https://dprint.dev/schemas/v0.json",
+  "includes": [
+    "**/*.pug"
+  ],
+  "excludes": [
+    ".git/",
+    "fixtures/upstream/",
+    "target/"
+  ],
+  "plugins": [
+    "target/wasm32-unknown-unknown/release/dprint_plugin_pug.wasm"
+  ]
+}
