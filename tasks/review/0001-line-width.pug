@@ -1,4 +1,4 @@
-issue(id="0001" status="open")
+issue(id="0001" status="review")
   title Explore lineWidth support for Pug formatting
   user-story
     as-a maintainer of the puggers formatter
@@ -22,8 +22,8 @@ issue(id="0001" status="open")
     criterion Consider long attribute lists as a separate width-aware formatting rule, with examples showing when attributes should stay inline versus split across lines.
     criterion Thread lineWidth through the dprint plugin and standalone converter configuration only after the supported behaviors are defined.
   review-items
-    item(status="open") Confirm whether multiline prose should preserve author-provided hard breaks by default instead of eagerly reflowing them.
-    item(status="open") Identify a reliable heuristic, whitelist, or explicit mode switch for prose-like dotted blocks versus code-like dotted blocks.
-    item(status="open") Decide whether piped text lines (`|`) should be excluded entirely because leading and trailing spaces are often significant.
-    item(status="open") Evaluate attribute wrapping as the other main place where lineWidth is likely to be useful without changing semantics.
-    item(status="open") Attribute quote normalization and structural formatting are being specified in task `0003`, but concrete multiline attribute wrapping shapes remain intentionally deferred until `lineWidth` work can evaluate real examples and thresholds.
+    item(status="covered") The current line-width implementation does not reflow multiline prose blocks, so author-provided hard breaks remain preserved by default.
+    item(status="covered") Piped text lines (`|`), interpolation-heavy inline text, literal HTML text, and code-like dotted blocks remain excluded from line-width-driven wrapping because their whitespace is too semantically risky.
+    item(status="covered") The first supported line-width behavior is multiline wrapping for long attribute lists, using the structured attribute model from task `0003`.
+    item(status="covered") Attribute quote normalization and structural formatting now provide the stable base for width-aware attribute wrapping.
+    item(status="open") Decide whether future prose wrapping should rely on the current raw-tag whitelist from task `0005`, a broader syntax-context rule, or an explicit opt-in.

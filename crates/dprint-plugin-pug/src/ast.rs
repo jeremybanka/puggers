@@ -173,7 +173,7 @@ impl TagHead {
 }
 
 impl Attribute {
-    fn to_source(&self, quote_style: QuoteStyle) -> String {
+    pub(crate) fn to_source(&self, quote_style: QuoteStyle) -> String {
         let mut output = self.name.clone();
 
         if let Some(value) = &self.value {

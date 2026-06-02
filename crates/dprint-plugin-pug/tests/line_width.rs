@@ -7,7 +7,8 @@ use support::format_source;
 
 #[test]
 fn wraps_long_attribute_lists_when_line_width_is_exceeded() {
-    let source = "div\n  a.link(data-z=\"last\", aria-label=\"Documentation\", href=\"/docs\") Docs\n";
+    let source =
+        "div\n  a.link(data-z=\"last\", aria-label=\"Documentation\", href=\"/docs\") Docs\n";
     let formatted = format_source(
         source,
         &Configuration {

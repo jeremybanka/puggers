@@ -72,7 +72,8 @@ fn parse_block(
             continue;
         }
 
-        let (statement_content, text_block_kind) = split_text_block_suffix(content);
+        let (statement_content, next_index) = collect_statement_lines(lines, index, current_indent);
+        let (statement_content, text_block_kind) = split_text_block_suffix(&statement_content);
         let head = parse_statement_head(statement_content);
         let text_block_kind = text_block_kind.then(|| classify_text_block_kind(&head));
 
@@ -81,7 +82,6 @@ fn parse_block(
             text_block_kind,
             children: Vec::new(),
         });
-        let next_index = index + 1;
 
         if next_index < lines.len() && lines[next_index].indent > current_indent {
             if let Node::Statement(statement) = &mut node {
@@ -105,6 +105,91 @@ fn parse_block(
     }
 
     (nodes, index)
+}
+
+fn collect_statement_lines(
+    lines: &[LexedLine],
+    start_index: usize,
+    current_indent: usize,
+) -> (String, usize) {
+    let mut content = lines[start_index].content.trim_start().to_string();
+    if !should_collect_multiline_statement(&content) {
+        return (content, start_index + 1);
+    }
+
+    let mut index = start_index + 1;
+    while index < lines.len() && has_unclosed_parenthesis(&content) {
+        let line = &lines[index];
+        if line.indent < current_indent {
+            break;
+        }
+
+        content.push('\n');
+        content.push_str(line.content.trim());
+        index += 1;
+    }
+
+    (content, index)
+}
+
+fn should_collect_multiline_statement(content: &str) -> bool {
+    starts_attribute_list_in_head(content) && has_unclosed_parenthesis(content)
+}
+
+fn has_unclosed_parenthesis(content: &str) -> bool {
+    let mut in_quote = None;
+    let mut escaped = false;
+    let mut depth = 0isize;
+
+    for ch in content.chars() {
+        if let Some(quote) = in_quote {
+            if escaped {
+                escaped = false;
+                continue;
+            }
+
+            if ch == '\\' {
+                escaped = true;
+                continue;
+            }
+
+            if ch == quote {
+                in_quote = None;
+            }
+            continue;
+        }
+
+        match ch {
+            '\'' | '"' => in_quote = Some(ch),
+            '(' => depth += 1,
+            ')' => depth -= 1,
+            _ => {}
+        }
+    }
+
+    depth > 0
+}
+
+fn starts_attribute_list_in_head(content: &str) -> bool {
+    let mut cursor = 0;
+
+    if let Some((_, next_cursor)) = parse_tag_name(content, cursor) {
+        cursor = next_cursor;
+    }
+
+    while let Some(marker) = content[cursor..].chars().next() {
+        if marker != '#' && marker != '.' {
+            break;
+        }
+
+        let segment_start = cursor + marker.len_utf8();
+        let Some((_, next_cursor)) = parse_shorthand_value(content, segment_start) else {
+            return false;
+        };
+        cursor = next_cursor;
+    }
+
+    content[cursor..].starts_with('(')
 }
 
 fn split_text_block_suffix(content: &str) -> (&str, bool) {
@@ -289,10 +374,10 @@ fn parse_attributes(content: &str) -> Option<Vec<Attribute>> {
     }
 
     let mut attributes = Vec::new();
-    for entry in split_top_level(trimmed, ',') {
+    for entry in split_top_level_attributes(trimmed) {
         let entry = entry.trim();
         if entry.is_empty() {
-            return None;
+            continue;
         }
         attributes.push(parse_attribute(entry)?);
     }
@@ -420,7 +505,7 @@ fn find_top_level_equals(content: &str) -> Option<usize> {
     None
 }
 
-fn split_top_level(content: &str, delimiter: char) -> Vec<&str> {
+fn split_top_level_attributes(content: &str) -> Vec<&str> {
     let mut parts = Vec::new();
     let mut start = 0;
     let mut in_quote = None;
@@ -455,7 +540,11 @@ fn split_top_level(content: &str, delimiter: char) -> Vec<&str> {
             ']' => bracket_depth -= 1,
             '{' => brace_depth += 1,
             '}' => brace_depth -= 1,
-            _ if ch == delimiter && paren_depth == 0 && bracket_depth == 0 && brace_depth == 0 => {
+            ',' if paren_depth == 0 && bracket_depth == 0 && brace_depth == 0 => {
+                parts.push(&content[start..index]);
+                start = index + ch.len_utf8();
+            }
+            '\n' if paren_depth == 0 && bracket_depth == 0 && brace_depth == 0 => {
                 parts.push(&content[start..index]);
                 start = index + ch.len_utf8();
             }
