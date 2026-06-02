@@ -1,5 +1,5 @@
 ---
-puggers: patch
+default: patch
 ---
 
 ### Model more Pug syntax explicitly

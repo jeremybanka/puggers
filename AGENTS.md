@@ -10,6 +10,20 @@
 - Keep acceptance criteria concrete and testable.
 - Keep `review-items` focused on the remaining review conversation, not as a duplicate backlog.
 
+## Release Notes
+
+- This repo uses Knope change files in `.changeset/` for release notes and version bumps.
+- In this single-package setup, change files must use `default` in frontmatter, not `puggers`.
+- Example:
+
+  ```md
+  ---
+  default: patch
+  ---
+
+  ### Short user-facing summary
+  ```
+
 ## Testing Policy
 
 - Prefer focused test suites in separate files instead of growing large inline test modules.

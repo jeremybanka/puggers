@@ -1,5 +1,5 @@
 ---
-puggers: patch
+default: patch
 ---
 
 ### Preserve distinct comments and explicit filter blocks in the Pug formatter
