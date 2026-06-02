@@ -43,19 +43,19 @@ Format outcomes by role
 - support / rewritten: 64
 
 Structure coverage by role
-- example / fully-structured: 8
-- example / mixed: 11
+- example / fully-structured: 9
+- example / mixed: 10
 - case / no-statements: 4
-- case / fully-structured: 174
-- case / mixed: 126
+- case / fully-structured: 197
+- case / mixed: 103
 - case / raw-only: 4
 - anti-case / fully-structured: 34
 - anti-case / mixed: 9
 - anti-case / raw-only: 12
 - support / no-statements: 1
-- support / fully-structured: 61
-- support / mixed: 7
-- support / raw-only: 8
+- support / fully-structured: 69
+- support / mixed: 4
+- support / raw-only: 3
 
 Rewritten anti-cases
 - packages/pug/test/anti-cases/attrs.unescaped.pug [packages/pug/test/anti-cases]
@@ -103,23 +103,23 @@ Rewritten anti-cases
 - packages/pug-linker/test/errors-src/unexpected-block.pug [packages/pug-linker/test/errors-src]
 
 Most opaque case fixtures
-- raw 29/47 | mixed | packages/pug-lexer/test/cases/mixin.attrs.pug
-- raw 29/47 | mixed | packages/pug/test/cases/mixin.attrs.pug
-- raw 12/26 | mixed | packages/pug-lexer/test/cases/code.iteration.pug
+- raw 25/47 | mixed | packages/pug-lexer/test/cases/mixin.attrs.pug
+- raw 25/47 | mixed | packages/pug/test/cases/mixin.attrs.pug
 - raw 12/14 | mixed | packages/pug-lexer/test/cases/mixin.merge.pug
-- raw 12/26 | mixed | packages/pug/test/cases/code.iteration.pug
 - raw 12/14 | mixed | packages/pug/test/cases/mixin.merge.pug
-- raw 11/39 | mixed | packages/pug-lexer/test/cases/each.else.pug
-- raw 11/25 | mixed | packages/pug-lexer/test/cases/mixins.pug
-- raw 11/25 | mixed | packages/pug/test/cases/mixins.pug
-- raw 9/10 | mixed | packages/pug-lexer/test/cases/html.pug
-- raw 9/18 | mixed | packages/pug-lexer/test/cases/tag.interpolation.pug
+- raw 10/25 | mixed | packages/pug-lexer/test/cases/mixins.pug
+- raw 10/25 | mixed | packages/pug/test/cases/mixins.pug
 - raw 9/16 | mixed | packages/pug-lexer/test/cases/tags.self-closing.pug
-- raw 9/10 | mixed | packages/pug/test/cases/html.pug
-- raw 9/18 | mixed | packages/pug/test/cases/tag.interpolation.pug
 - raw 9/16 | mixed | packages/pug/test/cases/tags.self-closing.pug
-- raw 8/16 | mixed | packages/pug-lexer/test/cases/styles.pug
-- raw 8/32 | mixed | packages/pug/test/cases/each.else.pug
-- raw 8/16 | mixed | packages/pug/test/cases/styles.pug
-- raw 7/33 | mixed | packages/pug-lexer/test/cases/mixin.blocks.pug
-- raw 7/33 | mixed | packages/pug/test/cases/mixin.blocks.pug
+- raw 8/10 | mixed | packages/pug-lexer/test/cases/html.pug
+- raw 8/10 | mixed | packages/pug/test/cases/html.pug
+- raw 7/16 | mixed | packages/pug-lexer/test/cases/styles.pug
+- raw 7/18 | mixed | packages/pug-lexer/test/cases/tag.interpolation.pug
+- raw 7/16 | mixed | packages/pug/test/cases/styles.pug
+- raw 7/18 | mixed | packages/pug/test/cases/tag.interpolation.pug
+- raw 6/33 | mixed | packages/pug-lexer/test/cases/mixin.blocks.pug
+- raw 6/33 | mixed | packages/pug/test/cases/mixin.blocks.pug
+- raw 5/10 | mixed | packages/pug-lexer/test/cases/code.pug
+- raw 5/10 | mixed | packages/pug/test/cases/code.pug
+- raw 4/26 | mixed | packages/pug-lexer/test/cases/code.iteration.pug
+- raw 4/39 | mixed | packages/pug-lexer/test/cases/each.else.pug

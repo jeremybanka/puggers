@@ -109,12 +109,12 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
         vec![
             (
                 (FixtureRole::Example, StructureCoverage::FullyStructured),
-                8
+                9
             ),
-            ((FixtureRole::Example, StructureCoverage::Mixed), 11),
+            ((FixtureRole::Example, StructureCoverage::Mixed), 10),
             ((FixtureRole::Case, StructureCoverage::NoStatements), 4),
-            ((FixtureRole::Case, StructureCoverage::FullyStructured), 174),
-            ((FixtureRole::Case, StructureCoverage::Mixed), 126),
+            ((FixtureRole::Case, StructureCoverage::FullyStructured), 197),
+            ((FixtureRole::Case, StructureCoverage::Mixed), 103),
             ((FixtureRole::Case, StructureCoverage::RawOnly), 4),
             (
                 (FixtureRole::AntiCase, StructureCoverage::FullyStructured),
@@ -125,10 +125,10 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
             ((FixtureRole::Support, StructureCoverage::NoStatements), 1),
             (
                 (FixtureRole::Support, StructureCoverage::FullyStructured),
-                61
+                69
             ),
-            ((FixtureRole::Support, StructureCoverage::Mixed), 7),
-            ((FixtureRole::Support, StructureCoverage::RawOnly), 8),
+            ((FixtureRole::Support, StructureCoverage::Mixed), 4),
+            ((FixtureRole::Support, StructureCoverage::RawOnly), 3),
         ],
         "structure coverage register drifted\n{report}"
     );

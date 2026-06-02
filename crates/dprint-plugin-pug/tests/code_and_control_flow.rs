@@ -41,7 +41,9 @@ ul
 
     assert_keyword_statements_are_explicitly_modeled(
         &document.children,
-        &["if", "else if", "else", "case", "when", "default", "each", "while"],
+        &[
+            "if", "else if", "else", "case", "when", "default", "each", "while",
+        ],
     );
 }
 
@@ -78,7 +80,10 @@ fn assert_keyword_statements_are_explicitly_modeled(nodes: &[Node], keywords: &[
             .any(|keyword| matches_keyword_head(&rendered, keyword))
         {
             assert!(
-                !matches!(&statement.head, StatementHead::Tag(_) | StatementHead::Raw(_)),
+                !matches!(
+                    &statement.head,
+                    StatementHead::Tag(_) | StatementHead::Raw(_)
+                ),
                 "expected `{rendered}` to use an explicit code/control-flow head, found {:?}",
                 statement.head
             );

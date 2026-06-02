@@ -1,6 +1,7 @@
 use crate::ast::{
-    Attribute, AttributeValue, DoctypeHead, Document, InlineText, InlineTextKind, Node, QuoteStyle,
-    RawTextNode, StatementHead, StatementNode, TagHead, TextBlockKind, TextLineKind, TextLineNode,
+    Attribute, AttributeValue, CodeHead, CodeKind, ControlFlowHead, ControlFlowKind, DoctypeHead,
+    Document, InlineText, InlineTextKind, Node, QuoteStyle, RawTextNode, StatementHead,
+    StatementNode, TagHead, TextBlockKind, TextLineKind, TextLineNode,
 };
 use crate::lexer::LexedLine;
 
@@ -221,11 +222,86 @@ fn parse_statement_head(content: &str) -> StatementHead {
         return StatementHead::Doctype(head);
     }
 
+    if let Some(head) = parse_code_head(content) {
+        return StatementHead::Code(head);
+    }
+
+    if let Some(head) = parse_control_flow_head(content) {
+        return StatementHead::ControlFlow(head);
+    }
+
     if let Some(head) = parse_tag_head(content) {
         return StatementHead::Tag(head);
     }
 
     StatementHead::Raw(content.to_string())
+}
+
+fn parse_code_head(content: &str) -> Option<CodeHead> {
+    if let Some(suffix) = content.strip_prefix("!=") {
+        return Some(CodeHead {
+            kind: CodeKind::UnescapedBuffered,
+            suffix: suffix.to_string(),
+        });
+    }
+
+    if let Some(suffix) = content.strip_prefix('=') {
+        return Some(CodeHead {
+            kind: CodeKind::EscapedBuffered,
+            suffix: suffix.to_string(),
+        });
+    }
+
+    if let Some(suffix) = content.strip_prefix('-') {
+        return Some(CodeHead {
+            kind: CodeKind::Unbuffered,
+            suffix: suffix.to_string(),
+        });
+    }
+
+    None
+}
+
+fn parse_control_flow_head(content: &str) -> Option<ControlFlowHead> {
+    const KEYWORDS: &[(ControlFlowKind, &str)] = &[
+        (ControlFlowKind::ElseIf, "else if"),
+        (ControlFlowKind::Else, "else"),
+        (ControlFlowKind::If, "if"),
+        (ControlFlowKind::Case, "case"),
+        (ControlFlowKind::When, "when"),
+        (ControlFlowKind::Default, "default"),
+        (ControlFlowKind::Each, "each"),
+        (ControlFlowKind::While, "while"),
+    ];
+
+    for (kind, keyword) in KEYWORDS {
+        let Some(suffix) = content.strip_prefix(keyword) else {
+            continue;
+        };
+
+        if !starts_control_flow_suffix(suffix) {
+            continue;
+        }
+
+        return Some(ControlFlowHead {
+            kind: *kind,
+            suffix: suffix.to_string(),
+        });
+    }
+
+    None
+}
+
+fn starts_control_flow_suffix(suffix: &str) -> bool {
+    suffix.is_empty()
+        || suffix
+            .chars()
+            .next()
+            .is_some_and(|ch| ch.is_whitespace() || !is_identifier_continue(ch))
+}
+
+fn is_identifier_continue(ch: char) -> bool {
+    ch.is_ascii_alphanumeric() || ch == '_' || ch == '-'
 }
 
 fn parse_doctype_head(content: &str) -> Option<DoctypeHead> {
