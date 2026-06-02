@@ -1,6 +1,8 @@
 use crate::ast::{
-    Attribute, AttributeValue, DoctypeHead, Document, InlineText, InlineTextKind, Node, QuoteStyle,
-    RawTextNode, StatementHead, StatementNode, TagHead, TextBlockKind, TextLineKind, TextLineNode,
+    Attribute, AttributeValue, BlockHead, BlockMode, CodeHead, CodeKind, ControlFlowHead,
+    ControlFlowKind, DoctypeHead, Document, ExtendsHead, IncludeHead, InlineText, InlineTextKind,
+    MixinCallHead, MixinHead, Node, QuoteStyle, RawTextNode, StatementHead, StatementNode, TagHead,
+    TextBlockKind, TextLineKind, TextLineNode,
 };
 use crate::lexer::LexedLine;
 
@@ -221,11 +223,185 @@ fn parse_statement_head(content: &str) -> StatementHead {
         return StatementHead::Doctype(head);
     }
 
+    if let Some(head) = parse_code_head(content) {
+        return StatementHead::Code(head);
+    }
+
+    if let Some(head) = parse_control_flow_head(content) {
+        return StatementHead::ControlFlow(head);
+    }
+
+    if let Some(head) = parse_include_head(content) {
+        return StatementHead::Include(head);
+    }
+
+    if let Some(head) = parse_extends_head(content) {
+        return StatementHead::Extends(head);
+    }
+
+    if let Some(head) = parse_block_head(content) {
+        return StatementHead::Block(head);
+    }
+
+    if let Some(head) = parse_mixin_head(content) {
+        return StatementHead::Mixin(head);
+    }
+
+    if let Some(head) = parse_mixin_call_head(content) {
+        return StatementHead::MixinCall(head);
+    }
+
     if let Some(head) = parse_tag_head(content) {
         return StatementHead::Tag(head);
     }
 
     StatementHead::Raw(content.to_string())
+}
+
+fn parse_code_head(content: &str) -> Option<CodeHead> {
+    if let Some(suffix) = content.strip_prefix("!=") {
+        return Some(CodeHead {
+            kind: CodeKind::UnescapedBuffered,
+            suffix: suffix.to_string(),
+        });
+    }
+
+    if let Some(suffix) = content.strip_prefix('=') {
+        return Some(CodeHead {
+            kind: CodeKind::EscapedBuffered,
+            suffix: suffix.to_string(),
+        });
+    }
+
+    if let Some(suffix) = content.strip_prefix('-') {
+        return Some(CodeHead {
+            kind: CodeKind::Unbuffered,
+            suffix: suffix.to_string(),
+        });
+    }
+
+    None
+}
+
+fn parse_control_flow_head(content: &str) -> Option<ControlFlowHead> {
+    const KEYWORDS: &[(ControlFlowKind, &str)] = &[
+        (ControlFlowKind::ElseIf, "else if"),
+        (ControlFlowKind::Else, "else"),
+        (ControlFlowKind::If, "if"),
+        (ControlFlowKind::Case, "case"),
+        (ControlFlowKind::When, "when"),
+        (ControlFlowKind::Default, "default"),
+        (ControlFlowKind::Each, "each"),
+        (ControlFlowKind::While, "while"),
+    ];
+
+    for (kind, keyword) in KEYWORDS {
+        let Some(suffix) = content.strip_prefix(keyword) else {
+            continue;
+        };
+
+        if !starts_control_flow_suffix(suffix) {
+            continue;
+        }
+
+        return Some(ControlFlowHead {
+            kind: *kind,
+            suffix: suffix.to_string(),
+        });
+    }
+
+    None
+}
+
+fn parse_include_head(content: &str) -> Option<IncludeHead> {
+    let suffix = content.strip_prefix("include")?;
+    if !starts_keyword_suffix(suffix) {
+        return None;
+    }
+
+    Some(IncludeHead {
+        suffix: suffix.to_string(),
+    })
+}
+
+fn parse_extends_head(content: &str) -> Option<ExtendsHead> {
+    let suffix = content.strip_prefix("extends")?;
+    if !starts_keyword_suffix(suffix) {
+        return None;
+    }
+
+    Some(ExtendsHead {
+        suffix: suffix.to_string(),
+    })
+}
+
+fn parse_block_head(content: &str) -> Option<BlockHead> {
+    let suffix = content.strip_prefix("block")?;
+    if !starts_keyword_suffix(suffix) {
+        return None;
+    }
+
+    let trimmed = suffix.trim_start();
+    let (mode, target) = if let Some(rest) = trimmed.strip_prefix("append")
+        && starts_keyword_suffix(rest)
+    {
+        (Some(BlockMode::Append), parse_optional_payload(rest))
+    } else if let Some(rest) = trimmed.strip_prefix("prepend")
+        && starts_keyword_suffix(rest)
+    {
+        (Some(BlockMode::Prepend), parse_optional_payload(rest))
+    } else {
+        (None, parse_optional_payload(trimmed))
+    };
+
+    Some(BlockHead {
+        mode,
+        target,
+        suffix: suffix.to_string(),
+    })
+}
+
+fn parse_mixin_head(content: &str) -> Option<MixinHead> {
+    let suffix = content.strip_prefix("mixin")?;
+    if !starts_keyword_suffix(suffix) {
+        return None;
+    }
+
+    Some(MixinHead {
+        suffix: suffix.to_string(),
+    })
+}
+
+fn parse_mixin_call_head(content: &str) -> Option<MixinCallHead> {
+    let suffix = content.strip_prefix('+')?;
+    if suffix.is_empty() {
+        return None;
+    }
+
+    Some(MixinCallHead {
+        suffix: suffix.to_string(),
+    })
+}
+
+fn starts_keyword_suffix(suffix: &str) -> bool {
+    suffix.is_empty() || suffix.chars().next().is_some_and(|ch| ch.is_whitespace())
+}
+
+fn parse_optional_payload(content: &str) -> Option<String> {
+    let trimmed = content.trim();
+    (!trimmed.is_empty()).then(|| trimmed.to_string())
+}
+
+fn starts_control_flow_suffix(suffix: &str) -> bool {
+    suffix.is_empty()
+        || suffix
+            .chars()
+            .next()
+            .is_some_and(|ch| ch.is_whitespace() || !is_identifier_continue(ch))
+}
+
+fn is_identifier_continue(ch: char) -> bool {
+    ch.is_ascii_alphanumeric() || ch == '_' || ch == '-'
 }
 
 fn parse_doctype_head(content: &str) -> Option<DoctypeHead> {

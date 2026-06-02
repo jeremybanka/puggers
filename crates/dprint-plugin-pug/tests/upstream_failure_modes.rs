@@ -63,9 +63,9 @@ fn upstream_failure_modes_have_a_pinned_current_behavior_split() {
     assert_eq!(
         structure_counts.into_iter().collect::<Vec<_>>(),
         vec![
-            (StructureCoverage::FullyStructured, 34),
-            (StructureCoverage::Mixed, 9),
-            (StructureCoverage::RawOnly, 12),
+            (StructureCoverage::FullyStructured, 38),
+            (StructureCoverage::Mixed, 6),
+            (StructureCoverage::RawOnly, 11),
         ]
     );
 }

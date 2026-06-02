@@ -41,6 +41,13 @@ pub enum TextLineKind {
 pub enum StatementHead {
     Tag(TagHead),
     Doctype(DoctypeHead),
+    Code(CodeHead),
+    ControlFlow(ControlFlowHead),
+    Include(IncludeHead),
+    Extends(ExtendsHead),
+    Block(BlockHead),
+    Mixin(MixinHead),
+    MixinCall(MixinCallHead),
     Raw(String),
 }
 
@@ -49,7 +56,145 @@ impl StatementHead {
         match self {
             StatementHead::Tag(head) => head.to_source(config),
             StatementHead::Doctype(head) => head.to_source(),
+            StatementHead::Code(head) => head.to_source(),
+            StatementHead::ControlFlow(head) => head.to_source(),
+            StatementHead::Include(head) => head.to_source(),
+            StatementHead::Extends(head) => head.to_source(),
+            StatementHead::Block(head) => head.to_source(),
+            StatementHead::Mixin(head) => head.to_source(),
+            StatementHead::MixinCall(head) => head.to_source(),
             StatementHead::Raw(content) => content.clone(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct IncludeHead {
+    pub suffix: String,
+}
+
+impl IncludeHead {
+    pub fn to_source(&self) -> String {
+        format!("include{}", self.suffix)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ExtendsHead {
+    pub suffix: String,
+}
+
+impl ExtendsHead {
+    pub fn to_source(&self) -> String {
+        format!("extends{}", self.suffix)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BlockHead {
+    pub mode: Option<BlockMode>,
+    pub target: Option<String>,
+    pub suffix: String,
+}
+
+impl BlockHead {
+    pub fn to_source(&self) -> String {
+        format!("block{}", self.suffix)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BlockMode {
+    Append,
+    Prepend,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MixinHead {
+    pub suffix: String,
+}
+
+impl MixinHead {
+    pub fn to_source(&self) -> String {
+        format!("mixin{}", self.suffix)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MixinCallHead {
+    pub suffix: String,
+}
+
+impl MixinCallHead {
+    pub fn to_source(&self) -> String {
+        format!("+{}", self.suffix)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CodeHead {
+    pub kind: CodeKind,
+    pub suffix: String,
+}
+
+impl CodeHead {
+    pub fn to_source(&self) -> String {
+        format!("{}{}", self.kind.operator(), self.suffix)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CodeKind {
+    Unbuffered,
+    EscapedBuffered,
+    UnescapedBuffered,
+}
+
+impl CodeKind {
+    fn operator(self) -> &'static str {
+        match self {
+            CodeKind::Unbuffered => "-",
+            CodeKind::EscapedBuffered => "=",
+            CodeKind::UnescapedBuffered => "!=",
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ControlFlowHead {
+    pub kind: ControlFlowKind,
+    pub suffix: String,
+}
+
+impl ControlFlowHead {
+    pub fn to_source(&self) -> String {
+        format!("{}{}", self.kind.keyword(), self.suffix)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ControlFlowKind {
+    If,
+    ElseIf,
+    Else,
+    Case,
+    When,
+    Default,
+    Each,
+    While,
+}
+
+impl ControlFlowKind {
+    fn keyword(self) -> &'static str {
+        match self {
+            ControlFlowKind::If => "if",
+            ControlFlowKind::ElseIf => "else if",
+            ControlFlowKind::Else => "else",
+            ControlFlowKind::Case => "case",
+            ControlFlowKind::When => "when",
+            ControlFlowKind::Default => "default",
+            ControlFlowKind::Each => "each",
+            ControlFlowKind::While => "while",
         }
     }
 }
