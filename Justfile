@@ -3,6 +3,11 @@ set shell := ["sh", "-eu", "-c"]
 default:
     @just --list
 
+# REPO SETUP
+prepare:
+    git config core.hooksPath .githooks
+    chmod +x .githooks/pre-commit
+
 # USE FROM SOURCE
 i:
     just install
