@@ -30,6 +30,10 @@ pub fn vendored_upstream_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/upstream/pug")
 }
 
+pub fn vendored_upstream_register_path() -> PathBuf {
+    vendored_upstream_dir().join("REGISTER.md")
+}
+
 pub fn pug_doc_sources() -> Vec<(PathBuf, String)> {
     let mut docs = Vec::new();
 

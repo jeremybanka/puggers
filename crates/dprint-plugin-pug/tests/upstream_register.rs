@@ -86,7 +86,7 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
     let fixtures = support::upstream_pug_sources();
     let behaviors = fixtures.iter().map(analyze_fixture).collect::<Vec<_>>();
 
-    let report = render_behavior_report(&behaviors);
+    let report = render_behavior_report(&fixtures, &behaviors);
 
     let total_by_role = summarize_by_role(&behaviors);
     assert_eq!(
@@ -139,6 +139,17 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
     );
 
     println!("{report}");
+}
+
+#[test]
+fn checked_in_upstream_register_report_is_current() {
+    let fixtures = support::upstream_pug_sources();
+    let behaviors = fixtures.iter().map(analyze_fixture).collect::<Vec<_>>();
+    let report = render_behavior_report(&fixtures, &behaviors);
+    let expected = std::fs::read_to_string(support::vendored_upstream_register_path())
+        .expect("checked-in upstream register should exist");
+
+    assert_eq!(report, expected, "checked-in upstream register drifted");
 }
 
 fn analyze_fixture(fixture: &UpstreamFixture) -> FixtureBehavior {
@@ -211,12 +222,18 @@ fn summarize_structure_coverage(
     counts
 }
 
-fn render_behavior_report(behaviors: &[FixtureBehavior]) -> String {
+fn render_behavior_report(fixtures: &[UpstreamFixture], behaviors: &[FixtureBehavior]) -> String {
     let mut output = String::new();
 
     output.push_str("Upstream fixture register\n");
     output.push_str("========================\n");
     output.push_str(&format!("total fixtures: {}\n", behaviors.len()));
+    output.push('\n');
+
+    output.push_str("By bucket\n");
+    for (bucket, count) in support::bucket_counts(fixtures) {
+        output.push_str(&format!("- {bucket}: {count}\n"));
+    }
     output.push('\n');
 
     output.push_str("By role\n");
