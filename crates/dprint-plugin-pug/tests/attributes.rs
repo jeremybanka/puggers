@@ -53,7 +53,8 @@ fn parses_attributes_into_structured_entries() {
 
 #[test]
 fn normalizes_attribute_spacing_and_defaults_to_double_quotes() {
-    let source = "input( type = 'text' , disabled , data-empty = '' , data-count = items.length )\n";
+    let source =
+        "input( type = 'text' , disabled , data-empty = '' , data-count = items.length )\n";
     let formatted = format_source(source, &Configuration::default());
 
     assert_eq!(

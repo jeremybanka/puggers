@@ -8,13 +8,7 @@ pub fn format(document: &Document, config: &Configuration) -> String {
         if index > 0 {
             output.push('\n');
         }
-        write_node(
-            &mut output,
-            node,
-            0,
-            config.indent_width(),
-            config.use_tabs(),
-        );
+        write_node(&mut output, node, 0, config);
     }
 
     if !output.ends_with('\n') {
@@ -24,22 +18,26 @@ pub fn format(document: &Document, config: &Configuration) -> String {
     output
 }
 
-fn write_node(output: &mut String, node: &Node, depth: usize, indent_width: usize, use_tabs: bool) {
+fn write_node(output: &mut String, node: &Node, depth: usize, config: &Configuration) {
     match node {
-        Node::Statement(statement) => {
-            write_statement(output, statement, depth, indent_width, use_tabs)
-        }
+        Node::Statement(statement) => write_statement(output, statement, depth, config),
         Node::Comment(text) => {
-            write_indent(output, depth, indent_width, use_tabs);
+            write_indent(output, depth, config.indent_width(), config.use_tabs());
             output.push_str("// ");
             output.push_str(text.trim());
         }
         Node::Text(text) => {
-            write_indent(output, depth, indent_width, use_tabs);
+            write_indent(output, depth, config.indent_width(), config.use_tabs());
             output.push('|');
             output.push_str(text);
         }
-        Node::RawText(text) => write_raw_text(output, text, depth, indent_width, use_tabs),
+        Node::RawText(text) => write_raw_text(
+            output,
+            text,
+            depth,
+            config.indent_width(),
+            config.use_tabs(),
+        ),
     }
 }
 
@@ -47,18 +45,17 @@ fn write_statement(
     output: &mut String,
     element: &StatementNode,
     depth: usize,
-    indent_width: usize,
-    use_tabs: bool,
+    config: &Configuration,
 ) {
-    write_indent(output, depth, indent_width, use_tabs);
-    output.push_str(&element.head.to_source());
+    write_indent(output, depth, config.indent_width(), config.use_tabs());
+    output.push_str(&element.head.to_source(config));
     if element.is_text_block {
         output.push('.');
     }
 
     for child in &element.children {
         output.push('\n');
-        write_node(output, child, depth + 1, indent_width, use_tabs);
+        write_node(output, child, depth + 1, config);
     }
 }
 

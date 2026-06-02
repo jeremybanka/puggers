@@ -1,4 +1,7 @@
-use crate::ast::{DoctypeHead, Document, Node, RawTextNode, StatementHead, StatementNode, TagHead};
+use crate::ast::{
+    Attribute, AttributeValue, DoctypeHead, Document, Node, QuoteStyle, RawTextNode, StatementHead,
+    StatementNode, TagHead,
+};
 use crate::lexer::LexedLine;
 
 pub fn parse(lines: &[LexedLine]) -> Document {
@@ -186,7 +189,7 @@ fn parse_tag_head(content: &str) -> Option<TagHead> {
     let mut attributes = None;
     if content[cursor..].starts_with('(') {
         let end = find_matching_paren(content, cursor)?;
-        attributes = Some(content[cursor + 1..end].to_string());
+        attributes = Some(parse_attributes(&content[cursor + 1..end])?);
         cursor = end + 1;
     }
 
@@ -226,6 +229,191 @@ fn parse_tag_head(content: &str) -> Option<TagHead> {
         inline_space,
         inline_text,
     })
+}
+
+fn parse_attributes(content: &str) -> Option<Vec<Attribute>> {
+    let trimmed = content.trim();
+    if trimmed.is_empty() {
+        return Some(Vec::new());
+    }
+
+    let mut attributes = Vec::new();
+    for entry in split_top_level(trimmed, ',') {
+        let entry = entry.trim();
+        if entry.is_empty() {
+            return None;
+        }
+        attributes.push(parse_attribute(entry)?);
+    }
+
+    Some(attributes)
+}
+
+fn parse_attribute(content: &str) -> Option<Attribute> {
+    let trimmed = content.trim();
+    let Some(split_index) = find_top_level_equals(trimmed) else {
+        return Some(Attribute {
+            name: trimmed.to_string(),
+            value: None,
+        });
+    };
+
+    let name = trimmed[..split_index].trim();
+    let value = trimmed[split_index + 1..].trim();
+
+    if name.is_empty() || value.is_empty() {
+        return None;
+    }
+
+    Some(Attribute {
+        name: name.to_string(),
+        value: Some(parse_attribute_value(value)),
+    })
+}
+
+fn parse_attribute_value(content: &str) -> AttributeValue {
+    if let Some((quote_style, value)) = parse_quoted_value(content) {
+        return AttributeValue::Quoted { value, quote_style };
+    }
+
+    AttributeValue::Expression(content.to_string())
+}
+
+fn parse_quoted_value(content: &str) -> Option<(QuoteStyle, String)> {
+    if content.len() < 2 {
+        return None;
+    }
+
+    let mut chars = content.chars();
+    let first = chars.next()?;
+    let last = content.chars().last()?;
+
+    let quote_style = match first {
+        '"' if last == '"' => QuoteStyle::Double,
+        '\'' if last == '\'' => QuoteStyle::Single,
+        _ => return None,
+    };
+
+    if !is_wrapped_in_single_top_level_quote(content, first) {
+        return None;
+    }
+
+    let inner = &content[first.len_utf8()..content.len() - last.len_utf8()];
+    Some((quote_style, inner.to_string()))
+}
+
+fn is_wrapped_in_single_top_level_quote(content: &str, quote: char) -> bool {
+    let mut escaped = false;
+    let mut close_index = None;
+
+    for (index, ch) in content.char_indices().skip(1) {
+        if escaped {
+            escaped = false;
+            continue;
+        }
+
+        if ch == '\\' {
+            escaped = true;
+            continue;
+        }
+
+        if ch == quote {
+            close_index = Some(index);
+            break;
+        }
+    }
+
+    close_index == Some(content.len() - quote.len_utf8())
+}
+
+fn find_top_level_equals(content: &str) -> Option<usize> {
+    let mut in_quote = None;
+    let mut escaped = false;
+    let mut paren_depth = 0isize;
+    let mut bracket_depth = 0isize;
+    let mut brace_depth = 0isize;
+
+    for (index, ch) in content.char_indices() {
+        if let Some(quote) = in_quote {
+            if escaped {
+                escaped = false;
+                continue;
+            }
+
+            if ch == '\\' {
+                escaped = true;
+                continue;
+            }
+
+            if ch == quote {
+                in_quote = None;
+            }
+            continue;
+        }
+
+        match ch {
+            '\'' | '"' => in_quote = Some(ch),
+            '(' => paren_depth += 1,
+            ')' => paren_depth -= 1,
+            '[' => bracket_depth += 1,
+            ']' => bracket_depth -= 1,
+            '{' => brace_depth += 1,
+            '}' => brace_depth -= 1,
+            '=' if paren_depth == 0 && bracket_depth == 0 && brace_depth == 0 => {
+                return Some(index);
+            }
+            _ => {}
+        }
+    }
+
+    None
+}
+
+fn split_top_level(content: &str, delimiter: char) -> Vec<&str> {
+    let mut parts = Vec::new();
+    let mut start = 0;
+    let mut in_quote = None;
+    let mut escaped = false;
+    let mut paren_depth = 0isize;
+    let mut bracket_depth = 0isize;
+    let mut brace_depth = 0isize;
+
+    for (index, ch) in content.char_indices() {
+        if let Some(quote) = in_quote {
+            if escaped {
+                escaped = false;
+                continue;
+            }
+
+            if ch == '\\' {
+                escaped = true;
+                continue;
+            }
+
+            if ch == quote {
+                in_quote = None;
+            }
+            continue;
+        }
+
+        match ch {
+            '\'' | '"' => in_quote = Some(ch),
+            '(' => paren_depth += 1,
+            ')' => paren_depth -= 1,
+            '[' => bracket_depth += 1,
+            ']' => bracket_depth -= 1,
+            '{' => brace_depth += 1,
+            '}' => brace_depth -= 1,
+            _ if ch == delimiter && paren_depth == 0 && bracket_depth == 0 && brace_depth == 0 => {
+                parts.push(&content[start..index]);
+                start = index + ch.len_utf8();
+            }
+            _ => {}
+        }
+    }
+
+    parts.push(&content[start..]);
+    parts
 }
 
 fn parse_tag_name(content: &str, start: usize) -> Option<(&str, usize)> {
