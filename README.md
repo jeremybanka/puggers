@@ -2,6 +2,15 @@
 
 Workspace for a small family of Pug tools.
 
+## Tooling
+
+This repo uses `mise` as the source of truth for local tool versions, including
+Rust.
+
+```sh
+mise install
+```
+
 ## Crates
 
 - `crates/dprint-plugin-pug`: the existing tiny `dprint` formatter plugin
