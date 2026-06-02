@@ -1,4 +1,4 @@
-issue(id="0003" status="open")
+issue(id="0003" status="review")
   title Add a real attribute model and attribute formatting rules
   user-story
     as-a maintainer of the puggers formatter
@@ -18,7 +18,6 @@ issue(id="0003" status="open")
     criterion Add formatting rules for commas, spacing, quoting preservation or normalization, and multiline attribute layout.
     criterion Cover repeated class-like inputs, boolean attrs, empty attrs, and representative complex expressions with tests.
   review-items
-    item(status="open") Decide whether quote style should remain authored, be normalized, or stay outside initial scope.
-    item(status="open") Confirm how to treat syntactically unusual attribute names such as `(click)` and `data-*` without regressing docs examples.
-    item(status="open") Evaluate whether attribute wrapping should be the first place line width is enforced because it is less semantically risky than prose reflow.
-
+    item(status="covered") Quote output is now normalized through formatter configuration, with double quotes as the default and single quotes available as an explicit option.
+    item(status="open") Confirm how to treat syntactically unusual attribute names such as `(click)` without regressing docs examples while the parser remains conservative.
+    item(status="covered") Multiline attribute wrapping remains intentionally deferred to task `0001`, where `lineWidth` can evaluate real examples and thresholds.
