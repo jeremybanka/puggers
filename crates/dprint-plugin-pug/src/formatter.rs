@@ -1,5 +1,6 @@
 use crate::ast::{
-    Document, Node, RawTextNode, StatementHead, StatementNode, TagHead, TextBlockKind,
+    CommentKind, CommentNode, Document, Node, RawTextNode, StatementHead, StatementNode, TagHead,
+    TextBlockKind,
 };
 use crate::config::Configuration;
 
@@ -23,11 +24,7 @@ pub fn format(document: &Document, config: &Configuration) -> String {
 fn write_node(output: &mut String, node: &Node, depth: usize, config: &Configuration) {
     match node {
         Node::Statement(statement) => write_statement(output, statement, depth, config),
-        Node::Comment(text) => {
-            write_indent(output, depth, config.indent_width(), config.use_tabs());
-            output.push_str("// ");
-            output.push_str(text.trim());
-        }
+        Node::Comment(comment) => write_comment(output, comment, depth, config),
         Node::Text(text) => {
             write_indent(output, depth, config.indent_width(), config.use_tabs());
             output.push('|');
@@ -56,7 +53,7 @@ fn write_statement(
         }
         _ => output.push_str(&element.head.to_source(config)),
     }
-    if element.text_block_kind.is_some() {
+    if element.text_block_kind.is_some() && !matches!(&element.head, StatementHead::Filter(_)) {
         output.push('.');
     }
 
@@ -72,6 +69,30 @@ fn write_statement(
     for child in &element.children {
         output.push('\n');
         write_node(output, child, depth + 1, config);
+    }
+}
+
+fn write_comment(output: &mut String, comment: &CommentNode, depth: usize, config: &Configuration) {
+    write_indent(output, depth, config.indent_width(), config.use_tabs());
+    match comment.kind {
+        CommentKind::Buffered => output.push_str("//"),
+        CommentKind::Unbuffered => output.push_str("//-"),
+    }
+
+    if let Some(value) = &comment.value {
+        output.push(' ');
+        output.push_str(value.trim());
+    }
+
+    for child in &comment.children {
+        output.push('\n');
+        write_raw_text(
+            output,
+            child,
+            depth + 1,
+            config.indent_width(),
+            config.use_tabs(),
+        );
     }
 }
 
@@ -242,6 +263,10 @@ fn write_raw_text(
     indent_width: usize,
     use_tabs: bool,
 ) {
+    if text.content.is_empty() && !text.preserve_base_indent && text.extra_indent == 0 {
+        return;
+    }
+
     write_indent(output, depth, indent_width, use_tabs);
     for _ in 0..text.extra_indent {
         output.push(' ');

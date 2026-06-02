@@ -35,27 +35,27 @@ By role
 Format outcomes by role
 - example / idempotent: 3
 - example / rewritten: 16
-- case / idempotent: 58
-- case / rewritten: 250
-- anti-case / idempotent: 12
-- anti-case / rewritten: 43
+- case / idempotent: 60
+- case / rewritten: 248
+- anti-case / idempotent: 14
+- anti-case / rewritten: 41
 - support / idempotent: 13
 - support / rewritten: 64
 
 Structure coverage by role
-- example / fully-structured: 10
-- example / mixed: 9
+- example / fully-structured: 11
+- example / mixed: 8
 - case / no-statements: 4
-- case / fully-structured: 210
-- case / mixed: 90
+- case / fully-structured: 225
+- case / mixed: 75
 - case / raw-only: 4
-- anti-case / fully-structured: 38
-- anti-case / mixed: 6
+- anti-case / fully-structured: 39
+- anti-case / mixed: 5
 - anti-case / raw-only: 11
 - support / no-statements: 1
-- support / fully-structured: 71
+- support / fully-structured: 72
 - support / mixed: 2
-- support / raw-only: 3
+- support / raw-only: 2
 
 Rewritten anti-cases
 - packages/pug/test/anti-cases/attrs.unescaped.pug [packages/pug/test/anti-cases]
@@ -64,7 +64,6 @@ Rewritten anti-cases
 - packages/pug/test/anti-cases/else-condition.pug [packages/pug/test/anti-cases]
 - packages/pug/test/anti-cases/else-without-if.pug [packages/pug/test/anti-cases]
 - packages/pug/test/anti-cases/inlining-a-mixin-after-a-tag.pug [packages/pug/test/anti-cases]
-- packages/pug/test/anti-cases/mismatched-inline-tag.pug [packages/pug/test/anti-cases]
 - packages/pug/test/anti-cases/mixins-blocks-with-bodies.pug [packages/pug/test/anti-cases]
 - packages/pug/test/anti-cases/multiple-non-nested-tags-on-a-line.pug [packages/pug/test/anti-cases]
 - packages/pug/test/anti-cases/non-existant-filter.pug [packages/pug/test/anti-cases]
@@ -93,7 +92,6 @@ Rewritten anti-cases
 - packages/pug-lexer/test/errors/malformed-each.pug [packages/pug-lexer/test/errors]
 - packages/pug-lexer/test/errors/malformed-extend.pug [packages/pug-lexer/test/errors]
 - packages/pug-lexer/test/errors/malformed-include.pug [packages/pug-lexer/test/errors]
-- packages/pug-lexer/test/errors/mismatched-inline-tag.pug [packages/pug-lexer/test/errors]
 - packages/pug-lexer/test/errors/multi-line-interpolation.pug [packages/pug-lexer/test/errors]
 - packages/pug-lexer/test/errors/open-interpolation.pug [packages/pug-lexer/test/errors]
 - packages/pug-lexer/test/errors/when-with-no-expression.pug [packages/pug-lexer/test/errors]
@@ -117,9 +115,9 @@ Most opaque case fixtures
 - raw 5/18 | mixed | packages/pug/test/cases/tag.interpolation.pug
 - raw 4/26 | mixed | packages/pug-lexer/test/cases/code.iteration.pug
 - raw 4/39 | mixed | packages/pug-lexer/test/cases/each.else.pug
-- raw 4/8 | mixed | packages/pug-lexer/test/cases/filters.less.pug
-- raw 4/6 | mixed | packages/pug-lexer/test/cases/filters.nested.pug
 - raw 4/14 | mixed | packages/pug-lexer/test/cases/mixin.merge.pug
 - raw 4/16 | mixed | packages/pug-lexer/test/cases/styles.pug
-- raw 4/8 | mixed | packages/pug-linker/test/cases-src/auxiliary/filter-in-include.pug
-- raw 4/8 | mixed | packages/pug/test/cases/auxiliary/filter-in-include.pug
+- raw 4/26 | mixed | packages/pug/test/cases/code.iteration.pug
+- raw 4/14 | mixed | packages/pug/test/cases/mixin.merge.pug
+- raw 4/16 | mixed | packages/pug/test/cases/styles.pug
+- raw 3/32 | mixed | packages/pug-lexer/test/cases/attrs.pug

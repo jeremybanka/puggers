@@ -20,8 +20,8 @@ fn upstream_idempotence_inventory_is_explicit_by_role() {
         counts.into_iter().collect::<Vec<_>>(),
         vec![
             (FixtureRole::Example, 3),
-            (FixtureRole::Case, 58),
-            (FixtureRole::AntiCase, 12),
+            (FixtureRole::Case, 60),
+            (FixtureRole::AntiCase, 14),
             (FixtureRole::Support, 13),
         ]
     );

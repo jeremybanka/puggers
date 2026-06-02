@@ -17,6 +17,7 @@
 - Use one file per feature or behavior slice so suites stay easy to scan and easy to run.
 - Prefer names like `tests/<feature>.rs` over `tests/<feature>.test.rs`.
 - `tests/<feature>.test.rs` may be technically possible, but it adds no value here and leads to less clean target names and conventions.
+- When breaking new ground, prefer tests that assert user-visible outcomes first; add implementation-shape assertions only when they pin down intended semantics or catch regressions the user-visible tests would miss.
 - Keep test inputs and assertions narrow. If a behavior needs broad corpus coverage, give that suite a descriptive name and document the fixture source nearby.
 - Follow a red-green workflow for task-defining behavior changes: land focused failing tests that express the intended behavior, commit that red state, then implement the code that turns the tests green in a later commit.
 - Run `cargo test` for normal verification.
