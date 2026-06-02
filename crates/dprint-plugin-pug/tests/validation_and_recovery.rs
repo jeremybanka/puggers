@@ -102,6 +102,16 @@ default
         "case pet\n  default foo\n    p mystery\ndefault\n  p outside\n",
         "invalid default heads should stay modeled and formatted even when warned on",
     );
-    assert_has_diagnostic(&report.diagnostics, DiagnosticSeverity::Warning, 2, "default");
-    assert_has_diagnostic(&report.diagnostics, DiagnosticSeverity::Warning, 4, "default");
+    assert_has_diagnostic(
+        &report.diagnostics,
+        DiagnosticSeverity::Warning,
+        2,
+        "default",
+    );
+    assert_has_diagnostic(
+        &report.diagnostics,
+        DiagnosticSeverity::Warning,
+        4,
+        "default",
+    );
 }

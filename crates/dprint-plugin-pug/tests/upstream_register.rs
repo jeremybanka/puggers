@@ -88,6 +88,7 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
 
     let format_by_role = summarize_format_outcomes(&behaviors);
     let structure_by_role = summarize_structure_coverage(&behaviors);
+    let diagnostics_by_role = summarize_diagnostics_by_role(&behaviors);
 
     assert_eq!(
         format_by_role.into_iter().collect::<Vec<_>>(),
@@ -131,6 +132,15 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
             ((FixtureRole::Support, StructureCoverage::RawOnly), 2),
         ],
         "structure coverage register drifted\n{report}"
+    );
+
+    assert_eq!(
+        diagnostics_by_role.into_iter().collect::<Vec<_>>(),
+        vec![
+            ((FixtureRole::Case, String::from("warnings")), 20),
+            ((FixtureRole::AntiCase, String::from("warnings")), 11),
+        ],
+        "diagnostic inventory drifted\n{report}"
     );
 
     println!("{report}");
@@ -188,6 +198,27 @@ fn summarize_structure_coverage(
     counts
 }
 
+fn summarize_diagnostics_by_role(
+    behaviors: &[FixtureBehavior],
+) -> BTreeMap<(FixtureRole, String), usize> {
+    let mut counts = BTreeMap::new();
+
+    for behavior in behaviors {
+        *counts
+            .entry((behavior.role, String::from("warnings")))
+            .or_insert(0usize) += behavior.diagnostics.warnings;
+        *counts
+            .entry((behavior.role, String::from("errors")))
+            .or_insert(0usize) += behavior.diagnostics.errors;
+        *counts
+            .entry((behavior.role, String::from("fatals")))
+            .or_insert(0usize) += behavior.diagnostics.fatals;
+    }
+
+    counts.retain(|_, count| *count > 0);
+    counts
+}
+
 fn render_behavior_report(fixtures: &[UpstreamFixture], behaviors: &[FixtureBehavior]) -> String {
     let mut output = String::new();
 
@@ -223,6 +254,17 @@ fn render_behavior_report(fixtures: &[UpstreamFixture], behaviors: &[FixtureBeha
     }
     output.push('\n');
 
+    output.push_str("Diagnostics by role\n");
+    let diagnostics_by_role = summarize_diagnostics_by_role(behaviors);
+    if diagnostics_by_role.is_empty() {
+        output.push_str("- none\n");
+    } else {
+        for ((role, severity), count) in diagnostics_by_role {
+            output.push_str(&format!("- {role} / {severity}: {count}\n"));
+        }
+    }
+    output.push('\n');
+
     output.push_str("Rewritten anti-cases\n");
     let rewritten_anti_cases = behaviors
         .iter()
@@ -238,6 +280,42 @@ fn render_behavior_report(fixtures: &[UpstreamFixture], behaviors: &[FixtureBeha
             output.push_str(&format!(
                 "- {} [{}]\n",
                 behavior.relative_path, behavior.bucket
+            ));
+        }
+    }
+    output.push('\n');
+
+    output.push_str("Warned case fixtures\n");
+    let warned_case_fixtures = behaviors
+        .iter()
+        .filter(|behavior| behavior.role == FixtureRole::Case && behavior.diagnostics.warnings > 0)
+        .collect::<Vec<_>>();
+    if warned_case_fixtures.is_empty() {
+        output.push_str("- none\n");
+    } else {
+        for behavior in warned_case_fixtures {
+            output.push_str(&format!(
+                "- {} [{}] warnings={}\n",
+                behavior.relative_path, behavior.bucket, behavior.diagnostics.warnings
+            ));
+        }
+    }
+    output.push('\n');
+
+    output.push_str("Warned anti-cases\n");
+    let warned_anti_cases = behaviors
+        .iter()
+        .filter(|behavior| {
+            behavior.role == FixtureRole::AntiCase && behavior.diagnostics.warnings > 0
+        })
+        .collect::<Vec<_>>();
+    if warned_anti_cases.is_empty() {
+        output.push_str("- none\n");
+    } else {
+        for behavior in warned_anti_cases {
+            output.push_str(&format!(
+                "- {} [{}] warnings={}\n",
+                behavior.relative_path, behavior.bucket, behavior.diagnostics.warnings
             ));
         }
     }

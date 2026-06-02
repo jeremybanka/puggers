@@ -57,6 +57,10 @@ Structure coverage by role
 - support / mixed: 2
 - support / raw-only: 2
 
+Diagnostics by role
+- case / warnings: 20
+- anti-case / warnings: 11
+
 Rewritten anti-cases
 - packages/pug/test/anti-cases/attrs.unescaped.pug [packages/pug/test/anti-cases]
 - packages/pug/test/anti-cases/case-when.pug [packages/pug/test/anti-cases]
@@ -99,6 +103,32 @@ Rewritten anti-cases
 - packages/pug-linker/test/errors-src/child-with-tags.pug [packages/pug-linker/test/errors-src]
 - packages/pug-linker/test/errors-src/extends-not-first.pug [packages/pug-linker/test/errors-src]
 - packages/pug-linker/test/errors-src/unexpected-block.pug [packages/pug-linker/test/errors-src]
+
+Warned case fixtures
+- packages/pug/test/cases/block-code.pug [packages/pug/test/cases] warnings=1
+- packages/pug/test/cases/case.pug [packages/pug/test/cases] warnings=1
+- packages/pug/test/cases/code.conditionals.pug [packages/pug/test/cases] warnings=1
+- packages/pug/test/cases/each.else.pug [packages/pug/test/cases] warnings=5
+- packages/pug/test/cases/inheritance.extend.whitespace.pug [packages/pug/test/cases] warnings=1
+- packages/pug/test/cases/mixin.attrs.pug [packages/pug/test/cases] warnings=1
+- packages/pug-lexer/test/cases/block-code.pug [packages/pug-lexer/test/cases] warnings=1
+- packages/pug-lexer/test/cases/case.pug [packages/pug-lexer/test/cases] warnings=1
+- packages/pug-lexer/test/cases/code.conditionals.pug [packages/pug-lexer/test/cases] warnings=1
+- packages/pug-lexer/test/cases/each.else.pug [packages/pug-lexer/test/cases] warnings=5
+- packages/pug-lexer/test/cases/inheritance.extend.whitespace.pug [packages/pug-lexer/test/cases] warnings=1
+- packages/pug-lexer/test/cases/mixin.attrs.pug [packages/pug-lexer/test/cases] warnings=1
+
+Warned anti-cases
+- packages/pug/test/anti-cases/else-condition.pug [packages/pug/test/anti-cases] warnings=1
+- packages/pug/test/anti-cases/else-without-if.pug [packages/pug/test/anti-cases] warnings=1
+- packages/pug-lexer/test/errors/case-with-no-expression.pug [packages/pug-lexer/test/errors] warnings=1
+- packages/pug-lexer/test/errors/default-with-expression.pug [packages/pug-lexer/test/errors] warnings=2
+- packages/pug-lexer/test/errors/else-with-condition.pug [packages/pug-lexer/test/errors] warnings=1
+- packages/pug-lexer/test/errors/extends-no-path.pug [packages/pug-lexer/test/errors] warnings=1
+- packages/pug-lexer/test/errors/include-no-path.pug [packages/pug-lexer/test/errors] warnings=1
+- packages/pug-lexer/test/errors/inconsistent-indentation.pug [packages/pug-lexer/test/errors] warnings=1
+- packages/pug-lexer/test/errors/when-with-no-expression.pug [packages/pug-lexer/test/errors] warnings=1
+- packages/pug-lexer/test/errors/while-with-no-expression.pug [packages/pug-lexer/test/errors] warnings=1
 
 Most opaque case fixtures
 - raw 16/49 | mixed | packages/pug-lexer/test/cases/mixin.attrs.pug

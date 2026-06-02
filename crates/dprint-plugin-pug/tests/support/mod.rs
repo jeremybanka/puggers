@@ -229,6 +229,13 @@ pub struct DocumentStats {
     pub raw_text_lines: usize,
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct DiagnosticStats {
+    pub warnings: usize,
+    pub errors: usize,
+    pub fatals: usize,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum StructureCoverage {
     NoStatements,
@@ -245,6 +252,7 @@ pub struct FixtureBehavior {
     pub format_outcome: FormatOutcome,
     pub structure_coverage: StructureCoverage,
     pub stats: DocumentStats,
+    pub diagnostics: DiagnosticStats,
 }
 
 pub fn document_stats(document: &ast::Document) -> DocumentStats {
@@ -287,9 +295,9 @@ pub fn upstream_fixture_behaviors() -> Vec<FixtureBehavior> {
 
 pub fn analyze_fixture(fixture: &UpstreamFixture) -> FixtureBehavior {
     let lexed = lexer::lex(&fixture.source);
-    let document = parser::parse(&lexed);
-    let stats = document_stats(&document);
-    let formatted = formatter::format(&document, &config::Configuration::default());
+    let report = parser::parse_with_diagnostics(&lexed);
+    let stats = document_stats(&report.document);
+    let formatted = formatter::format(&report.document, &config::Configuration::default());
 
     FixtureBehavior {
         role: fixture.role,
@@ -302,7 +310,22 @@ pub fn analyze_fixture(fixture: &UpstreamFixture) -> FixtureBehavior {
         },
         structure_coverage: classify_structure_coverage(stats),
         stats,
+        diagnostics: diagnostic_stats(&report.diagnostics),
     }
+}
+
+pub fn diagnostic_stats(diagnostics: &[Diagnostic]) -> DiagnosticStats {
+    let mut stats = DiagnosticStats::default();
+
+    for diagnostic in diagnostics {
+        match diagnostic.severity {
+            DiagnosticSeverity::Warning => stats.warnings += 1,
+            DiagnosticSeverity::Error => stats.errors += 1,
+            DiagnosticSeverity::Fatal => stats.fatals += 1,
+        }
+    }
+
+    stats
 }
 
 pub fn classify_structure_coverage(stats: DocumentStats) -> StructureCoverage {
