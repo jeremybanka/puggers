@@ -69,3 +69,39 @@ case pet
     );
     assert_has_diagnostic(&report.diagnostics, DiagnosticSeverity::Warning, 2, "when");
 }
+
+#[test]
+fn warns_for_orphaned_else_while_preserving_its_structure() {
+    let source = "\
+else
+  .foo
+";
+    let report = format_source_with_diagnostics(source, &Configuration::default());
+
+    assert_same_text(
+        &report.formatted,
+        "else\n  .foo\n",
+        "orphaned else should remain structurally recoverable instead of collapsing to raw text",
+    );
+    assert_has_diagnostic(&report.diagnostics, DiagnosticSeverity::Warning, 1, "else");
+}
+
+#[test]
+fn warns_for_invalid_default_heads_without_destructuring_the_case_block() {
+    let source = "\
+case pet
+  default foo
+    p mystery
+default
+  p outside
+";
+    let report = format_source_with_diagnostics(source, &Configuration::default());
+
+    assert_same_text(
+        &report.formatted,
+        "case pet\n  default foo\n    p mystery\ndefault\n  p outside\n",
+        "invalid default heads should stay modeled and formatted even when warned on",
+    );
+    assert_has_diagnostic(&report.diagnostics, DiagnosticSeverity::Warning, 2, "default");
+    assert_has_diagnostic(&report.diagnostics, DiagnosticSeverity::Warning, 4, "default");
+}

@@ -137,6 +137,7 @@ fn parse_block(
         let (statement_content, has_text_block_suffix) =
             split_text_block_suffix(&statement_content);
         let head = parse_statement_head(statement_content, index + 1, diagnostics);
+        validate_statement_context(&head, &nodes, index + 1, diagnostics);
         let text_block_kind = determine_text_block_kind(&head, has_text_block_suffix);
 
         let mut node = Node::Statement(StatementNode {
@@ -410,6 +411,81 @@ fn validate_control_flow_head(
             ),
         });
     }
+
+    let unexpected_payload = match head.kind {
+        ControlFlowKind::Else | ControlFlowKind::Default => !head.suffix.trim().is_empty(),
+        ControlFlowKind::If
+        | ControlFlowKind::ElseIf
+        | ControlFlowKind::Case
+        | ControlFlowKind::When
+        | ControlFlowKind::Each
+        | ControlFlowKind::While => false,
+    };
+
+    if unexpected_payload {
+        diagnostics.push(Diagnostic {
+            severity: DiagnosticSeverity::Warning,
+            line,
+            message: format!(
+                "Recovered `{}` with unexpected trailing content",
+                control_flow_keyword(head.kind)
+            ),
+        });
+    }
+}
+
+fn validate_statement_context(
+    head: &StatementHead,
+    prior_nodes: &[Node],
+    line: usize,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    let StatementHead::ControlFlow(head) = head else {
+        return;
+    };
+
+    match head.kind {
+        ControlFlowKind::Else => {
+            if !matches!(
+                previous_statement_head(prior_nodes),
+                Some(StatementHead::ControlFlow(ControlFlowHead {
+                    kind: ControlFlowKind::If | ControlFlowKind::ElseIf,
+                    ..
+                }))
+            ) {
+                diagnostics.push(Diagnostic {
+                    severity: DiagnosticSeverity::Warning,
+                    line,
+                    message: String::from("Recovered orphaned `else` without a matching `if`"),
+                });
+            }
+        }
+        ControlFlowKind::Default => {
+            if !matches!(
+                previous_statement_head(prior_nodes),
+                Some(StatementHead::ControlFlow(ControlFlowHead {
+                    kind: ControlFlowKind::When,
+                    ..
+                }))
+            ) {
+                diagnostics.push(Diagnostic {
+                    severity: DiagnosticSeverity::Warning,
+                    line,
+                    message: String::from(
+                        "Recovered orphaned `default` without a preceding `when`",
+                    ),
+                });
+            }
+        }
+        _ => {}
+    }
+}
+
+fn previous_statement_head(nodes: &[Node]) -> Option<&StatementHead> {
+    nodes.iter().rev().find_map(|node| match node {
+        Node::Statement(statement) => Some(&statement.head),
+        Node::Comment(_) | Node::Text(_) | Node::RawText(_) => None,
+    })
 }
 
 fn control_flow_keyword(kind: ControlFlowKind) -> &'static str {
