@@ -18,12 +18,12 @@ issue(id="0001" status="review")
     significant leading or trailing spaces can all change meaning.
   acceptance-criteria
     criterion Decide and document which Pug constructs are eligible for line-width-driven wrapping and which are explicitly excluded.
-    criterion If multiline text wrapping is implemented, limit it to cases that are demonstrably safe and avoid reflowing code-like or example-like raw text blocks.
+    criterion If multiline text wrapping is implemented, apply it only to prose-like dotted blocks whose content is demonstrably plain and low-risk, including custom-tag blocks, and do not reflow raw-tag blocks such as `pre.`, `script.`, `style.`, or `textarea.`.
     criterion Consider long attribute lists as a separate width-aware formatting rule, with examples showing when attributes should stay inline versus split across lines.
     criterion Thread lineWidth through the dprint plugin and standalone converter configuration only after the supported behaviors are defined.
   review-items
-    item(status="covered") The current line-width implementation does not reflow multiline prose blocks, so author-provided hard breaks remain preserved by default.
+    item(status="open") Extend the current line-width implementation beyond attribute wrapping to reflow only plain, low-risk dotted prose blocks while preserving author hard breaks for raw or otherwise whitespace-sensitive text forms.
     item(status="covered") Piped text lines (`|`), interpolation-heavy inline text, literal HTML text, and code-like dotted blocks remain excluded from line-width-driven wrapping because their whitespace is too semantically risky.
     item(status="covered") The first supported line-width behavior is multiline wrapping for long attribute lists, using the structured attribute model from task `0003`.
     item(status="covered") Attribute quote normalization and structural formatting now provide the stable base for width-aware attribute wrapping.
-    item(status="open") Decide whether future prose wrapping should rely on the current raw-tag whitelist from task `0005`, a broader syntax-context rule, or an explicit opt-in.
+    item(status="covered") Future dotted prose wrapping should use a hard raw-tag denylist (`pre`, `script`, `style`, `textarea`) plus syntax and content-shape checks, not a prose-tag allowlist; custom tags remain eligible when their dotted content is plainly prose-like.

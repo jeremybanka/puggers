@@ -38,17 +38,20 @@ fn keeps_short_attribute_lists_inline_even_with_line_width() {
 }
 
 #[test]
-fn does_not_reflow_prose_blocks_when_line_width_is_set() {
-    let source = "p.\n  Using regular tags can help keep your lines short,\n  but interpolated tags may be easier to #[em visualize]\n  whether the tags and text are whitespace-separated.\n";
+fn reflows_safe_prose_blocks_when_line_width_is_set() {
+    let source = "p.\n  This paragraph is made of plain prose lines that should wrap into a narrower block when line width is configured.\n";
     let formatted = format_source(
         source,
         &Configuration {
-            line_width: Some(20),
+            line_width: Some(40),
             ..Configuration::default()
         },
     );
 
-    assert_eq!(formatted, source);
+    assert_eq!(
+        formatted,
+        "p.\n  This paragraph is made of plain\n  prose lines that should wrap into a\n  narrower block when line width is\n  configured.\n"
+    );
 }
 
 #[test]
@@ -59,6 +62,51 @@ fn reparses_wrapped_attribute_layout_idempotently() {
         source,
         &Configuration {
             line_width: Some(40),
+            ..Configuration::default()
+        },
+    );
+
+    assert_eq!(formatted, source);
+}
+
+#[test]
+fn reflows_safe_prose_blocks_for_custom_tags() {
+    let source = "marketing-copy.\n  This paragraph belongs to a custom element but should still wrap based on content shape rather than tag name alone.\n";
+    let formatted = format_source(
+        source,
+        &Configuration {
+            line_width: Some(38),
+            ..Configuration::default()
+        },
+    );
+
+    assert_eq!(
+        formatted,
+        "marketing-copy.\n  This paragraph belongs to a custom\n  element but should still wrap based\n  on content shape rather than tag\n  name alone.\n"
+    );
+}
+
+#[test]
+fn does_not_reflow_raw_tag_dotted_blocks() {
+    let source = "script.\n  const message = \"This should stay on one line even when it is long enough to exceed the configured width.\";\n";
+    let formatted = format_source(
+        source,
+        &Configuration {
+            line_width: Some(32),
+            ..Configuration::default()
+        },
+    );
+
+    assert_eq!(formatted, source);
+}
+
+#[test]
+fn does_not_reflow_interpolated_dotted_prose_blocks() {
+    let source = "custom-copy.\n  This paragraph has #[strong interpolation] and should stay exactly as written even if the line width is small.\n";
+    let formatted = format_source(
+        source,
+        &Configuration {
+            line_width: Some(32),
             ..Configuration::default()
         },
     );
