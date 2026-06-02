@@ -29,7 +29,7 @@ fn write_node(output: &mut String, node: &Node, depth: usize, config: &Configura
         Node::Text(text) => {
             write_indent(output, depth, config.indent_width(), config.use_tabs());
             output.push('|');
-            output.push_str(text);
+            output.push_str(&text.content);
         }
         Node::RawText(text) => write_raw_text(
             output,
@@ -49,7 +49,7 @@ fn write_statement(
 ) {
     write_indent(output, depth, config.indent_width(), config.use_tabs());
     output.push_str(&element.head.to_source(config));
-    if element.is_text_block {
+    if element.text_block_kind.is_some() {
         output.push('.');
     }
 

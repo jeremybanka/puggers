@@ -1,6 +1,6 @@
 use crate::ast::{
-    Attribute, AttributeValue, DoctypeHead, Document, Node, QuoteStyle, RawTextNode, StatementHead,
-    StatementNode, TagHead,
+    Attribute, AttributeValue, DoctypeHead, Document, InlineText, InlineTextKind, Node, QuoteStyle,
+    RawTextNode, StatementHead, StatementNode, TagHead, TextBlockKind, TextLineKind, TextLineNode,
 };
 use crate::lexer::LexedLine;
 
@@ -64,24 +64,28 @@ fn parse_block(
         }
 
         if let Some(text) = content.strip_prefix('|') {
-            nodes.push(Node::Text(text.to_string()));
+            nodes.push(Node::Text(TextLineNode {
+                kind: TextLineKind::Piped,
+                content: text.to_string(),
+            }));
             index += 1;
             continue;
         }
 
-        let trimmed = content.trim();
-        let (statement_content, is_text_block) = split_text_block_suffix(trimmed);
+        let (statement_content, text_block_kind) = split_text_block_suffix(content);
+        let head = parse_statement_head(statement_content);
+        let text_block_kind = text_block_kind.then(|| classify_text_block_kind(&head));
 
         let mut node = Node::Statement(StatementNode {
-            head: parse_statement_head(statement_content),
-            is_text_block,
+            head,
+            text_block_kind,
             children: Vec::new(),
         });
         let next_index = index + 1;
 
         if next_index < lines.len() && lines[next_index].indent > current_indent {
             if let Node::Statement(statement) = &mut node {
-                let next_mode = if statement.is_text_block {
+                let next_mode = if statement.text_block_kind.is_some() {
                     ParseMode::RawText
                 } else {
                     ParseMode::Normal
@@ -104,11 +108,27 @@ fn parse_block(
 }
 
 fn split_text_block_suffix(content: &str) -> (&str, bool) {
-    if content.ends_with('.') && !matches!(content, "." | "..") {
-        (&content[..content.len() - 1], true)
-    } else {
-        (content, false)
+    let trimmed_end = content.trim_end_matches(char::is_whitespace);
+
+    if trimmed_end == "." {
+        return ("", true);
     }
+
+    if matches!(trimmed_end, "" | "..") {
+        return (content, false);
+    }
+
+    if let Some(without_dot) = trimmed_end.strip_suffix('.')
+        && (without_dot.is_empty()
+            || !without_dot
+                .chars()
+                .last()
+                .is_some_and(|ch| ch.is_whitespace()))
+    {
+        return (without_dot, true);
+    }
+
+    (content, false)
 }
 
 fn parse_statement_head(content: &str) -> StatementHead {
@@ -213,12 +233,13 @@ fn parse_tag_head(content: &str) -> Option<TagHead> {
         let spacing = &remainder[..spacing_len];
         let text = &remainder[spacing_len..];
 
-        if text.is_empty() {
-            return None;
+        if !text.is_empty() {
+            inline_space = Some(spacing.to_string());
+            inline_text = Some(InlineText {
+                kind: classify_inline_text(text),
+                content: text.to_string(),
+            });
         }
-
-        inline_space = Some(spacing.to_string());
-        inline_text = Some(text.to_string());
     }
 
     Some(TagHead {
@@ -229,6 +250,36 @@ fn parse_tag_head(content: &str) -> Option<TagHead> {
         inline_space,
         inline_text,
     })
+}
+
+fn classify_text_block_kind(head: &StatementHead) -> TextBlockKind {
+    match head {
+        StatementHead::Tag(head)
+            if head
+                .tag_name
+                .as_deref()
+                .is_some_and(is_code_like_raw_text_tag) =>
+        {
+            TextBlockKind::Raw
+        }
+        _ => TextBlockKind::Prose,
+    }
+}
+
+fn is_code_like_raw_text_tag(tag: &str) -> bool {
+    matches!(tag, "pre" | "script" | "style" | "textarea")
+}
+
+fn classify_inline_text(text: &str) -> InlineTextKind {
+    if text.trim_start().starts_with('<') {
+        return InlineTextKind::LiteralHtml;
+    }
+
+    if text.contains("#[") || text.contains("#{") || text.contains("!{") {
+        return InlineTextKind::Interpolated;
+    }
+
+    InlineTextKind::Plain
 }
 
 fn parse_attributes(content: &str) -> Option<Vec<Attribute>> {

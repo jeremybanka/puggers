@@ -9,15 +9,32 @@ pub struct Document {
 pub enum Node {
     Statement(StatementNode),
     Comment(String),
-    Text(String),
+    Text(TextLineNode),
     RawText(RawTextNode),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StatementNode {
     pub head: StatementHead,
-    pub is_text_block: bool,
+    pub text_block_kind: Option<TextBlockKind>,
     pub children: Vec<Node>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TextBlockKind {
+    Prose,
+    Raw,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TextLineNode {
+    pub kind: TextLineKind,
+    pub content: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TextLineKind {
+    Piped,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -101,7 +118,20 @@ pub struct TagHead {
     pub shorthand_classes: Vec<String>,
     pub attributes: Option<Vec<Attribute>>,
     pub inline_space: Option<String>,
-    pub inline_text: Option<String>,
+    pub inline_text: Option<InlineText>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct InlineText {
+    pub kind: InlineTextKind,
+    pub content: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InlineTextKind {
+    Plain,
+    Interpolated,
+    LiteralHtml,
 }
 
 impl TagHead {
@@ -135,7 +165,7 @@ impl TagHead {
 
         if let (Some(inline_space), Some(inline_text)) = (&self.inline_space, &self.inline_text) {
             output.push_str(inline_space);
-            output.push_str(inline_text);
+            output.push_str(&inline_text.content);
         }
 
         output

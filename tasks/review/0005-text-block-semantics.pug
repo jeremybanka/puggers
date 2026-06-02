@@ -1,4 +1,4 @@
-issue(id="0005" status="open")
+issue(id="0005" status="review")
   title Distinguish prose blocks, raw blocks, and whitespace-sensitive text forms
   user-story
     as-a maintainer of the puggers formatter
@@ -18,7 +18,7 @@ issue(id="0005" status="open")
     criterion Add tests that cover whitespace-control examples, interpolation-heavy prose, and raw blocks such as `script.` and `textarea.`.
     criterion Document which text forms may eventually participate in width-aware formatting and which are excluded by design.
   review-items
-    item(status="open") Decide whether dotted prose blocks should be identified by tag whitelist, by syntax context, or by explicit opt-in only.
-    item(status="open") Confirm whether literal HTML inside text contexts deserves its own treatment instead of falling under generic raw text handling.
-    item(status="open") Keep the docs corpus examples central because they already expose whitespace-sensitive edge cases.
-
+    item(status="covered") Plain prose blocks and plain inline text remain the main candidates for future width-aware formatting, while piped text, interpolation-heavy inline text, literal HTML text, and code-like raw blocks stay excluded by default for now.
+    item(status="open") Decide whether the current raw-text tag whitelist (`pre`, `script`, `style`, `textarea`) should remain the long-term boundary for dotted prose blocks or evolve into a broader syntax-context rule.
+    item(status="open") Confirm whether literal HTML inside text contexts deserves a deeper treatment than the current conservative category split.
+    item(status="covered") The new text-semantics suite keeps docs-style whitespace examples central alongside the generated docs idempotence pass.
