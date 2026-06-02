@@ -1,8 +1,8 @@
 use crate::ast::{
-    Attribute, AttributeValue, BlockHead, BlockMode, CodeHead, CodeKind, CommentKind,
-    CommentNode, ControlFlowHead, ControlFlowKind, DoctypeHead, Document, ExtendsHead, FilterHead,
-    IncludeHead, InlineText, InlineTextKind, MixinCallHead, MixinHead, Node, QuoteStyle,
-    RawTextNode, StatementHead, StatementNode, TagHead, TextBlockKind, TextLineKind, TextLineNode,
+    Attribute, AttributeValue, BlockHead, BlockMode, CodeHead, CodeKind, CommentKind, CommentNode,
+    ControlFlowHead, ControlFlowKind, DoctypeHead, Document, ExtendsHead, FilterHead, IncludeHead,
+    InlineText, InlineTextKind, MixinCallHead, MixinHead, Node, QuoteStyle, RawTextNode,
+    StatementHead, StatementNode, TagHead, TextBlockKind, TextLineKind, TextLineNode,
 };
 use crate::lexer::LexedLine;
 
@@ -91,7 +91,8 @@ fn parse_block(
         }
 
         let (statement_content, next_index) = collect_statement_lines(lines, index, current_indent);
-        let (statement_content, has_text_block_suffix) = split_text_block_suffix(&statement_content);
+        let (statement_content, has_text_block_suffix) =
+            split_text_block_suffix(&statement_content);
         let head = parse_statement_head(statement_content);
         let text_block_kind = determine_text_block_kind(&head, has_text_block_suffix);
 
