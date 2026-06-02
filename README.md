@@ -11,6 +11,19 @@ Rust.
 mise install
 ```
 
+## Formatting
+
+Build the local `dprint` plugin, then run `dprint` against the repo config:
+
+```sh
+just build-wasm
+dprint fmt
+```
+
+The repo's `dprint.json` points at
+`target/wasm32-unknown-unknown/release/dprint_plugin_pug.wasm` and excludes the
+checked-in upstream fixture corpus from bulk formatting.
+
 ## Crates
 
 - `crates/dprint-plugin-pug`: the existing tiny `dprint` formatter plugin
