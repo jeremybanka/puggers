@@ -6,9 +6,38 @@ use crate::ast::{
 };
 use crate::lexer::LexedLine;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DiagnosticSeverity {
+    Warning,
+    Error,
+    Fatal,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Diagnostic {
+    pub severity: DiagnosticSeverity,
+    pub line: usize,
+    pub message: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ParseReport {
+    pub document: Document,
+    pub diagnostics: Vec<Diagnostic>,
+}
+
 pub fn parse(lines: &[LexedLine]) -> Document {
-    let (children, _) = parse_block(lines, 0, 0, ParseMode::Normal);
-    Document { children }
+    parse_with_diagnostics(lines).document
+}
+
+pub fn parse_with_diagnostics(lines: &[LexedLine]) -> ParseReport {
+    let mut diagnostics = Vec::new();
+    let (children, _) = parse_block(lines, 0, 0, ParseMode::Normal, &mut diagnostics);
+
+    ParseReport {
+        document: Document { children },
+        diagnostics,
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -22,6 +51,7 @@ fn parse_block(
     mut index: usize,
     current_indent: usize,
     mode: ParseMode,
+    diagnostics: &mut Vec<Diagnostic>,
 ) -> (Vec<Node>, usize) {
     let mut nodes = Vec::new();
 
@@ -54,20 +84,33 @@ fn parse_block(
             continue;
         }
 
-        if line.indent > current_indent {
-            index += 1;
-            continue;
+        let recovered_indent = line.indent > current_indent;
+        if recovered_indent {
+            diagnostics.push(Diagnostic {
+                severity: DiagnosticSeverity::Warning,
+                line: index + 1,
+                message: format!(
+                    "Recovered inconsistent indentation: expected {} spaces in this block, found {}",
+                    current_indent, line.indent
+                ),
+            });
         }
 
         let content = line.content.trim_start();
+        let nesting_parent_indent = if recovered_indent {
+            line.indent
+        } else {
+            current_indent
+        };
 
         if let Some((kind, value)) = parse_comment_head(content) {
             let mut children = Vec::new();
             let mut next_index = index + 1;
 
-            if next_index < lines.len() && lines[next_index].indent > current_indent {
+            if next_index < lines.len() && lines[next_index].indent > nesting_parent_indent {
+                let child_indent = determine_child_indent(lines, next_index, nesting_parent_indent);
                 let (parsed_children, consumed_index) =
-                    parse_raw_text_block(lines, next_index, lines[next_index].indent);
+                    parse_raw_text_block(lines, next_index, child_indent, diagnostics);
                 children = parsed_children;
                 next_index = consumed_index;
             }
@@ -93,7 +136,7 @@ fn parse_block(
         let (statement_content, next_index) = collect_statement_lines(lines, index, current_indent);
         let (statement_content, has_text_block_suffix) =
             split_text_block_suffix(&statement_content);
-        let head = parse_statement_head(statement_content);
+        let head = parse_statement_head(statement_content, index + 1, diagnostics);
         let text_block_kind = determine_text_block_kind(&head, has_text_block_suffix);
 
         let mut node = Node::Statement(StatementNode {
@@ -102,15 +145,16 @@ fn parse_block(
             children: Vec::new(),
         });
 
-        if next_index < lines.len() && lines[next_index].indent > current_indent {
+        if next_index < lines.len() && lines[next_index].indent > nesting_parent_indent {
             if let Node::Statement(statement) = &mut node {
                 let next_mode = if statement.text_block_kind.is_some() {
                     ParseMode::RawText
                 } else {
                     ParseMode::Normal
                 };
+                let child_indent = determine_child_indent(lines, next_index, nesting_parent_indent);
                 let (children, consumed_index) =
-                    parse_block(lines, next_index, lines[next_index].indent, next_mode);
+                    parse_block(lines, next_index, child_indent, next_mode, diagnostics);
                 statement.children = children;
                 index = consumed_index;
             } else {
@@ -124,6 +168,30 @@ fn parse_block(
     }
 
     (nodes, index)
+}
+
+fn determine_child_indent(lines: &[LexedLine], start_index: usize, parent_indent: usize) -> usize {
+    let mut minimum_indent: Option<usize> = None;
+    let mut index = start_index;
+
+    while index < lines.len() {
+        let line = &lines[index];
+
+        if !line.is_blank && line.indent <= parent_indent {
+            break;
+        }
+
+        if !line.is_blank && line.indent > parent_indent {
+            minimum_indent = Some(match minimum_indent {
+                Some(current_minimum) => current_minimum.min(line.indent),
+                None => line.indent,
+            });
+        }
+
+        index += 1;
+    }
+
+    minimum_indent.unwrap_or(lines[start_index].indent)
 }
 
 fn collect_statement_lines(
@@ -235,7 +303,11 @@ fn split_text_block_suffix(content: &str) -> (&str, bool) {
     (content, false)
 }
 
-fn parse_statement_head(content: &str) -> StatementHead {
+fn parse_statement_head(
+    content: &str,
+    line: usize,
+    diagnostics: &mut Vec<Diagnostic>,
+) -> StatementHead {
     if let Some(head) = parse_doctype_head(content) {
         return StatementHead::Doctype(head);
     }
@@ -245,6 +317,7 @@ fn parse_statement_head(content: &str) -> StatementHead {
     }
 
     if let Some(head) = parse_control_flow_head(content) {
+        validate_control_flow_head(&head, line, diagnostics);
         return StatementHead::ControlFlow(head);
     }
 
@@ -253,14 +326,17 @@ fn parse_statement_head(content: &str) -> StatementHead {
     }
 
     if let Some(head) = parse_include_head(content) {
+        validate_include_head(&head, line, diagnostics);
         return StatementHead::Include(head);
     }
 
     if let Some(head) = parse_extends_head(content) {
+        validate_extends_head(&head, line, diagnostics);
         return StatementHead::Extends(head);
     }
 
     if let Some(head) = parse_block_head(content) {
+        validate_block_head(&head, line, diagnostics);
         return StatementHead::Block(head);
     }
 
@@ -277,6 +353,76 @@ fn parse_statement_head(content: &str) -> StatementHead {
     }
 
     StatementHead::Raw(content.to_string())
+}
+
+fn validate_include_head(head: &IncludeHead, line: usize, diagnostics: &mut Vec<Diagnostic>) {
+    if head.suffix.trim().is_empty() {
+        diagnostics.push(Diagnostic {
+            severity: DiagnosticSeverity::Warning,
+            line,
+            message: String::from("Recovered `include` without a path"),
+        });
+    }
+}
+
+fn validate_extends_head(head: &ExtendsHead, line: usize, diagnostics: &mut Vec<Diagnostic>) {
+    if head.suffix.trim().is_empty() {
+        diagnostics.push(Diagnostic {
+            severity: DiagnosticSeverity::Warning,
+            line,
+            message: String::from("Recovered `extends` without a path"),
+        });
+    }
+}
+
+fn validate_block_head(head: &BlockHead, line: usize, diagnostics: &mut Vec<Diagnostic>) {
+    if head.mode.is_some() && head.target.is_none() {
+        diagnostics.push(Diagnostic {
+            severity: DiagnosticSeverity::Warning,
+            line,
+            message: String::from("Recovered `block append`/`block prepend` without a target"),
+        });
+    }
+}
+
+fn validate_control_flow_head(
+    head: &ControlFlowHead,
+    line: usize,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    let missing_payload = match head.kind {
+        ControlFlowKind::If
+        | ControlFlowKind::ElseIf
+        | ControlFlowKind::Case
+        | ControlFlowKind::When
+        | ControlFlowKind::Each
+        | ControlFlowKind::While => head.suffix.trim().is_empty(),
+        ControlFlowKind::Else | ControlFlowKind::Default => false,
+    };
+
+    if missing_payload {
+        diagnostics.push(Diagnostic {
+            severity: DiagnosticSeverity::Warning,
+            line,
+            message: format!(
+                "Recovered `{}` without the required expression",
+                control_flow_keyword(head.kind)
+            ),
+        });
+    }
+}
+
+fn control_flow_keyword(kind: ControlFlowKind) -> &'static str {
+    match kind {
+        ControlFlowKind::If => "if",
+        ControlFlowKind::ElseIf => "else if",
+        ControlFlowKind::Else => "else",
+        ControlFlowKind::Case => "case",
+        ControlFlowKind::When => "when",
+        ControlFlowKind::Default => "default",
+        ControlFlowKind::Each => "each",
+        ControlFlowKind::While => "while",
+    }
 }
 
 fn determine_text_block_kind(
@@ -448,8 +594,15 @@ fn parse_raw_text_block(
     lines: &[LexedLine],
     index: usize,
     current_indent: usize,
+    diagnostics: &mut Vec<Diagnostic>,
 ) -> (Vec<RawTextNode>, usize) {
-    let (children, consumed_index) = parse_block(lines, index, current_indent, ParseMode::RawText);
+    let (children, consumed_index) = parse_block(
+        lines,
+        index,
+        current_indent,
+        ParseMode::RawText,
+        diagnostics,
+    );
     let raw_text = children
         .into_iter()
         .map(|node| match node {

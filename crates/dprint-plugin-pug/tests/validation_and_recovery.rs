@@ -1,0 +1,71 @@
+mod support;
+
+pub use support::{ast, config, formatter, lexer, parser};
+
+use config::Configuration;
+use support::{
+    DiagnosticSeverity, assert_has_diagnostic, assert_same_text, format_source_with_diagnostics,
+};
+
+#[test]
+fn recovers_inconsistent_indentation_without_dropping_following_siblings() {
+    let source = "\
+html
+  body
+      p Hey
+    p Is this in <body> or in <p>?
+";
+    let report = format_source_with_diagnostics(source, &Configuration::default());
+
+    assert_same_text(
+        &report.formatted,
+        "html\n  body\n    p Hey\n    p Is this in <body> or in <p>?\n",
+        "recovered output should preserve both body children after inconsistent indentation",
+    );
+    assert_has_diagnostic(
+        &report.diagnostics,
+        DiagnosticSeverity::Warning,
+        3,
+        "indent",
+    );
+}
+
+#[test]
+fn warns_when_include_is_missing_a_path_but_preserves_surrounding_formatting() {
+    let source = "\
+include
+p After
+";
+    let report = format_source_with_diagnostics(source, &Configuration::default());
+
+    assert_same_text(
+        &report.formatted,
+        "include\np After\n",
+        "missing include payload should stay quarantined without blocking surrounding formatting",
+    );
+    assert_has_diagnostic(
+        &report.diagnostics,
+        DiagnosticSeverity::Warning,
+        1,
+        "include",
+    );
+}
+
+#[test]
+fn warns_for_bare_when_while_still_formatting_the_rest_of_the_case_block() {
+    let source = "\
+case pet
+  when
+    p mystery
+  when 'dog'
+    p bark
+";
+    let report = format_source_with_diagnostics(source, &Configuration::default());
+
+    assert_same_text(
+        &report.formatted,
+        "case pet\n  when\n    p mystery\n  when 'dog'\n    p bark\n",
+        "recoverable control-flow damage should not prevent surrounding valid branches from formatting",
+    );
+    assert_has_diagnostic(&report.diagnostics, DiagnosticSeverity::Warning, 2, "when");
+}

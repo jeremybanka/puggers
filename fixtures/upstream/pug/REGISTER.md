@@ -35,16 +35,16 @@ By role
 Format outcomes by role
 - example / idempotent: 3
 - example / rewritten: 16
-- case / idempotent: 60
-- case / rewritten: 248
+- case / idempotent: 66
+- case / rewritten: 242
 - anti-case / idempotent: 14
 - anti-case / rewritten: 41
 - support / idempotent: 13
 - support / rewritten: 64
 
 Structure coverage by role
-- example / fully-structured: 11
-- example / mixed: 8
+- example / fully-structured: 10
+- example / mixed: 9
 - case / no-statements: 4
 - case / fully-structured: 225
 - case / mixed: 75
@@ -101,8 +101,8 @@ Rewritten anti-cases
 - packages/pug-linker/test/errors-src/unexpected-block.pug [packages/pug-linker/test/errors-src]
 
 Most opaque case fixtures
-- raw 14/47 | mixed | packages/pug-lexer/test/cases/mixin.attrs.pug
-- raw 14/47 | mixed | packages/pug/test/cases/mixin.attrs.pug
+- raw 16/49 | mixed | packages/pug-lexer/test/cases/mixin.attrs.pug
+- raw 16/49 | mixed | packages/pug/test/cases/mixin.attrs.pug
 - raw 9/16 | mixed | packages/pug-lexer/test/cases/tags.self-closing.pug
 - raw 9/16 | mixed | packages/pug/test/cases/tags.self-closing.pug
 - raw 8/10 | mixed | packages/pug-lexer/test/cases/html.pug

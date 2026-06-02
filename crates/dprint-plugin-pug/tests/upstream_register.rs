@@ -94,8 +94,8 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
         vec![
             ((FixtureRole::Example, FormatOutcome::Idempotent), 3),
             ((FixtureRole::Example, FormatOutcome::Rewritten), 16),
-            ((FixtureRole::Case, FormatOutcome::Idempotent), 60),
-            ((FixtureRole::Case, FormatOutcome::Rewritten), 248),
+            ((FixtureRole::Case, FormatOutcome::Idempotent), 66),
+            ((FixtureRole::Case, FormatOutcome::Rewritten), 242),
             ((FixtureRole::AntiCase, FormatOutcome::Idempotent), 14),
             ((FixtureRole::AntiCase, FormatOutcome::Rewritten), 41),
             ((FixtureRole::Support, FormatOutcome::Idempotent), 13),
@@ -109,9 +109,9 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
         vec![
             (
                 (FixtureRole::Example, StructureCoverage::FullyStructured),
-                11
+                10
             ),
-            ((FixtureRole::Example, StructureCoverage::Mixed), 8),
+            ((FixtureRole::Example, StructureCoverage::Mixed), 9),
             ((FixtureRole::Case, StructureCoverage::NoStatements), 4),
             ((FixtureRole::Case, StructureCoverage::FullyStructured), 225),
             ((FixtureRole::Case, StructureCoverage::Mixed), 75),

@@ -22,6 +22,29 @@ pub fn format_source(source: &str, config: &config::Configuration) -> String {
     formatter::format(&document, config)
 }
 
+pub type Diagnostic = parser::Diagnostic;
+pub type DiagnosticSeverity = parser::DiagnosticSeverity;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FormatReport {
+    pub formatted: String,
+    pub diagnostics: Vec<parser::Diagnostic>,
+}
+
+pub fn format_source_with_diagnostics(
+    source: &str,
+    config: &config::Configuration,
+) -> FormatReport {
+    let lexed = lexer::lex(source);
+    let report = parser::parse_with_diagnostics(&lexed);
+    let formatted = formatter::format(&report.document, config);
+
+    FormatReport {
+        formatted,
+        diagnostics: report.diagnostics,
+    }
+}
+
 pub fn docs_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../docs/pug/2026-05-31")
 }
@@ -311,5 +334,25 @@ pub fn assert_same_text(actual: &str, expected: &str, context: &str) {
     panic!(
         "{context}\nfirst mismatch at char {mismatch}\nactual:   {:?}\nexpected: {:?}",
         actual_snippet, expected_snippet
+    );
+}
+
+pub fn assert_has_diagnostic(
+    diagnostics: &[Diagnostic],
+    severity: DiagnosticSeverity,
+    line: usize,
+    message_fragment: &str,
+) {
+    if diagnostics.iter().any(|diagnostic| {
+        diagnostic.severity == severity
+            && diagnostic.line == line
+            && diagnostic.message.contains(message_fragment)
+    }) {
+        return;
+    }
+
+    panic!(
+        "expected a {severity:?} diagnostic on line {line} containing {:?}, found {:?}",
+        message_fragment, diagnostics
     );
 }
