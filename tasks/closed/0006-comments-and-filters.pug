@@ -1,4 +1,4 @@
-issue(id="0006" status="open")
+issue(id="0006" status="closed")
   title Add distinct handling for Pug comments and filter blocks
   user-story
     as-a maintainer of the puggers formatter
@@ -17,7 +17,6 @@ issue(id="0006" status="open")
     criterion Preserve filter payloads losslessly even if embedded-language formatting is out of scope initially.
     criterion Add tests covering comments at different nesting levels and representative filter blocks from real-world Pug usage.
   review-items
-    item(status="open") Decide whether any filters should eventually delegate to host formatters or remain opaque payloads permanently.
-    item(status="open") Confirm whether comment normalization should preserve authored spacing more strictly than it does today.
-    item(status="open") Avoid letting the generic dotted-block heuristic remain the long-term implementation for filter syntax.
-
+    item(status="covered") Filters remain opaque payloads by default; any future host-formatter delegation should come later as an explicit opt-in capability rather than baseline behavior.
+    item(status="covered") Comment heads now normalize to a readable `// ` or `//- ` form while still preserving the buffered versus unbuffered distinction; stricter authored-spacing preservation is intentionally deferred unless a later task finds user-visible breakage.
+    item(status="covered") Filters now use explicit parser and formatter handling instead of relying on the generic dotted-block heuristic, with dedicated outcome-first coverage for nested and blank-line-sensitive payloads.
