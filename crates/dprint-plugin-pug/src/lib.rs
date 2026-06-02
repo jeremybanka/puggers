@@ -39,6 +39,8 @@ impl SyncPluginHandler<Configuration> for PugPluginHandler {
     ) -> PluginResolveConfigurationResult<Configuration> {
         let mut resolved = Configuration {
             indent_width: global_config.indent_width.map(|value| value as usize),
+            line_width: global_config.line_width.map(|value| value as usize),
+            quote_style: None,
             use_tabs: global_config.use_tabs,
         };
 
@@ -47,6 +49,18 @@ impl SyncPluginHandler<Configuration> for PugPluginHandler {
             .and_then(|value| value.as_number())
         {
             resolved.indent_width = Some(value as usize);
+        }
+
+        if let Some(value) = config.get("lineWidth").and_then(|value| value.as_number()) {
+            resolved.line_width = Some(value as usize);
+        }
+
+        if let Some(value) = config.get("quoteStyle").and_then(|value| value.as_string()) {
+            resolved.quote_style = match value.as_str() {
+                "double" => Some(crate::ast::QuoteStyle::Double),
+                "single" => Some(crate::ast::QuoteStyle::Single),
+                _ => None,
+            };
         }
 
         if let Some(value) = config.get("useTabs").and_then(|value| value.as_bool()) {

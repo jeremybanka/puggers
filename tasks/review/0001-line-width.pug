@@ -1,4 +1,4 @@
-issue(id="0001" status="open")
+issue(id="0001" status="review")
   title Explore lineWidth support for Pug formatting
   user-story
     as-a maintainer of the puggers formatter
@@ -18,11 +18,12 @@ issue(id="0001" status="open")
     significant leading or trailing spaces can all change meaning.
   acceptance-criteria
     criterion Decide and document which Pug constructs are eligible for line-width-driven wrapping and which are explicitly excluded.
-    criterion If multiline text wrapping is implemented, limit it to cases that are demonstrably safe and avoid reflowing code-like or example-like raw text blocks.
+    criterion If multiline text wrapping is implemented, apply it only to prose-like dotted blocks whose content is demonstrably plain and low-risk, including custom-tag blocks, and do not reflow raw-tag blocks such as `pre.`, `script.`, `style.`, or `textarea.`.
     criterion Consider long attribute lists as a separate width-aware formatting rule, with examples showing when attributes should stay inline versus split across lines.
     criterion Thread lineWidth through the dprint plugin and standalone converter configuration only after the supported behaviors are defined.
   review-items
-    item(status="open") Confirm whether multiline prose should preserve author-provided hard breaks by default instead of eagerly reflowing them.
-    item(status="open") Identify a reliable heuristic, whitelist, or explicit mode switch for prose-like dotted blocks versus code-like dotted blocks.
-    item(status="open") Decide whether piped text lines (`|`) should be excluded entirely because leading and trailing spaces are often significant.
-    item(status="open") Evaluate attribute wrapping as the other main place where lineWidth is likely to be useful without changing semantics.
+    item(status="covered") The current line-width implementation now reflows plain, low-risk dotted prose blocks, including custom tags, while preserving author hard breaks for raw or otherwise whitespace-sensitive text forms.
+    item(status="covered") Piped text lines (`|`), interpolation-heavy inline text, literal HTML text, and code-like dotted blocks remain excluded from line-width-driven wrapping because their whitespace is too semantically risky.
+    item(status="covered") The first supported line-width behavior is multiline wrapping for long attribute lists, using the structured attribute model from task `0003`.
+    item(status="covered") Attribute quote normalization and structural formatting now provide the stable base for width-aware attribute wrapping.
+    item(status="covered") Future dotted prose wrapping should use a hard raw-tag denylist (`pre`, `script`, `style`, `textarea`) plus syntax and content-shape checks, not a prose-tag allowlist; custom tags remain eligible when their dotted content is plainly prose-like.

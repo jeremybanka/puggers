@@ -1,4 +1,4 @@
-issue(id="0002" status="review")
+issue(id="0002" status="closed")
   title Add structured parsing for Pug statement heads
   user-story
     as-a maintainer of the puggers formatter
@@ -19,6 +19,6 @@ issue(id="0002" status="review")
     criterion Preserve an explicit raw or unknown branch for syntax that is not yet modeled so the formatter can remain lossless while coverage grows.
     criterion Add focused tests covering plain tags, shorthand-only divs, doctype-like statements, and representative edge cases from the docs corpus.
   review-items
-    item(status="open") Decide where operator-prefixed statements such as `-`, `=`, and `!=` fit in the statement AST versus later control-flow parsing.
-    item(status="open") Confirm how much whitespace around inline text should be normalized once statement heads are no longer opaque strings.
-    item(status="open") Keep a clear separation between syntactic structure and later formatting policy so future width-related changes stay localized.
+    item(status="covered") Operator-prefixed statements such as `-`, `=`, and `!=` remain intentionally deferred to task `0004`, while `0002` closes with a lossless raw fallback for unsupported heads.
+    item(status="covered") Inline-text spacing remains preserved as-authored for now; normalization policy is intentionally left to later formatting tasks instead of being decided inside the parsing task.
+    item(status="covered") Parsing and formatting remain separated by the current AST and formatter split so later width and whitespace policy changes can stay localized.
