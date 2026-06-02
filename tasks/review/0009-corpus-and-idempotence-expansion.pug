@@ -1,4 +1,4 @@
-issue(id="0009" status="open")
+issue(id="0009" status="review")
   title Expand the corpus and idempotence coverage for real Pug syntax
   user-story
     as-a maintainer of puggers
@@ -17,6 +17,6 @@ issue(id="0009" status="open")
     criterion Add fixtures for whitespace-sensitive text cases, code forms, comments, filters, includes, inheritance, and mixins.
     criterion Document how new corpus files should be organized so future task work can add targeted fixtures without confusion.
   review-items
-    item(status="open") Decide whether converted HTML docs should remain one corpus tier while hand-authored Pug fixtures become another.
-    item(status="open") Confirm whether we want snapshot-style assertions, inline expected strings, or both for different kinds of tests.
-    item(status="open") Make sure corpus growth stays comprehensible rather than turning into a pile of unlabeled edge-case files.
+    item(status="covered") The corpus now distinguishes vendored upstream fixtures from hand-authored tiers, with repo-level guidance in `fixtures/README.md` and pinned upstream metadata under `fixtures/upstream/pug`.
+    item(status="covered") The upstream register uses both checked-in snapshot-style reporting (`fixtures/upstream/pug/REGISTER.md`) and direct code assertions in focused idempotence, normalization, and failure-mode suites.
+    item(status="covered") Corpus growth remains comprehensible because upstream material stays mirrored in place while future project-owned fixtures have reserved `hand-authored/idempotence`, `hand-authored/normalization`, and `hand-authored/failure` tiers.

@@ -5,31 +5,7 @@ pub use support::{ast, config, formatter, lexer, parser};
 use std::collections::BTreeMap;
 
 use config::Configuration;
-use support::{DocumentStats, FixtureRole, UpstreamFixture};
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-enum FormatOutcome {
-    Idempotent,
-    Rewritten,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-enum StructureCoverage {
-    NoStatements,
-    FullyStructured,
-    Mixed,
-    RawOnly,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct FixtureBehavior {
-    role: FixtureRole,
-    bucket: String,
-    relative_path: String,
-    format_outcome: FormatOutcome,
-    structure_coverage: StructureCoverage,
-    stats: DocumentStats,
-}
+use support::{FixtureBehavior, FixtureRole, FormatOutcome, StructureCoverage, UpstreamFixture};
 
 #[test]
 fn registers_all_vendored_upstream_pug_fixtures_by_bucket() {
@@ -84,7 +60,7 @@ fn formats_every_vendored_upstream_pug_fixture_without_panicking() {
 #[test]
 fn reports_current_upstream_case_and_anti_case_coverage() {
     let fixtures = support::upstream_pug_sources();
-    let behaviors = fixtures.iter().map(analyze_fixture).collect::<Vec<_>>();
+    let behaviors = fixtures.iter().map(support::analyze_fixture).collect::<Vec<_>>();
 
     let report = render_behavior_report(&fixtures, &behaviors);
 
@@ -144,44 +120,12 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
 #[test]
 fn checked_in_upstream_register_report_is_current() {
     let fixtures = support::upstream_pug_sources();
-    let behaviors = fixtures.iter().map(analyze_fixture).collect::<Vec<_>>();
+    let behaviors = fixtures.iter().map(support::analyze_fixture).collect::<Vec<_>>();
     let report = render_behavior_report(&fixtures, &behaviors);
     let expected = std::fs::read_to_string(support::vendored_upstream_register_path())
         .expect("checked-in upstream register should exist");
 
     assert_eq!(report, expected, "checked-in upstream register drifted");
-}
-
-fn analyze_fixture(fixture: &UpstreamFixture) -> FixtureBehavior {
-    let lexed = lexer::lex(&fixture.source);
-    let document = parser::parse(&lexed);
-    let stats = support::document_stats(&document);
-    let formatted = formatter::format(&document, &Configuration::default());
-
-    FixtureBehavior {
-        role: fixture.role,
-        bucket: fixture.bucket.clone(),
-        relative_path: fixture.relative_path.clone(),
-        format_outcome: if formatted == fixture.source {
-            FormatOutcome::Idempotent
-        } else {
-            FormatOutcome::Rewritten
-        },
-        structure_coverage: classify_structure_coverage(stats),
-        stats,
-    }
-}
-
-fn classify_structure_coverage(stats: DocumentStats) -> StructureCoverage {
-    if stats.statements == 0 {
-        StructureCoverage::NoStatements
-    } else if stats.raw_statements == 0 {
-        StructureCoverage::FullyStructured
-    } else if stats.structured_statements == 0 {
-        StructureCoverage::RawOnly
-    } else {
-        StructureCoverage::Mixed
-    }
 }
 
 fn summarize_by_role(behaviors: &[FixtureBehavior]) -> Vec<(FixtureRole, usize)> {

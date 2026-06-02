@@ -189,6 +189,12 @@ fn upstream_role(relative_path: &str) -> FixtureRole {
     FixtureRole::Support
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum FormatOutcome {
+    Idempotent,
+    Rewritten,
+}
+
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct DocumentStats {
     pub statements: usize,
@@ -197,6 +203,24 @@ pub struct DocumentStats {
     pub comments: usize,
     pub text_lines: usize,
     pub raw_text_lines: usize,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum StructureCoverage {
+    NoStatements,
+    FullyStructured,
+    Mixed,
+    RawOnly,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FixtureBehavior {
+    pub role: FixtureRole,
+    pub bucket: String,
+    pub relative_path: String,
+    pub format_outcome: FormatOutcome,
+    pub structure_coverage: StructureCoverage,
+    pub stats: DocumentStats,
 }
 
 pub fn document_stats(document: &ast::Document) -> DocumentStats {
@@ -231,6 +255,42 @@ pub fn bucket_counts(fixtures: &[UpstreamFixture]) -> Vec<(String, usize)> {
     }
 
     counts.into_iter().collect()
+}
+
+pub fn upstream_fixture_behaviors() -> Vec<FixtureBehavior> {
+    upstream_pug_sources().iter().map(analyze_fixture).collect()
+}
+
+pub fn analyze_fixture(fixture: &UpstreamFixture) -> FixtureBehavior {
+    let lexed = lexer::lex(&fixture.source);
+    let document = parser::parse(&lexed);
+    let stats = document_stats(&document);
+    let formatted = formatter::format(&document, &config::Configuration::default());
+
+    FixtureBehavior {
+        role: fixture.role,
+        bucket: fixture.bucket.clone(),
+        relative_path: fixture.relative_path.clone(),
+        format_outcome: if formatted == fixture.source {
+            FormatOutcome::Idempotent
+        } else {
+            FormatOutcome::Rewritten
+        },
+        structure_coverage: classify_structure_coverage(stats),
+        stats,
+    }
+}
+
+pub fn classify_structure_coverage(stats: DocumentStats) -> StructureCoverage {
+    if stats.statements == 0 {
+        StructureCoverage::NoStatements
+    } else if stats.raw_statements == 0 {
+        StructureCoverage::FullyStructured
+    } else if stats.structured_statements == 0 {
+        StructureCoverage::RawOnly
+    } else {
+        StructureCoverage::Mixed
+    }
 }
 
 pub fn assert_same_text(actual: &str, expected: &str, context: &str) {
