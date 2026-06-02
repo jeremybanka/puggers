@@ -18,5 +18,6 @@
 - Prefer names like `tests/<feature>.rs` over `tests/<feature>.test.rs`.
 - `tests/<feature>.test.rs` may be technically possible, but it adds no value here and leads to less clean target names and conventions.
 - Keep test inputs and assertions narrow. If a behavior needs broad corpus coverage, give that suite a descriptive name and document the fixture source nearby.
+- Follow a red-green workflow for task-defining behavior changes: land focused failing tests that express the intended behavior, commit that red state, then implement the code that turns the tests green in a later commit.
 - Run `cargo test` for normal verification.
 - Before landing broader Rust changes, also run `cargo fmt --all`, `cargo check --workspace`, `cargo clippy --workspace --all-targets -- -D warnings`, and `cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release` when the affected area justifies it.

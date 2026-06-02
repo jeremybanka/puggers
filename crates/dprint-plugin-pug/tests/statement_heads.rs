@@ -2,7 +2,7 @@ mod support;
 
 pub use support::{ast, config, formatter, lexer, parser};
 
-use ast::{Node, StatementHead};
+use ast::{Attribute, AttributeValue, InlineTextKind, Node, QuoteStyle, StatementHead};
 
 #[test]
 fn parses_statement_heads_into_structured_ast() {
@@ -30,7 +30,13 @@ fn parses_statement_heads_into_structured_ast() {
                     if head.tag_name.is_none()
                         && head.shorthand_id.as_deref() == Some("app")
                         && head.shorthand_classes == vec![String::from("shell")]
-                        && head.attributes.as_deref() == Some("data-mode=\"demo\"")
+                        && head.attributes == Some(vec![Attribute {
+                            name: String::from("data-mode"),
+                            value: Some(AttributeValue::Quoted {
+                                value: String::from("demo"),
+                                quote_style: QuoteStyle::Double,
+                            }),
+                        }])
             )
     ));
 
@@ -42,7 +48,10 @@ fn parses_statement_heads_into_structured_ast() {
                 StatementHead::Tag(head)
                     if head.tag_name.as_deref() == Some("p")
                         && head.inline_space.as_deref() == Some("   ")
-                        && head.inline_text.as_deref() == Some("hello world")
+                        && head.inline_text.as_ref().is_some_and(|text|
+                            text.kind == InlineTextKind::Plain
+                                && text.content == "hello world"
+                        )
             )
     ));
 }

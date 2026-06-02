@@ -24,6 +24,8 @@ fn formats_with_tabs_when_requested() {
         &Configuration {
             use_tabs: Some(true),
             indent_width: Some(2),
+            line_width: None,
+            quote_style: None,
         },
     );
 
