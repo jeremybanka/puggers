@@ -86,7 +86,8 @@ pub fn upstream_pug_sources() -> Vec<UpstreamFixture> {
     collect_pug_paths(&root, &mut paths);
     paths.sort();
 
-    paths.into_iter()
+    paths
+        .into_iter()
         .map(|path| {
             let relative_path = path
                 .strip_prefix(&root)

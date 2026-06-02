@@ -11,7 +11,11 @@ use support::{FixtureBehavior, FixtureRole, FormatOutcome, StructureCoverage, Up
 fn registers_all_vendored_upstream_pug_fixtures_by_bucket() {
     let fixtures = support::upstream_pug_sources();
 
-    assert_eq!(fixtures.len(), 459, "expected to register every vendored .pug fixture");
+    assert_eq!(
+        fixtures.len(),
+        459,
+        "expected to register every vendored .pug fixture"
+    );
 
     let expected = vec![
         (String::from("packages/pug-filters/test/cases"), 1),
@@ -20,7 +24,10 @@ fn registers_all_vendored_upstream_pug_fixtures_by_bucket() {
         (String::from("packages/pug-linker/test/cases-src"), 40),
         (String::from("packages/pug-linker/test/errors-src"), 3),
         (String::from("packages/pug-linker/test/fixtures"), 17),
-        (String::from("packages/pug-linker/test/special-cases-src"), 3),
+        (
+            String::from("packages/pug-linker/test/special-cases-src"),
+            3,
+        ),
         (String::from("packages/pug/examples"), 19),
         (String::from("packages/pug/test/anti-cases"), 22),
         (String::from("packages/pug/test/browser"), 1),
@@ -60,7 +67,10 @@ fn formats_every_vendored_upstream_pug_fixture_without_panicking() {
 #[test]
 fn reports_current_upstream_case_and_anti_case_coverage() {
     let fixtures = support::upstream_pug_sources();
-    let behaviors = fixtures.iter().map(support::analyze_fixture).collect::<Vec<_>>();
+    let behaviors = fixtures
+        .iter()
+        .map(support::analyze_fixture)
+        .collect::<Vec<_>>();
 
     let report = render_behavior_report(&fixtures, &behaviors);
 
@@ -97,17 +107,26 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
     assert_eq!(
         structure_by_role.into_iter().collect::<Vec<_>>(),
         vec![
-            ((FixtureRole::Example, StructureCoverage::FullyStructured), 8),
+            (
+                (FixtureRole::Example, StructureCoverage::FullyStructured),
+                8
+            ),
             ((FixtureRole::Example, StructureCoverage::Mixed), 11),
             ((FixtureRole::Case, StructureCoverage::NoStatements), 4),
             ((FixtureRole::Case, StructureCoverage::FullyStructured), 174),
             ((FixtureRole::Case, StructureCoverage::Mixed), 126),
             ((FixtureRole::Case, StructureCoverage::RawOnly), 4),
-            ((FixtureRole::AntiCase, StructureCoverage::FullyStructured), 34),
+            (
+                (FixtureRole::AntiCase, StructureCoverage::FullyStructured),
+                34
+            ),
             ((FixtureRole::AntiCase, StructureCoverage::Mixed), 9),
             ((FixtureRole::AntiCase, StructureCoverage::RawOnly), 12),
             ((FixtureRole::Support, StructureCoverage::NoStatements), 1),
-            ((FixtureRole::Support, StructureCoverage::FullyStructured), 61),
+            (
+                (FixtureRole::Support, StructureCoverage::FullyStructured),
+                61
+            ),
             ((FixtureRole::Support, StructureCoverage::Mixed), 7),
             ((FixtureRole::Support, StructureCoverage::RawOnly), 8),
         ],
@@ -120,7 +139,10 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
 #[test]
 fn checked_in_upstream_register_report_is_current() {
     let fixtures = support::upstream_pug_sources();
-    let behaviors = fixtures.iter().map(support::analyze_fixture).collect::<Vec<_>>();
+    let behaviors = fixtures
+        .iter()
+        .map(support::analyze_fixture)
+        .collect::<Vec<_>>();
     let report = render_behavior_report(&fixtures, &behaviors);
     let expected = std::fs::read_to_string(support::vendored_upstream_register_path())
         .expect("checked-in upstream register should exist");

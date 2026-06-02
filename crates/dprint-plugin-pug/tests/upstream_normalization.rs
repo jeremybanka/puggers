@@ -32,14 +32,12 @@ fn upstream_normalization_is_not_limited_to_a_single_corpus_tier() {
     let behaviors = support::upstream_fixture_behaviors();
 
     assert!(behaviors.iter().any(|behavior| {
-        behavior.role == FixtureRole::Example
-            && behavior.format_outcome == FormatOutcome::Rewritten
+        behavior.role == FixtureRole::Example && behavior.format_outcome == FormatOutcome::Rewritten
     }));
     assert!(behaviors.iter().any(|behavior| {
         behavior.role == FixtureRole::Case && behavior.format_outcome == FormatOutcome::Rewritten
     }));
     assert!(behaviors.iter().any(|behavior| {
-        behavior.role == FixtureRole::Support
-            && behavior.format_outcome == FormatOutcome::Rewritten
+        behavior.role == FixtureRole::Support && behavior.format_outcome == FormatOutcome::Rewritten
     }));
 }

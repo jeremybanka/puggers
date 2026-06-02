@@ -17,7 +17,9 @@ fn upstream_failure_mode_inventory_is_explicit() {
 
     let mut bucket_counts = BTreeMap::new();
     for behavior in &anti_cases {
-        *bucket_counts.entry(behavior.bucket.clone()).or_insert(0usize) += 1;
+        *bucket_counts
+            .entry(behavior.bucket.clone())
+            .or_insert(0usize) += 1;
     }
 
     assert_eq!(
