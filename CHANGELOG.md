@@ -2,6 +2,27 @@
 
 All notable user-facing changes to `puggers` will be documented here.
 
+## 0.1.2 (2026-06-02)
+
+### Fixes
+
+#### Model more Pug syntax explicitly
+
+The `dprint-plugin-pug` parser now distinguishes operator-prefixed code,
+control-flow heads, `include`, `extends`, `block`, mixin declarations, and
+mixin calls instead of treating those forms as generic tags or opaque raw
+statements. This preserves existing permissive formatting behavior while making
+real-world Pug files safer to analyze, test, and extend with future validation
+and formatting rules.
+
+#### Preserve distinct comments and explicit filter blocks in the Pug formatter
+
+The `dprint-plugin-pug` formatter now keeps `//` and `//-` comments distinct,
+preserves pipeless comment payloads, and treats filter blocks such as
+`:markdown-it`, `:css`, and `:javascript` as explicit raw-payload constructs
+instead of generic dotted blocks. This makes comment and filter formatting more
+predictable while preserving blank-line-sensitive payload content losslessly.
+
 ## 0.1.1 (2026-06-02)
 
 ### Fixes
