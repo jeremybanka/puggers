@@ -1,5 +1,5 @@
 ---
-puggers: patch
+default: patch
 ---
 
 ### Normalize Pug attribute formatting

@@ -41,7 +41,23 @@ jobs:
       - uses: knope-dev/action@v2.1.2
         with:
           version: 0.23.0
-      - run: knope prepare-release --verbose
-        continue-on-error: true
+      - name: Run knope prepare-release
+        run: |
+          set +e
+          knope prepare-release --verbose 2>&1 | tee /tmp/knope-prepare-release.log
+          status=${PIPESTATUS[0]}
+          set -e
+
+          if [[ ${status} -eq 0 ]]; then
+            exit 0
+          fi
+
+          if grep -Eq "releases::no_release|No packages are ready to release" /tmp/knope-prepare-release.log; then
+            echo "::notice::No packages are ready to release."
+            exit 0
+          fi
+
+          echo "::error::knope prepare-release failed."
+          exit "${status}"
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

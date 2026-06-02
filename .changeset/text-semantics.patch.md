@@ -1,5 +1,5 @@
 ---
-puggers: patch
+default: patch
 ---
 
 ### Classify Pug text forms more conservatively
