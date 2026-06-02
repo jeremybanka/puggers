@@ -1,4 +1,6 @@
-use crate::ast::{Document, Node, RawTextNode, StatementHead, StatementNode, TagHead};
+use crate::ast::{
+    Document, Node, RawTextNode, StatementHead, StatementNode, TagHead, TextBlockKind,
+};
 use crate::config::Configuration;
 
 pub fn format(document: &Document, config: &Configuration) -> String {
@@ -58,10 +60,43 @@ fn write_statement(
         output.push('.');
     }
 
+    if let Some(lines) = reflowed_text_block_lines(element, depth, config) {
+        for line in lines {
+            output.push('\n');
+            write_indent(output, depth + 1, config.indent_width(), config.use_tabs());
+            output.push_str(&line);
+        }
+        return;
+    }
+
     for child in &element.children {
         output.push('\n');
         write_node(output, child, depth + 1, config);
     }
+}
+
+fn reflowed_text_block_lines(
+    element: &StatementNode,
+    depth: usize,
+    config: &Configuration,
+) -> Option<Vec<String>> {
+    if element.text_block_kind != Some(TextBlockKind::Prose) {
+        return None;
+    }
+
+    let line_width = config.line_width()?;
+    let available_width = line_width.checked_sub(display_width(depth + 1, config))?;
+    if available_width == 0 {
+        return None;
+    }
+
+    let segments = plain_prose_segments(&element.children)?;
+    let normalized_line = segments.join(" ");
+    if normalized_line.len() <= available_width {
+        return None;
+    }
+
+    Some(wrap_words(&segments, available_width))
 }
 
 fn should_wrap_attributes(head: &TagHead, depth: usize, config: &Configuration) -> bool {
@@ -134,6 +169,70 @@ fn display_width(depth: usize, config: &Configuration) -> usize {
     } else {
         depth * config.indent_width()
     }
+}
+
+fn plain_prose_segments(children: &[Node]) -> Option<Vec<String>> {
+    if children.is_empty() {
+        return None;
+    }
+
+    let mut segments = Vec::with_capacity(children.len());
+
+    for child in children {
+        let Node::RawText(text) = child else {
+            return None;
+        };
+
+        if text.extra_indent != 0 || text.content.is_empty() {
+            return None;
+        }
+
+        if text.content.trim() != text.content {
+            return None;
+        }
+
+        if text.content.contains("  ") || text.content.contains("#[") || text.content.contains('<')
+        {
+            return None;
+        }
+
+        segments.push(text.content.clone());
+    }
+
+    Some(segments)
+}
+
+fn wrap_words(segments: &[String], available_width: usize) -> Vec<String> {
+    let mut lines = Vec::new();
+    let mut current = String::new();
+
+    for word in segments
+        .iter()
+        .flat_map(|segment| segment.split_whitespace())
+    {
+        let next_len = if current.is_empty() {
+            word.len()
+        } else {
+            current.len() + 1 + word.len()
+        };
+
+        if !current.is_empty() && next_len > available_width {
+            lines.push(current);
+            current = word.to_string();
+            continue;
+        }
+
+        if !current.is_empty() {
+            current.push(' ');
+        }
+        current.push_str(word);
+    }
+
+    if !current.is_empty() {
+        lines.push(current);
+    }
+
+    lines
 }
 
 fn write_raw_text(

@@ -50,7 +50,7 @@ fn reflows_safe_prose_blocks_when_line_width_is_set() {
 
     assert_eq!(
         formatted,
-        "p.\n  This paragraph is made of plain\n  prose lines that should wrap into a\n  narrower block when line width is\n  configured.\n"
+        "p.\n  This paragraph is made of plain prose\n  lines that should wrap into a narrower\n  block when line width is configured.\n"
     );
 }
 
