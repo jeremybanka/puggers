@@ -10,14 +10,18 @@ issue(id="0008" status="open")
     syntax can silently pass through without clear boundaries. As the syntax
     model grows, the tool should become more intentional about what it accepts,
     what it preserves opaquely, and what it reports as an error. This will also
-    matter for a future CLI or npm-facing developer experience.
+    matter for a future CLI or npm-facing developer experience. Task `0009`
+    now gives us a broad upstream case and anti-case register, so the next step
+    here is not discovering malformed inputs but deciding which of those
+    currently preserved or rewritten anti-cases should instead become explicit
+    validation failures, and how that should surface to users.
   acceptance-criteria
     criterion Define the categories of syntax handling: fully supported, preserved but not normalized, and unsupported or invalid.
     criterion Add useful error messages for malformed indentation and clearly broken syntax once the relevant constructs are structured.
     criterion Preserve lossless fallback behavior where practical, but make that behavior explicit rather than accidental.
     criterion Add tests that cover both successful preservation and intentional failures.
   review-items
+    item(status="covered") Task `0009` now provides a pinned upstream anti-case baseline and checked-in behavior register, so `0008` can focus on turning current preserve-or-rewrite behavior into intentional validation categories and user-facing errors.
     item(status="open") Decide whether validation should be strict by default or whether permissive preservation remains the default mode.
     item(status="open") Confirm how error messages should surface source location information for both the dprint plugin and the standalone tooling.
     item(status="open") Avoid making unsupported syntax look successfully normalized when it was actually passed through untouched.
-

@@ -1,0 +1,22 @@
+issue(id="0009" status="review")
+  title Expand the corpus and idempotence coverage for real Pug syntax
+  user-story
+    as-a maintainer of puggers
+    i-want a broader regression corpus
+    so-that refactors toward a richer syntax model can move quickly without breaking real files silently
+  premise.
+    The current generated docs corpus has been extremely useful, but it only
+    covers a slice of the language and is skewed toward the HTML-converted
+    examples we already materialized. As the formatter starts to parse more
+    semantics, we will need a broader set of fixture sources that include real
+    Pug syntax forms, intentionally tricky whitespace cases, and examples that
+    should remain opaque. A stronger corpus will make all the other tasks safer.
+  acceptance-criteria
+    criterion Add curated fixture coverage for major Pug constructs that are not well represented in the current docs-derived corpus.
+    criterion Include explicit idempotence tests, normalization tests, and failure-mode tests rather than relying on one corpus style alone.
+    criterion Add fixtures for whitespace-sensitive text cases, code forms, comments, filters, includes, inheritance, and mixins.
+    criterion Document how new corpus files should be organized so future task work can add targeted fixtures without confusion.
+  review-items
+    item(status="covered") The corpus now distinguishes vendored upstream fixtures from hand-authored tiers, with repo-level guidance in `fixtures/README.md` and pinned upstream metadata under `fixtures/upstream/pug`.
+    item(status="covered") The upstream register uses both checked-in snapshot-style reporting (`fixtures/upstream/pug/REGISTER.md`) and direct code assertions in focused idempotence, normalization, and failure-mode suites.
+    item(status="covered") Corpus growth remains comprehensible because upstream material stays mirrored in place while future project-owned fixtures have reserved `hand-authored/idempotence`, `hand-authored/normalization`, and `hand-authored/failure` tiers.

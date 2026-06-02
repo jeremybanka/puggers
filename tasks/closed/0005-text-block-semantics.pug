@@ -1,0 +1,24 @@
+issue(id="0005" status="closed")
+  title Distinguish prose blocks, raw blocks, and whitespace-sensitive text forms
+  user-story
+    as-a maintainer of the puggers formatter
+    i-want text-bearing Pug constructs modeled more precisely
+    so-that formatting can improve readability without breaking rendered output
+  premise.
+    Text handling is the most semantically dangerous area in Pug because
+    whitespace can be meaningful in multiple ways. Today the formatter uses a
+    broad dotted-block heuristic and preserves piped text lines largely as-is,
+    while the HTML converter has a short whitelist of raw-text HTML tags. Before
+    introducing line width or broader text normalization, the tool needs a
+    clearer distinction between prose-like blocks, code-like raw blocks, piped
+    text, and literal HTML or interpolation-heavy content.
+  acceptance-criteria
+    criterion Define explicit categories for dotted blocks, piped text, inline text, and code-like raw blocks.
+    criterion Preserve blank lines, leading spaces, and trailing spaces where they are semantically significant.
+    criterion Add tests that cover whitespace-control examples, interpolation-heavy prose, and raw blocks such as `script.` and `textarea.`.
+    criterion Document which text forms may eventually participate in width-aware formatting and which are excluded by design.
+  review-items
+    item(status="covered") Plain prose blocks and plain inline text remain the main candidates for future width-aware formatting, while piped text, interpolation-heavy inline text, literal HTML text, and code-like raw blocks stay excluded by default for now.
+    item(status="covered") The current raw-text tag whitelist (`pre`, `script`, `style`, `textarea`) remains the explicit long-term boundary for now; broader syntax-context rules should wait for concrete counterexamples.
+    item(status="covered") NO-OP: literal HTML inside text contexts remains a conservative non-reflowable category and does not get deeper treatment until a later task demonstrates clear value.
+    item(status="covered") The new text-semantics suite keeps docs-style whitespace examples central alongside the generated docs idempotence pass.
