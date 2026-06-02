@@ -1,0 +1,62 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "branchConcurrentLimit": 1,
+  "prHourlyLimit": 10,
+  "minimumReleaseAge": "1 day",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github\\/actions\\/setup\\/action\\.yml$/"],
+      "matchStrings": [
+        "uses: jdx\\/mise-action@\\S+(?:\\s+#.*)?\\s+      with:\\s+        version: (?<currentValue>\\S+)"
+      ],
+      "depNameTemplate": "jdx/mise",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver-coerced"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^mise\\.toml$/"],
+      "matchStrings": ["just = \"(?<currentValue>[^\"]+)\""],
+      "depNameTemplate": "casey/just",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver-coerced"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^mise\\.toml$/"],
+      "matchStrings": ["\"cargo:knope\" = \"(?<currentValue>[^\"]+)\""],
+      "depNameTemplate": "knope",
+      "datasourceTemplate": "crate",
+      "versioningTemplate": "cargo"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github\\/workflows\\/(prepare-release|release)\\.yml$/"],
+      "matchStrings": [
+        "uses: knope-dev\\/action@\\S+(?:\\s+#.*)?\\s+        with:\\s+          version: (?<currentValue>\\S+)"
+      ],
+      "depNameTemplate": "knope",
+      "datasourceTemplate": "crate",
+      "versioningTemplate": "cargo"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["jdx/mise"],
+      "matchDatasources": ["github-releases"],
+      "ignoreUnstable": true,
+      "dependencyDashboardApproval": true
+    },
+    {
+      "matchDepNames": ["knope"],
+      "matchDatasources": ["crate"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "dependencyDashboardApproval": true
+    }
+  ]
+}
