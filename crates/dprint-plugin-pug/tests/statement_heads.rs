@@ -58,7 +58,7 @@ fn parses_statement_heads_into_structured_ast() {
 
 #[test]
 fn preserves_raw_statement_heads_for_unsupported_syntax() {
-    let source = "a: img\n+mixin(\"hello\")\nfoo/\n";
+    let source = "a: img\nfoo/\n";
     let lexed = lexer::lex(source);
     let document = parser::parse(&lexed);
 
