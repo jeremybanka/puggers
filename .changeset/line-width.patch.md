@@ -1,5 +1,5 @@
 ---
-puggers: patch
+default: patch
 ---
 
 ### Add conservative `lineWidth` support for Pug formatting
