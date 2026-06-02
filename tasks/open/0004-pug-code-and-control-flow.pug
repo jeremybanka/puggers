@@ -18,7 +18,8 @@ issue(id="0004" status="open")
     criterion Decide how includes, extends, blocks, and mixin declarations or calls fit into the same model or into adjacent statement categories.
     criterion Add tests that cover representative examples from the docs corpus without regressing lossless behavior on unsupported subforms.
   review-items
-    item(status="open") Decide whether template inheritance and include syntax should land in the same task or be split once the AST shape becomes clearer.
-    item(status="open") Confirm when the formatter should diagnose malformed code structure versus preserving it as opaque syntax.
-    item(status="open") Keep expression parsing scope realistic; we likely want to preserve JavaScript expressions as opaque payloads at first.
-
+    item(status="covered") Keep `0004` focused on syntax modeling: plain `include`, `extends`, `block`, `mixin`, and mixin-call heads should land here, while file-resolution, inheritance-linking, and cross-file validation semantics stay out of scope for now.
+    item(status="covered") Model `block` forms explicitly enough to separate the block target from the optional mode (`append` and `prepend`), but keep the target name itself as an opaque payload rather than trying to parse deeper block semantics in this task.
+    item(status="covered") Treat mixin declarations and mixin calls as the same implementation slice rather than splitting them, because the shared argument and attribute syntax is one of the main remaining sources of raw fallback in the upstream corpus.
+    item(status="covered") Keep `0004` permissive: once a head shape is recognized, structure it, but preserve malformed or still-unsupported subforms as raw or lossless fallback instead of introducing new formatter errors before task `0008`.
+    item(status="covered") Keep JavaScript and argument payload parsing intentionally shallow for now; conditions, loop expressions, include paths or filters, block targets, mixin parameters, and mixin arguments should all remain opaque strings inside explicit head variants.
