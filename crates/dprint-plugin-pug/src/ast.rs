@@ -8,9 +8,22 @@ pub struct Document {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Node {
     Statement(StatementNode),
-    Comment(String),
+    Comment(CommentNode),
     Text(TextLineNode),
     RawText(RawTextNode),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CommentNode {
+    pub kind: CommentKind,
+    pub value: Option<String>,
+    pub children: Vec<RawTextNode>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CommentKind {
+    Buffered,
+    Unbuffered,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -43,6 +56,7 @@ pub enum StatementHead {
     Doctype(DoctypeHead),
     Code(CodeHead),
     ControlFlow(ControlFlowHead),
+    Filter(FilterHead),
     Include(IncludeHead),
     Extends(ExtendsHead),
     Block(BlockHead),
@@ -58,6 +72,7 @@ impl StatementHead {
             StatementHead::Doctype(head) => head.to_source(),
             StatementHead::Code(head) => head.to_source(),
             StatementHead::ControlFlow(head) => head.to_source(),
+            StatementHead::Filter(head) => head.to_source(),
             StatementHead::Include(head) => head.to_source(),
             StatementHead::Extends(head) => head.to_source(),
             StatementHead::Block(head) => head.to_source(),
@@ -65,6 +80,17 @@ impl StatementHead {
             StatementHead::MixinCall(head) => head.to_source(),
             StatementHead::Raw(content) => content.clone(),
         }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FilterHead {
+    pub name: String,
+}
+
+impl FilterHead {
+    pub fn to_source(&self) -> String {
+        format!(":{}", self.name)
     }
 }
 
@@ -367,6 +393,7 @@ impl DoctypeHead {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RawTextNode {
+    pub preserve_base_indent: bool,
     pub extra_indent: usize,
     pub content: String,
 }

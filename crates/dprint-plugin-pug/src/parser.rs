@@ -1,8 +1,8 @@
 use crate::ast::{
-    Attribute, AttributeValue, BlockHead, BlockMode, CodeHead, CodeKind, ControlFlowHead,
-    ControlFlowKind, DoctypeHead, Document, ExtendsHead, IncludeHead, InlineText, InlineTextKind,
-    MixinCallHead, MixinHead, Node, QuoteStyle, RawTextNode, StatementHead, StatementNode, TagHead,
-    TextBlockKind, TextLineKind, TextLineNode,
+    Attribute, AttributeValue, BlockHead, BlockMode, CodeHead, CodeKind, CommentKind,
+    CommentNode, ControlFlowHead, ControlFlowKind, DoctypeHead, Document, ExtendsHead, FilterHead,
+    IncludeHead, InlineText, InlineTextKind, MixinCallHead, MixinHead, Node, QuoteStyle,
+    RawTextNode, StatementHead, StatementNode, TagHead, TextBlockKind, TextLineKind, TextLineNode,
 };
 use crate::lexer::LexedLine;
 
@@ -31,6 +31,7 @@ fn parse_block(
         if line.is_blank {
             if mode == ParseMode::RawText {
                 nodes.push(Node::RawText(RawTextNode {
+                    preserve_base_indent: line.indent >= current_indent,
                     extra_indent: line.indent.saturating_sub(current_indent),
                     content: String::new(),
                 }));
@@ -45,6 +46,7 @@ fn parse_block(
 
         if mode == ParseMode::RawText {
             nodes.push(Node::RawText(RawTextNode {
+                preserve_base_indent: true,
                 extra_indent: line.indent.saturating_sub(current_indent),
                 content: line.content.clone(),
             }));
@@ -59,9 +61,23 @@ fn parse_block(
 
         let content = line.content.trim_start();
 
-        if let Some(comment) = content.strip_prefix("//") {
-            nodes.push(Node::Comment(comment.trim().to_string()));
-            index += 1;
+        if let Some((kind, value)) = parse_comment_head(content) {
+            let mut children = Vec::new();
+            let mut next_index = index + 1;
+
+            if next_index < lines.len() && lines[next_index].indent > current_indent {
+                let (parsed_children, consumed_index) =
+                    parse_raw_text_block(lines, next_index, lines[next_index].indent);
+                children = parsed_children;
+                next_index = consumed_index;
+            }
+
+            nodes.push(Node::Comment(CommentNode {
+                kind,
+                value,
+                children,
+            }));
+            index = next_index;
             continue;
         }
 
@@ -75,9 +91,9 @@ fn parse_block(
         }
 
         let (statement_content, next_index) = collect_statement_lines(lines, index, current_indent);
-        let (statement_content, text_block_kind) = split_text_block_suffix(&statement_content);
+        let (statement_content, has_text_block_suffix) = split_text_block_suffix(&statement_content);
         let head = parse_statement_head(statement_content);
-        let text_block_kind = text_block_kind.then(|| classify_text_block_kind(&head));
+        let text_block_kind = determine_text_block_kind(&head, has_text_block_suffix);
 
         let mut node = Node::Statement(StatementNode {
             head,
@@ -231,6 +247,10 @@ fn parse_statement_head(content: &str) -> StatementHead {
         return StatementHead::ControlFlow(head);
     }
 
+    if let Some(head) = parse_filter_head(content) {
+        return StatementHead::Filter(head);
+    }
+
     if let Some(head) = parse_include_head(content) {
         return StatementHead::Include(head);
     }
@@ -256,6 +276,37 @@ fn parse_statement_head(content: &str) -> StatementHead {
     }
 
     StatementHead::Raw(content.to_string())
+}
+
+fn determine_text_block_kind(
+    head: &StatementHead,
+    has_text_block_suffix: bool,
+) -> Option<TextBlockKind> {
+    if matches!(head, StatementHead::Filter(_)) {
+        return Some(TextBlockKind::Raw);
+    }
+
+    has_text_block_suffix.then(|| classify_text_block_kind(head))
+}
+
+fn parse_comment_head(content: &str) -> Option<(CommentKind, Option<String>)> {
+    if let Some(comment) = content.strip_prefix("//-") {
+        return Some((CommentKind::Unbuffered, parse_optional_payload(comment)));
+    }
+
+    let comment = content.strip_prefix("//")?;
+    Some((CommentKind::Buffered, parse_optional_payload(comment)))
+}
+
+fn parse_filter_head(content: &str) -> Option<FilterHead> {
+    let name = content.strip_prefix(':')?;
+    if name.is_empty() || name.chars().any(char::is_whitespace) {
+        return None;
+    }
+
+    Some(FilterHead {
+        name: name.to_string(),
+    })
 }
 
 fn parse_code_head(content: &str) -> Option<CodeHead> {
@@ -392,6 +443,23 @@ fn parse_optional_payload(content: &str) -> Option<String> {
     (!trimmed.is_empty()).then(|| trimmed.to_string())
 }
 
+fn parse_raw_text_block(
+    lines: &[LexedLine],
+    index: usize,
+    current_indent: usize,
+) -> (Vec<RawTextNode>, usize) {
+    let (children, consumed_index) = parse_block(lines, index, current_indent, ParseMode::RawText);
+    let raw_text = children
+        .into_iter()
+        .map(|node| match node {
+            Node::RawText(text) => text,
+            _ => unreachable!("raw text parse mode should only produce raw text nodes"),
+        })
+        .collect();
+
+    (raw_text, consumed_index)
+}
+
 fn starts_control_flow_suffix(suffix: &str) -> bool {
     suffix.is_empty()
         || suffix
@@ -515,6 +583,7 @@ fn parse_tag_head(content: &str) -> Option<TagHead> {
 
 fn classify_text_block_kind(head: &StatementHead) -> TextBlockKind {
     match head {
+        StatementHead::Filter(_) => TextBlockKind::Raw,
         StatementHead::Tag(head)
             if head
                 .tag_name

@@ -94,10 +94,10 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
         vec![
             ((FixtureRole::Example, FormatOutcome::Idempotent), 3),
             ((FixtureRole::Example, FormatOutcome::Rewritten), 16),
-            ((FixtureRole::Case, FormatOutcome::Idempotent), 58),
-            ((FixtureRole::Case, FormatOutcome::Rewritten), 250),
-            ((FixtureRole::AntiCase, FormatOutcome::Idempotent), 12),
-            ((FixtureRole::AntiCase, FormatOutcome::Rewritten), 43),
+            ((FixtureRole::Case, FormatOutcome::Idempotent), 60),
+            ((FixtureRole::Case, FormatOutcome::Rewritten), 248),
+            ((FixtureRole::AntiCase, FormatOutcome::Idempotent), 14),
+            ((FixtureRole::AntiCase, FormatOutcome::Rewritten), 41),
             ((FixtureRole::Support, FormatOutcome::Idempotent), 13),
             ((FixtureRole::Support, FormatOutcome::Rewritten), 64),
         ],
@@ -109,26 +109,26 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
         vec![
             (
                 (FixtureRole::Example, StructureCoverage::FullyStructured),
-                10
+                11
             ),
-            ((FixtureRole::Example, StructureCoverage::Mixed), 9),
+            ((FixtureRole::Example, StructureCoverage::Mixed), 8),
             ((FixtureRole::Case, StructureCoverage::NoStatements), 4),
-            ((FixtureRole::Case, StructureCoverage::FullyStructured), 210),
-            ((FixtureRole::Case, StructureCoverage::Mixed), 90),
+            ((FixtureRole::Case, StructureCoverage::FullyStructured), 225),
+            ((FixtureRole::Case, StructureCoverage::Mixed), 75),
             ((FixtureRole::Case, StructureCoverage::RawOnly), 4),
             (
                 (FixtureRole::AntiCase, StructureCoverage::FullyStructured),
-                38
+                39
             ),
-            ((FixtureRole::AntiCase, StructureCoverage::Mixed), 6),
+            ((FixtureRole::AntiCase, StructureCoverage::Mixed), 5),
             ((FixtureRole::AntiCase, StructureCoverage::RawOnly), 11),
             ((FixtureRole::Support, StructureCoverage::NoStatements), 1),
             (
                 (FixtureRole::Support, StructureCoverage::FullyStructured),
-                71
+                72
             ),
             ((FixtureRole::Support, StructureCoverage::Mixed), 2),
-            ((FixtureRole::Support, StructureCoverage::RawOnly), 3),
+            ((FixtureRole::Support, StructureCoverage::RawOnly), 2),
         ],
         "structure coverage register drifted\n{report}"
     );
