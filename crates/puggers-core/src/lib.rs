@@ -12,6 +12,7 @@ pub struct ConvertOptions {
     pub text_whitespace: TextWhitespaceMode,
     pub keep_comments: bool,
     pub indent_width: usize,
+    pub line_width: Option<usize>,
     pub use_tabs: bool,
 }
 
@@ -25,6 +26,7 @@ impl Default for ConvertOptions {
             text_whitespace: TextWhitespaceMode::default(),
             keep_comments: true,
             indent_width: 2,
+            line_width: None,
             use_tabs: false,
         }
     }
