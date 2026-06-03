@@ -11,4 +11,4 @@ name = "puggers"
 path = "src/main.rs"
 
 [dependencies]
-puggers-core = { version = "0.1.2", path = "../puggers-core" }
+puggers-core = { version = "0.1.3", path = "../puggers-core" }
