@@ -9,6 +9,7 @@ pub struct ConvertOptions {
     pub preserve_id_and_class_shorthand: bool,
     pub trim_outer_document: bool,
     pub collapse_single_nested: bool,
+    pub text_whitespace: TextWhitespaceMode,
     pub keep_comments: bool,
     pub indent_width: usize,
     pub use_tabs: bool,
@@ -21,11 +22,19 @@ impl Default for ConvertOptions {
             preserve_id_and_class_shorthand: true,
             trim_outer_document: false,
             collapse_single_nested: false,
+            text_whitespace: TextWhitespaceMode::default(),
             keep_comments: true,
             indent_width: 2,
             use_tabs: false,
         }
     }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum TextWhitespaceMode {
+    #[default]
+    Collapse,
+    Preserve,
 }
 
 pub fn convert_html_to_pug(input: &str, options: &ConvertOptions) -> String {
