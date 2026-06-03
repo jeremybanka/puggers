@@ -1,0 +1,28 @@
+issue(id="0013" status="open")
+  title Define structural extraction policy for HTML import
+  user-story
+    as-a maintainer of the puggers HTML converter
+    i-want structural simplification choices to be explicit extraction policy rather than loosely accumulated heuristics
+    so-that users can trust when wrappers, shells, and surrounding regions are removed versus preserved
+  premise.
+    The converter is intentionally allowed to suppress noise, but its current
+    structural controls are still coarse: `trim_outer_document` is broad,
+    `collapse-single-nested` is heuristic, and there is no clear model for when
+    surrounding structure is considered framing noise versus meaningful signal.
+    This deserves its own task rather than staying mixed into baseline
+    correction work. The output here should be a deliberate policy for wrapper
+    removal and region extraction, with concrete examples of what is safe to
+    drop, what must be preserved, and what should require an explicit option.
+    `collapse-single-nested` and richer region selection are distinct features,
+    but they belong together here because both are really about deciding what
+    structural context counts as noise.
+  acceptance-criteria
+    criterion Revisit `collapse-single-nested` and classify at least a few concrete wrapper-removal cases as safe, unsafe, or option-dependent.
+    criterion Decide whether broader region-selection controls are needed beyond `trim_outer_document`, and either implement the minimal useful control set or document why the current boundary is sufficient for now.
+    criterion Add focused tests for wrapper-heavy and shell-heavy HTML samples so structural extraction decisions are reproducible instead of anecdotal.
+    criterion Make sure structural extraction policy is described independently from text-layout or formatter-compatibility concerns.
+    criterion Leave the importer with a smaller, more intentional set of structural heuristics than it started with, even if that means narrowing behavior rather than adding more options.
+  review-items
+    item(status="open") Decide whether anonymous wrapper collapse should remain a convenience flag, become narrower, or be replaced by a more explicit structural profile.
+    item(status="open") Confirm whether front-matter and back-matter trimming are real user needs or just a proxy for wanting better region selection.
+    item(status="open") Keep structural simplification policy understandable enough that future CLI and npm surfaces can explain it without a large caveat section.
