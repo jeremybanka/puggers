@@ -61,7 +61,7 @@ fn counts_tag_shorthand_and_attributes_when_deciding_to_wrap_inline_text() {
 }
 
 #[test]
-fn treats_source_line_breaks_as_paragraph_boundaries_when_reflowing_prose() {
+fn treats_source_line_breaks_as_collapsible_whitespace_when_reflowing_prose() {
     let output = convert_html_to_pug(
         "<p>First paragraph should wrap here\nSecond paragraph also wraps</p>",
         &ConvertOptions {
@@ -73,6 +73,6 @@ fn treats_source_line_breaks_as_paragraph_boundaries_when_reflowing_prose() {
 
     assert_eq!(
         output,
-        "p.\n  First paragraph should\n  wrap here\n\n  Second paragraph also\n  wraps\n"
+        "p.\n  First paragraph should\n  wrap here Second\n  paragraph also wraps\n"
     );
 }
