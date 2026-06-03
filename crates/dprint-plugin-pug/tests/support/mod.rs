@@ -22,6 +22,29 @@ pub fn format_source(source: &str, config: &config::Configuration) -> String {
     formatter::format(&document, config)
 }
 
+pub type Diagnostic = parser::Diagnostic;
+pub type DiagnosticSeverity = parser::DiagnosticSeverity;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FormatReport {
+    pub formatted: String,
+    pub diagnostics: Vec<parser::Diagnostic>,
+}
+
+pub fn format_source_with_diagnostics(
+    source: &str,
+    config: &config::Configuration,
+) -> FormatReport {
+    let lexed = lexer::lex(source);
+    let report = parser::parse_with_diagnostics(&lexed);
+    let formatted = formatter::format(&report.document, config);
+
+    FormatReport {
+        formatted,
+        diagnostics: report.diagnostics,
+    }
+}
+
 pub fn docs_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../docs/pug/2026-05-31")
 }
@@ -206,6 +229,13 @@ pub struct DocumentStats {
     pub raw_text_lines: usize,
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct DiagnosticStats {
+    pub warnings: usize,
+    pub errors: usize,
+    pub fatals: usize,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum StructureCoverage {
     NoStatements,
@@ -222,6 +252,7 @@ pub struct FixtureBehavior {
     pub format_outcome: FormatOutcome,
     pub structure_coverage: StructureCoverage,
     pub stats: DocumentStats,
+    pub diagnostics: DiagnosticStats,
 }
 
 pub fn document_stats(document: &ast::Document) -> DocumentStats {
@@ -264,9 +295,9 @@ pub fn upstream_fixture_behaviors() -> Vec<FixtureBehavior> {
 
 pub fn analyze_fixture(fixture: &UpstreamFixture) -> FixtureBehavior {
     let lexed = lexer::lex(&fixture.source);
-    let document = parser::parse(&lexed);
-    let stats = document_stats(&document);
-    let formatted = formatter::format(&document, &config::Configuration::default());
+    let report = parser::parse_with_diagnostics(&lexed);
+    let stats = document_stats(&report.document);
+    let formatted = formatter::format(&report.document, &config::Configuration::default());
 
     FixtureBehavior {
         role: fixture.role,
@@ -279,7 +310,22 @@ pub fn analyze_fixture(fixture: &UpstreamFixture) -> FixtureBehavior {
         },
         structure_coverage: classify_structure_coverage(stats),
         stats,
+        diagnostics: diagnostic_stats(&report.diagnostics),
     }
+}
+
+pub fn diagnostic_stats(diagnostics: &[Diagnostic]) -> DiagnosticStats {
+    let mut stats = DiagnosticStats::default();
+
+    for diagnostic in diagnostics {
+        match diagnostic.severity {
+            DiagnosticSeverity::Warning => stats.warnings += 1,
+            DiagnosticSeverity::Error => stats.errors += 1,
+            DiagnosticSeverity::Fatal => stats.fatals += 1,
+        }
+    }
+
+    stats
 }
 
 pub fn classify_structure_coverage(stats: DocumentStats) -> StructureCoverage {
@@ -311,5 +357,25 @@ pub fn assert_same_text(actual: &str, expected: &str, context: &str) {
     panic!(
         "{context}\nfirst mismatch at char {mismatch}\nactual:   {:?}\nexpected: {:?}",
         actual_snippet, expected_snippet
+    );
+}
+
+pub fn assert_has_diagnostic(
+    diagnostics: &[Diagnostic],
+    severity: DiagnosticSeverity,
+    line: usize,
+    message_fragment: &str,
+) {
+    if diagnostics.iter().any(|diagnostic| {
+        diagnostic.severity == severity
+            && diagnostic.line == line
+            && diagnostic.message.contains(message_fragment)
+    }) {
+        return;
+    }
+
+    panic!(
+        "expected a {severity:?} diagnostic on line {line} containing {:?}, found {:?}",
+        message_fragment, diagnostics
     );
 }

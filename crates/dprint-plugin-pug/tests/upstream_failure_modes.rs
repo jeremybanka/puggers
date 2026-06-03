@@ -4,7 +4,7 @@ pub use support::{ast, config, formatter, lexer, parser};
 
 use std::collections::BTreeMap;
 
-use support::{FixtureRole, FormatOutcome, StructureCoverage};
+use support::{DiagnosticStats, FixtureRole, FormatOutcome, StructureCoverage};
 
 #[test]
 fn upstream_failure_mode_inventory_is_explicit() {
@@ -42,6 +42,8 @@ fn upstream_failure_modes_have_a_pinned_current_behavior_split() {
 
     let mut format_counts = BTreeMap::new();
     let mut structure_counts = BTreeMap::new();
+    let mut diagnostic_totals = DiagnosticStats::default();
+    let mut warned_fixture_count = 0usize;
 
     for behavior in anti_cases {
         *format_counts
@@ -50,6 +52,12 @@ fn upstream_failure_modes_have_a_pinned_current_behavior_split() {
         *structure_counts
             .entry(behavior.structure_coverage)
             .or_insert(0usize) += 1;
+        diagnostic_totals.warnings += behavior.diagnostics.warnings;
+        diagnostic_totals.errors += behavior.diagnostics.errors;
+        diagnostic_totals.fatals += behavior.diagnostics.fatals;
+        if behavior.diagnostics.warnings > 0 {
+            warned_fixture_count += 1;
+        }
     }
 
     assert_eq!(
@@ -68,4 +76,9 @@ fn upstream_failure_modes_have_a_pinned_current_behavior_split() {
             (StructureCoverage::RawOnly, 11),
         ]
     );
+
+    assert_eq!(diagnostic_totals.warnings, 11);
+    assert_eq!(diagnostic_totals.errors, 0);
+    assert_eq!(diagnostic_totals.fatals, 0);
+    assert_eq!(warned_fixture_count, 10);
 }

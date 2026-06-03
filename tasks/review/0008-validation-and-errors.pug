@@ -1,4 +1,4 @@
-issue(id="0008" status="open")
+issue(id="0008" status="review")
   title Add validation boundaries and useful formatter error reporting
   user-story
     as-a user of puggers
@@ -22,6 +22,8 @@ issue(id="0008" status="open")
     criterion Add tests that cover both successful preservation and intentional failures.
   review-items
     item(status="covered") Task `0009` now provides a pinned upstream anti-case baseline and checked-in behavior register, so `0008` can focus on turning current preserve-or-rewrite behavior into intentional validation categories and user-facing errors.
-    item(status="open") Decide whether validation should be strict by default or whether permissive preservation remains the default mode.
-    item(status="open") Confirm how error messages should surface source location information for both the dprint plugin and the standalone tooling.
-    item(status="open") Avoid making unsupported syntax look successfully normalized when it was actually passed through untouched.
+    item(status="covered") Default formatter behavior now stays permissive for recoverable syntax damage and surfaces line-based warnings instead of failing formatting.
+    item(status="covered") The first recovery slice quarantines malformed indentation, bare `include` or `extends`, and missing control-flow expressions without dropping surrounding valid structure.
+    item(status="covered") The current diagnostics remain internal parser or formatter groundwork because `dprint` does not expose a per-file warning channel; future richer consumers can wrap the same report shape without changing the recovery semantics.
+    item(status="covered") The next recovery tranche started with orphaned structural keywords: `else` and `default` now stay structurally modeled while emitting warnings for invalid sibling context or trailing payload.
+    item(status="open") Review the newly inventoried warnings on positive corpus fixtures such as `each.else`, `case`, and `mixin.attrs` to decide which should remain intentional recoveries versus which indicate overly eager invalid-syntax heuristics.

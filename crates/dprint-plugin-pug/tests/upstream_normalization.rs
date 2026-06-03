@@ -20,7 +20,7 @@ fn upstream_normalization_inventory_is_explicit_by_role() {
         counts.into_iter().collect::<Vec<_>>(),
         vec![
             (FixtureRole::Example, 16),
-            (FixtureRole::Case, 248),
+            (FixtureRole::Case, 242),
             (FixtureRole::AntiCase, 41),
             (FixtureRole::Support, 64),
         ]
