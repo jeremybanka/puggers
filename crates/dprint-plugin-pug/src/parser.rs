@@ -498,22 +498,20 @@ fn validate_statement_context(
                 });
             }
         }
-        ControlFlowKind::Default => {
+        ControlFlowKind::Default
             if !matches!(
                 previous_statement_head(prior_nodes),
                 Some(StatementHead::ControlFlow(ControlFlowHead {
                     kind: ControlFlowKind::When,
                     ..
                 }))
-            ) {
-                diagnostics.push(Diagnostic {
-                    severity: DiagnosticSeverity::Warning,
-                    line,
-                    message: String::from(
-                        "Recovered orphaned `default` without a preceding `when`",
-                    ),
-                });
-            }
+            ) =>
+        {
+            diagnostics.push(Diagnostic {
+                severity: DiagnosticSeverity::Warning,
+                line,
+                message: String::from("Recovered orphaned `default` without a preceding `when`"),
+            });
         }
         _ => {}
     }
