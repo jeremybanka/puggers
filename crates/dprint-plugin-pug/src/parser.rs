@@ -217,9 +217,9 @@ fn collect_statement_lines(
     current_indent: usize,
 ) -> (String, usize) {
     let mut content = lines[start_index].content.trim_start().to_string();
-    if !should_collect_multiline_statement(&content) {
+    let Some(collection_mode) = multiline_statement_mode(&content) else {
         return (content, start_index + 1);
-    }
+    };
 
     let mut index = start_index + 1;
     while index < lines.len() && has_unclosed_parenthesis(&content) {
@@ -229,15 +229,39 @@ fn collect_statement_lines(
         }
 
         content.push('\n');
-        content.push_str(line.content.trim());
+        match collection_mode {
+            MultilineStatementMode::Normalized => content.push_str(line.content.trim()),
+            MultilineStatementMode::PreserveLayout => {
+                content.push_str(&" ".repeat(line.indent));
+                content.push_str(&line.content);
+            }
+        }
         index += 1;
     }
 
     (content, index)
 }
 
-fn should_collect_multiline_statement(content: &str) -> bool {
-    starts_attribute_list_in_head(content) && has_unclosed_parenthesis(content)
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum MultilineStatementMode {
+    Normalized,
+    PreserveLayout,
+}
+
+fn multiline_statement_mode(content: &str) -> Option<MultilineStatementMode> {
+    if !has_unclosed_parenthesis(content) {
+        return None;
+    }
+
+    if starts_attribute_list_in_head(content) {
+        return Some(MultilineStatementMode::Normalized);
+    }
+
+    if content.starts_with('+') {
+        return Some(MultilineStatementMode::PreserveLayout);
+    }
+
+    None
 }
 
 fn has_unclosed_parenthesis(content: &str) -> bool {

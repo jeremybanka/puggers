@@ -195,3 +195,30 @@ block head
         report.diagnostics
     );
 }
+
+#[test]
+fn does_not_warn_for_multiline_mixin_call_argument_layout() {
+    let source = "\
++my-mixin(
+'1',
+      '2',
+  '3',
+      '4'
+)
+";
+    let report = format_source_with_diagnostics(source, &Configuration::default());
+
+    assert_same_text(
+        &report.formatted,
+        source,
+        "multiline mixin call argument layout should remain non-structural and preserve authored spacing",
+    );
+    assert!(
+        !report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.message.contains("indent")),
+        "did not expect multiline mixin call arguments to trigger indentation recovery: {:?}",
+        report.diagnostics
+    );
+}

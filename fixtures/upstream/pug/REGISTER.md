@@ -58,7 +58,7 @@ Structure coverage by role
 - support / raw-only: 2
 
 Diagnostics by role
-- case / warnings: 4
+- case / warnings: 2
 - anti-case / warnings: 11
 
 Rewritten anti-cases
@@ -106,9 +106,7 @@ Rewritten anti-cases
 
 Warned case fixtures
 - packages/pug/test/cases/code.conditionals.pug [packages/pug/test/cases] warnings=1
-- packages/pug/test/cases/mixin.attrs.pug [packages/pug/test/cases] warnings=1
 - packages/pug-lexer/test/cases/code.conditionals.pug [packages/pug-lexer/test/cases] warnings=1
-- packages/pug-lexer/test/cases/mixin.attrs.pug [packages/pug-lexer/test/cases] warnings=1
 
 Warned anti-cases
 - packages/pug/test/anti-cases/else-condition.pug [packages/pug/test/anti-cases] warnings=1
@@ -123,17 +121,17 @@ Warned anti-cases
 - packages/pug-lexer/test/errors/while-with-no-expression.pug [packages/pug-lexer/test/errors] warnings=1
 
 Most opaque case fixtures
-- raw 16/49 | mixed | packages/pug-lexer/test/cases/mixin.attrs.pug
-- raw 16/49 | mixed | packages/pug/test/cases/mixin.attrs.pug
 - raw 9/16 | mixed | packages/pug-lexer/test/cases/tags.self-closing.pug
 - raw 9/16 | mixed | packages/pug/test/cases/tags.self-closing.pug
 - raw 8/10 | mixed | packages/pug-lexer/test/cases/html.pug
+- raw 8/41 | mixed | packages/pug-lexer/test/cases/mixin.attrs.pug
 - raw 8/10 | mixed | packages/pug/test/cases/html.pug
-- raw 6/25 | mixed | packages/pug-lexer/test/cases/mixins.pug
-- raw 6/25 | mixed | packages/pug/test/cases/mixins.pug
+- raw 8/41 | mixed | packages/pug/test/cases/mixin.attrs.pug
 - raw 5/10 | mixed | packages/pug-lexer/test/cases/code.pug
+- raw 5/24 | mixed | packages/pug-lexer/test/cases/mixins.pug
 - raw 5/18 | mixed | packages/pug-lexer/test/cases/tag.interpolation.pug
 - raw 5/10 | mixed | packages/pug/test/cases/code.pug
+- raw 5/24 | mixed | packages/pug/test/cases/mixins.pug
 - raw 5/18 | mixed | packages/pug/test/cases/tag.interpolation.pug
 - raw 4/26 | mixed | packages/pug-lexer/test/cases/code.iteration.pug
 - raw 4/39 | mixed | packages/pug-lexer/test/cases/each.else.pug
