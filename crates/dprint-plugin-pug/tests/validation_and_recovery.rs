@@ -163,9 +163,35 @@ case pet
     );
     assert!(
         !report.diagnostics.iter().any(|diagnostic| {
-            diagnostic.message.contains("`default` with unexpected trailing content")
+            diagnostic
+                .message
+                .contains("`default` with unexpected trailing content")
         }),
         "did not expect default colon shorthand to warn: {:?}",
+        report.diagnostics
+    );
+}
+
+#[test]
+fn does_not_warn_when_a_child_block_starts_after_blank_lines() {
+    let source = "\
+block head
+
+  script(src='jquery.js')
+";
+    let report = format_source_with_diagnostics(source, &Configuration::default());
+
+    assert_same_text(
+        &report.formatted,
+        "block head\n  script(src=\"jquery.js\")\n",
+        "blank lines before the first child should not detach the child block",
+    );
+    assert!(
+        !report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.message.contains("indent")),
+        "did not expect blank-line-separated child blocks to trigger indentation recovery: {:?}",
         report.diagnostics
     );
 }

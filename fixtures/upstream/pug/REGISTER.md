@@ -58,7 +58,7 @@ Structure coverage by role
 - support / raw-only: 2
 
 Diagnostics by role
-- case / warnings: 8
+- case / warnings: 4
 - anti-case / warnings: 11
 
 Rewritten anti-cases
@@ -105,13 +105,9 @@ Rewritten anti-cases
 - packages/pug-linker/test/errors-src/unexpected-block.pug [packages/pug-linker/test/errors-src]
 
 Warned case fixtures
-- packages/pug/test/cases/block-code.pug [packages/pug/test/cases] warnings=1
 - packages/pug/test/cases/code.conditionals.pug [packages/pug/test/cases] warnings=1
-- packages/pug/test/cases/inheritance.extend.whitespace.pug [packages/pug/test/cases] warnings=1
 - packages/pug/test/cases/mixin.attrs.pug [packages/pug/test/cases] warnings=1
-- packages/pug-lexer/test/cases/block-code.pug [packages/pug-lexer/test/cases] warnings=1
 - packages/pug-lexer/test/cases/code.conditionals.pug [packages/pug-lexer/test/cases] warnings=1
-- packages/pug-lexer/test/cases/inheritance.extend.whitespace.pug [packages/pug-lexer/test/cases] warnings=1
 - packages/pug-lexer/test/cases/mixin.attrs.pug [packages/pug-lexer/test/cases] warnings=1
 
 Warned anti-cases

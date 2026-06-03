@@ -107,7 +107,7 @@ fn parse_block(
             let mut children = Vec::new();
             let mut next_index = index + 1;
 
-            if next_index < lines.len() && lines[next_index].indent > nesting_parent_indent {
+            if block_has_children(lines, next_index, nesting_parent_indent) {
                 let child_indent = determine_child_indent(lines, next_index, nesting_parent_indent);
                 let (parsed_children, consumed_index) =
                     parse_raw_text_block(lines, next_index, child_indent, diagnostics);
@@ -146,7 +146,7 @@ fn parse_block(
             children: Vec::new(),
         });
 
-        if next_index < lines.len() && lines[next_index].indent > nesting_parent_indent {
+        if block_has_children(lines, next_index, nesting_parent_indent) {
             if let Node::Statement(statement) = &mut node {
                 let next_mode = if statement.text_block_kind.is_some() {
                     ParseMode::RawText
@@ -169,6 +169,22 @@ fn parse_block(
     }
 
     (nodes, index)
+}
+
+fn block_has_children(lines: &[LexedLine], start_index: usize, parent_indent: usize) -> bool {
+    let mut index = start_index;
+
+    while index < lines.len() {
+        let line = &lines[index];
+        if line.is_blank {
+            index += 1;
+            continue;
+        }
+
+        return line.indent > parent_indent;
+    }
+
+    false
 }
 
 fn determine_child_indent(lines: &[LexedLine], start_index: usize, parent_indent: usize) -> usize {
