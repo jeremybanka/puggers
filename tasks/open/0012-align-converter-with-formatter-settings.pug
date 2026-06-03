@@ -1,0 +1,28 @@
+issue(id="0012" status="open")
+  title Align the HTML converter with formatter settings and shared text layout logic
+  user-story
+    as-a maintainer of puggers
+    i-want the HTML converter to honor formatter settings intentionally and start sharing the layout code that those settings drive
+    so-that imported output and formatted output stop drifting for the same width, indentation, and text-layout decisions
+  premise.
+    Task `0007` establishes baseline corrections for importer behavior, while
+    tasks `0010` and `0011` are intended to clarify whitespace policy
+    boundaries. Once those semantics are stable enough, the next step is to
+    make the converter intentionally compatible with formatter settings instead
+    of growing a second mostly-similar behavior matrix. That work should start
+    code sharing in earnest where the logic is already converging: width-aware
+    text layout, prose reflow, indentation width, tab handling, and any
+    attribute or quote-style rendering that genuinely means the same thing on
+    both sides. The goal is not to force the importer and formatter into the
+    same architecture, but to extract the shared policy and rendering pieces
+    that would otherwise drift.
+  acceptance-criteria
+    criterion Define which formatter settings the converter should honor as true compatibility settings versus which remain importer-specific controls, and document that boundary.
+    criterion Begin sharing at least one meaningful text-layout or rendering component between the converter and formatter rather than only mirroring behavior in parallel implementations.
+    criterion Add tests that show matching settings produce intentionally aligned output decisions for width, indentation, and at least one other shared formatting concern.
+    criterion Keep importer-only extraction behavior separate enough that shared code does not absorb DOM-selection or HTML-specific policy decisions.
+    criterion Document the initial shared-core boundary so later compatibility work can extend it without reintroducing drift by accident.
+  review-items
+    item(status="open") Decide which settings belong in the first compatibility tranche: `lineWidth`, indentation, tabs, quote style, or only the subset already proven by tests.
+    item(status="open") Confirm the first shared component is small but real, so `0012` proves the refactor direction instead of only restating intent.
+    item(status="open") Make sure the importer can still diverge where HTML extraction policy truly differs from formatter rendering policy.

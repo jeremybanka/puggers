@@ -1,0 +1,25 @@
+issue(id="0014" status="open")
+  title Design importer intent profiles and unify the API shape
+  user-story
+    as-a maintainer of puggers
+    i-want the importer's user-facing API to describe coherent intents instead of only exposing a growing pile of low-level flags
+    so-that CLI, library, and future npm users can ask for the kind of view they want without reverse-engineering every knob
+  premise.
+    Once baseline corrections, whitespace policy, and initial compatibility work
+    are in place, the remaining question is product shape: should users choose
+    profiles such as readable-document, structure-inspection, or preserve-more,
+    or should they assemble everything from low-level flags, or both? That
+    question should be answered after the underlying semantics are more stable,
+    not before. This task is about defining the user-facing behavior matrix and
+    making sure the same model can be explained across CLI, library, and future
+    npm surfaces.
+  acceptance-criteria
+    criterion Decide whether importer intent should surface as named profiles, composable low-level flags, or a layered model that supports both, and document the reasoning.
+    criterion Define at least two concrete importer intents with example option mappings and example output differences.
+    criterion Ensure the resulting API shape can be represented consistently across CLI, library, and future npm surfaces without each surface inventing its own semantics.
+    criterion Add or update tests, help text, or documentation so the chosen API shape is visible in repo artifacts rather than only captured in task prose.
+    criterion Keep the behavior matrix small enough that new users can predict the major tradeoffs without reading every implementation detail.
+  review-items
+    item(status="open") Decide whether profiles should be stable user-facing promises or just convenience aliases over lower-level options.
+    item(status="open") Confirm that the API shape reflects real user intents from `0007` rather than abstract taxonomy work.
+    item(status="open") Make sure future surfaces can adopt the same model incrementally without waiting for every importer option to stabilize first.

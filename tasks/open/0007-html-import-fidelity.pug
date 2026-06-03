@@ -1,8 +1,8 @@
 issue(id="0007" status="open")
-  title Clarify HTML-to-Pug import signal extraction and fidelity controls
+  title Land baseline HTML-to-Pug correction and consistency fixes
   user-story
     as-a maintainer of the puggers HTML converter
-    i-want the importer to make its noise-reduction and preservation choices explicit, configurable, and compatible with the formatter's whitespace model
+    i-want the importer to stop making a few avoidable normalization mistakes and to align more closely with the formatter's current whitespace and text-handling model
     so-that users can shape bulky HTML into the concise Pug view that best surfaces the story they care about
   premise.
     The HTML converter is not just an "import" step in the narrow sense. Its
@@ -17,20 +17,24 @@ issue(id="0007" status="open")
     non-allowlisted attributes, collapses normal text whitespace aggressively,
     trims comments and inline text, recognizes only a short raw-text tag list,
     and offers only coarse outer-document and wrapper-collapse controls. Those
-    defaults are useful for a first pass, but they are stronger than the
-    formatter's own whitespace-sensitive model in a few important places. Task
-    `0007` should define which reductions are intentional ergonomic defaults,
-    which should become optional preservation controls, and how the importer can
-    emit concise Pug without pre-destructively normalizing content the formatter
-    would otherwise preserve.
+    defaults are useful for a first pass, but several were stronger than the
+    formatter's own whitespace-sensitive model in avoidable ways. This task is
+    now centered on baseline corrections: preserving meaningful inline spacing
+    when requested, preserving comments more faithfully by default, and making
+    line-width-driven import output behave more like the formatter's current
+    prose and wrapping model without inventing HTML semantics that do not exist.
+    Broader questions such as full formatter-option parity, importer presets,
+    richer region-selection controls, and code sharing with the formatter should
+    be treated as follow-on tasks instead of keeping `0007` indefinitely broad.
   acceptance-criteria
     criterion Document the importer's purpose as configurable signal extraction rather than strict HTML reproduction, including at least two distinct use cases with different noise-versus-signal priorities.
-    criterion Evaluate each current normalization step in HTML import and classify it as a stable default, an optional preservation control, or behavior that should be narrowed to stay compatible with the formatter's whitespace-sensitive semantics.
-    criterion Add or refine importer controls for region selection, text and comment preservation, or wrapper collapse only where the task confirms they represent materially different user intents rather than cosmetic option churn.
-    criterion Revisit the `collapse-single-nested` heuristic and define concrete safety conditions for when wrapper removal is acceptable and when it would hide relevant structure.
-    criterion Add focused tests that cover contrasting import intents, including text-forward imports, structure-forward imports, comment-sensitive imports, and wrapper-heavy samples, so the tradeoffs are visible and reproducible.
-    criterion Add at least one stability test that demonstrates imported output does not destroy distinctions the formatter is designed to preserve in whitespace-sensitive text scenarios.
+    criterion Add baseline correction coverage for importer behaviors that were clearly too destructive relative to the formatter's current semantics, especially around inline text whitespace, comment preservation, and line-width-driven prose output.
+    criterion Ensure line-width-aware import output follows actual HTML whitespace semantics, including treating ordinary source line breaks as collapsible whitespace rather than inventing paragraph boundaries.
+    criterion Add focused tests that cover contrasting import intents, including text-forward imports, structure-forward imports, comment-sensitive imports, and width-constrained prose examples, so the tradeoffs are visible and reproducible.
+    criterion Defer broader API-shape and full compatibility work to follow-on tasks once the baseline corrections are stable and intentional.
   review-items
-    item(status="open") Decide whether importer intent should surface as named presets, composable low-level flags, or a small set of higher-level profiles that expand to flags.
-    item(status="open") Confirm which text-preservation differences actually matter in practice: inline text spacing, comment payload trimming, raw-text tag coverage, or some combination of those.
-    item(status="open") Keep the API shared enough that future CLI, library, and npm surfaces can describe one behavior matrix instead of inventing separate importer semantics.
+    item(status="covered") The task is now explicitly framed around baseline corrections and consistency fixes, not full importer-feature design or full formatter-option parity.
+    item(status="covered") The importer now has focused coverage and implementation for preserve-more inline text whitespace, comment preservation by default, and line-width-aware output that can emit reflowed dotted prose blocks.
+    item(status="covered") The current line-width work now treats ordinary HTML source line breaks as collapsible whitespace instead of inventing paragraph boundaries during import.
+    item(status="open") Decide whether the remaining `collapse-single-nested` heuristic belongs in this task as a final correction pass or should move into a follow-on task about structural extraction policy.
+    item(status="open") Split full formatter-setting compatibility and the first formatter/importer code-sharing pass into `0012`, then move importer API-shape and profile design into later follow-on tasks so `0007` can close on a clear baseline-corrections milestone.
