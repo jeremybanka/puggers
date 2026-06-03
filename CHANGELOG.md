@@ -2,6 +2,36 @@
 
 All notable user-facing changes to `puggers` will be documented here.
 
+## 0.1.4 (2026-06-03)
+
+### Fixes
+
+#### Preserve HTML comments more faithfully during import
+
+The HTML importer now keeps empty comments, preserves spacing-sensitive comment
+payloads, and emits multiline or whitespace-sensitive comments as pipeless Pug
+comment blocks instead of trimming or flattening them by default.
+
+#### Add an opt-in HTML import mode that preserves meaningful inline text spacing
+
+The `puggers` HTML importer now supports a preserve-more text whitespace mode
+for keeping significant spaces around inline content such as adjacent tags and
+mixed text/tag prose, while leaving the default aggressive normalization
+behavior unchanged.
+
+#### Reflow imported HTML prose to line width
+
+When `lineWidth` is configured, the HTML importer now emits dotted prose blocks
+for plain text that should be reflowed and wraps those blocks to the configured
+width while still treating ordinary HTML source line breaks as collapsible
+whitespace.
+
+#### Respect configured line width for inline HTML import output
+
+The HTML importer now accepts a `lineWidth`-style option and moves long inline
+`tag text` output into multiline `tag` plus piped-text form when the rendered
+line would exceed the configured width.
+
 ## 0.1.3 (2026-06-03)
 
 ### Fixes
