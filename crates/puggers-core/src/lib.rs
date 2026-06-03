@@ -250,7 +250,8 @@ fn ends_with_whitespace(input: &str) -> bool {
 }
 
 fn prose_paragraphs_from_html(input: &str) -> Vec<String> {
-    input.lines()
+    input
+        .lines()
         .map(|line| line.split_whitespace().collect::<Vec<_>>().join(" "))
         .filter(|line| !line.is_empty())
         .collect()
