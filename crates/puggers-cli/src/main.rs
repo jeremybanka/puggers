@@ -24,6 +24,7 @@ fn run() -> Result<(), String> {
     let mut text_whitespace = TextWhitespaceMode::Collapse;
     let mut keep_comments = true;
     let mut indent_width = 2;
+    let mut line_width = None;
     let mut use_tabs = false;
     let mut input_path = None;
 
@@ -47,6 +48,16 @@ fn run() -> Result<(), String> {
                 indent_width = value
                     .parse::<usize>()
                     .map_err(|error| format!("invalid --indent-width value {value}: {error}"))?;
+            }
+            "--line-width" => {
+                let value = args
+                    .next()
+                    .ok_or_else(|| String::from("missing value after --line-width"))?;
+                line_width = Some(
+                    value
+                        .parse::<usize>()
+                        .map_err(|error| format!("invalid --line-width value {value}: {error}"))?,
+                );
             }
             "--help" | "-h" => {
                 print_help();
@@ -83,6 +94,7 @@ fn run() -> Result<(), String> {
             text_whitespace,
             keep_comments,
             indent_width,
+            line_width,
             use_tabs,
             ..Default::default()
         },
@@ -101,6 +113,7 @@ fn print_help() {
      Options:\n\
        --allow-attr <name>          Keep an attribute during conversion\n\
        --indent-width <count>       Set the indentation width for space mode\n\
+       --line-width <count>         Move long inline tag text to multiline output\n\
        --trim-outer-document        Emit body children instead of html/head/body\n\
        --collapse-single-nested     Collapse anonymous nested div wrappers\n\
        --preserve-text-whitespace   Keep meaningful spaces around inline content\n\

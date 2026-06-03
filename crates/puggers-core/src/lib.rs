@@ -392,9 +392,16 @@ fn render_element(element: &ElementNode, depth: usize, options: &ConvertOptions)
     }
 
     if let [Node::Text(text)] = element.children.as_slice() {
-        line.push(' ');
-        line.push_str(text);
-        return line;
+        if should_wrap_inline_text(&line, text, depth, options) {
+            let mut output = line;
+            output.push('\n');
+            output.push_str(&render_node(&Node::Text(text.clone()), depth + 1, options));
+            return output;
+        } else {
+            line.push(' ');
+            line.push_str(text);
+            return line;
+        }
     }
 
     if element.children.is_empty() {
@@ -407,6 +414,19 @@ fn render_element(element: &ElementNode, depth: usize, options: &ConvertOptions)
         output.push_str(&render_node(child, depth + 1, options));
     }
     output
+}
+
+fn should_wrap_inline_text(
+    line_prefix: &str,
+    text: &str,
+    depth: usize,
+    options: &ConvertOptions,
+) -> bool {
+    let Some(line_width) = options.line_width else {
+        return false;
+    };
+
+    display_width(depth, options) + line_prefix.trim_start().len() + 1 + text.len() > line_width
 }
 
 fn render_attribute(attribute: &Attribute) -> String {
@@ -425,6 +445,14 @@ fn indent(depth: usize, options: &ConvertOptions) -> String {
         "\t".repeat(depth)
     } else {
         " ".repeat(depth * options.indent_width)
+    }
+}
+
+fn display_width(depth: usize, options: &ConvertOptions) -> usize {
+    if options.use_tabs {
+        depth
+    } else {
+        depth * options.indent_width
     }
 }
 
