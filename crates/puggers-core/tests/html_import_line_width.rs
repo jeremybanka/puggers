@@ -27,7 +27,7 @@ fn keeps_short_inline_text_inline_when_line_width_allows_it() {
 }
 
 #[test]
-fn wraps_long_inline_text_into_multiline_piped_text_when_line_width_is_exceeded() {
+fn reflows_long_inline_prose_into_a_dotted_block_when_line_width_is_exceeded() {
     let output = convert_html_to_pug(
         "<p>Hello there this sentence should not stay inline once line width is small</p>",
         &ConvertOptions {
@@ -39,7 +39,7 @@ fn wraps_long_inline_text_into_multiline_piped_text_when_line_width_is_exceeded(
 
     assert_eq!(
         output,
-        "p\n  | Hello there this sentence should not stay inline once line width is small\n"
+        "p.\n  Hello there this sentence\n  should not stay inline once\n  line width is small\n"
     );
 }
 
@@ -57,5 +57,22 @@ fn counts_tag_shorthand_and_attributes_when_deciding_to_wrap_inline_text() {
     assert_eq!(
         output,
         "a.link.primary(href=\"/docs\")\n  | Documentation\n"
+    );
+}
+
+#[test]
+fn treats_source_line_breaks_as_paragraph_boundaries_when_reflowing_prose() {
+    let output = convert_html_to_pug(
+        "<p>First paragraph should wrap here\nSecond paragraph also wraps</p>",
+        &ConvertOptions {
+            trim_outer_document: true,
+            line_width: Some(24),
+            ..Default::default()
+        },
+    );
+
+    assert_eq!(
+        output,
+        "p.\n  First paragraph should\n  wrap here\n\n  Second paragraph also\n  wraps\n"
     );
 }
