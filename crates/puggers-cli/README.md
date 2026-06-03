@@ -23,7 +23,7 @@ Current controls let you:
 - preserve meaningful spaces around inline content with `--preserve-text-whitespace`
 - drop comments with `--drop-comments`
 - choose tabs or spaces with `--use-tabs` and `--indent-width`
-- move long inline tag text to multiline output with `--line-width`
+- reflow prose and wrap long inline tag text with `--line-width`
 
 By default, the converter is opinionated: it strips most attributes, keeps
 comments, and aggressively normalizes ordinary text. That makes it useful for

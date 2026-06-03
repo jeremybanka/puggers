@@ -199,12 +199,21 @@ fn normalize_text(
     input: &str,
     mode: TextWhitespaceMode,
     context: TextBoundaryContext,
-) -> Option<String> {
+) -> Option<TextNode> {
     let collapsed = input.split_whitespace().collect::<Vec<_>>().join(" ");
+    let prose_paragraphs = prose_paragraphs_from_html(input);
 
     match mode {
-        TextWhitespaceMode::Collapse => (!collapsed.is_empty()).then_some(collapsed),
-        TextWhitespaceMode::Preserve => normalize_preserved_text(input, collapsed, context),
+        TextWhitespaceMode::Collapse => (!collapsed.is_empty()).then_some(TextNode {
+            content: collapsed,
+            prose_paragraphs,
+        }),
+        TextWhitespaceMode::Preserve => {
+            normalize_preserved_text(input, collapsed, context).map(|content| TextNode {
+                content,
+                prose_paragraphs: Vec::new(),
+            })
+        }
     }
 }
 
@@ -238,6 +247,13 @@ fn starts_with_whitespace(input: &str) -> bool {
 
 fn ends_with_whitespace(input: &str) -> bool {
     input.chars().next_back().is_some_and(char::is_whitespace)
+}
+
+fn prose_paragraphs_from_html(input: &str) -> Vec<String> {
+    input.lines()
+        .map(|line| line.split_whitespace().collect::<Vec<_>>().join(" "))
+        .filter(|line| !line.is_empty())
+        .collect()
 }
 
 fn collect_raw_text(node: &NodeRef) -> Option<String> {
@@ -315,7 +331,7 @@ fn render_node(node: &Node, depth: usize, options: &ConvertOptions) -> String {
         }
         Node::Doctype(name) => format!("{}doctype {}", indent(depth, options), name.trim()),
         Node::Comment(comment) => render_comment(comment, depth, options),
-        Node::Text(text) => format!("{}| {}", indent(depth, options), text),
+        Node::Text(text) => format!("{}| {}", indent(depth, options), text.content),
         Node::Element(element) => render_element(element, depth, options),
     }
 }
@@ -392,14 +408,16 @@ fn render_element(element: &ElementNode, depth: usize, options: &ConvertOptions)
     }
 
     if let [Node::Text(text)] = element.children.as_slice() {
-        if should_wrap_inline_text(&line, text, depth, options) {
+        if should_render_prose_block(&line, text, depth, options) {
+            return render_prose_block(line, text, depth, options);
+        } else if should_wrap_inline_text(&line, text, depth, options) {
             let mut output = line;
             output.push('\n');
             output.push_str(&render_node(&Node::Text(text.clone()), depth + 1, options));
             return output;
         } else {
             line.push(' ');
-            line.push_str(text);
+            line.push_str(&text.content);
             return line;
         }
     }
@@ -418,7 +436,7 @@ fn render_element(element: &ElementNode, depth: usize, options: &ConvertOptions)
 
 fn should_wrap_inline_text(
     line_prefix: &str,
-    text: &str,
+    text: &TextNode,
     depth: usize,
     options: &ConvertOptions,
 ) -> bool {
@@ -426,7 +444,101 @@ fn should_wrap_inline_text(
         return false;
     };
 
-    display_width(depth, options) + line_prefix.trim_start().len() + 1 + text.len() > line_width
+    display_width(depth, options) + line_prefix.trim_start().len() + 1 + text.content.len()
+        > line_width
+}
+
+fn should_render_prose_block(
+    line_prefix: &str,
+    text: &TextNode,
+    depth: usize,
+    options: &ConvertOptions,
+) -> bool {
+    if options.line_width.is_none() || text.prose_paragraphs.is_empty() {
+        return false;
+    }
+
+    if text.prose_paragraphs.len() > 1 {
+        return true;
+    }
+
+    text.content.contains(' ') && should_wrap_inline_text(line_prefix, text, depth, options)
+}
+
+fn render_prose_block(
+    mut line: String,
+    text: &TextNode,
+    depth: usize,
+    options: &ConvertOptions,
+) -> String {
+    line.push('.');
+
+    let available_width = options
+        .line_width
+        .and_then(|line_width| line_width.checked_sub(display_width(depth + 1, options)));
+
+    for (index, paragraph) in text.prose_paragraphs.iter().enumerate() {
+        if index > 0 {
+            line.push('\n');
+        }
+
+        let wrapped_lines = wrap_prose_paragraph(paragraph, available_width);
+        for wrapped_line in wrapped_lines {
+            line.push('\n');
+            line.push_str(&indent(depth + 1, options));
+            line.push_str(&wrapped_line);
+        }
+    }
+
+    line
+}
+
+fn wrap_prose_paragraph(paragraph: &str, available_width: Option<usize>) -> Vec<String> {
+    let Some(available_width) = available_width else {
+        return vec![paragraph.to_string()];
+    };
+
+    if paragraph.len() <= available_width {
+        return vec![paragraph.to_string()];
+    }
+
+    wrap_words(
+        &paragraph
+            .split_whitespace()
+            .map(str::to_string)
+            .collect::<Vec<_>>(),
+        available_width,
+    )
+}
+
+fn wrap_words(words: &[String], available_width: usize) -> Vec<String> {
+    let mut lines = Vec::new();
+    let mut current = String::new();
+
+    for word in words {
+        let next_len = if current.is_empty() {
+            word.len()
+        } else {
+            current.len() + 1 + word.len()
+        };
+
+        if !current.is_empty() && next_len > available_width {
+            lines.push(current);
+            current = word.clone();
+            continue;
+        }
+
+        if !current.is_empty() {
+            current.push(' ');
+        }
+        current.push_str(word);
+    }
+
+    if !current.is_empty() {
+        lines.push(current);
+    }
+
+    lines
 }
 
 fn render_attribute(attribute: &Attribute) -> String {
@@ -471,8 +583,14 @@ fn is_raw_text_tag(tag: &str) -> bool {
 enum Node {
     Doctype(String),
     Comment(CommentNode),
-    Text(String),
+    Text(TextNode),
     Element(ElementNode),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct TextNode {
+    content: String,
+    prose_paragraphs: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

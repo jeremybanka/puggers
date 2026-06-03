@@ -113,7 +113,7 @@ fn print_help() {
      Options:\n\
        --allow-attr <name>          Keep an attribute during conversion\n\
        --indent-width <count>       Set the indentation width for space mode\n\
-       --line-width <count>         Move long inline tag text to multiline output\n\
+       --line-width <count>         Reflow prose and wrap long inline tag text\n\
        --trim-outer-document        Emit body children instead of html/head/body\n\
        --collapse-single-nested     Collapse anonymous nested div wrappers\n\
        --preserve-text-whitespace   Keep meaningful spaces around inline content\n\
