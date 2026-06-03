@@ -1,22 +1,36 @@
 issue(id="0007" status="open")
-  title Improve HTML-to-Pug import fidelity and trimming controls
+  title Clarify HTML-to-Pug import signal extraction and fidelity controls
   user-story
     as-a maintainer of the puggers HTML converter
-    i-want imports to preserve more meaningful structure and text without losing the current ergonomic defaults
-    so-that converted output is a better foundation for real editing and later formatting
+    i-want the importer to make its noise-reduction and preservation choices explicit, configurable, and compatible with the formatter's whitespace model
+    so-that users can shape bulky HTML into the concise Pug view that best surfaces the story they care about
   premise.
-    The HTML converter is already useful, but it currently makes a few strong
-    simplifications: it removes all attributes unless allowlisted, collapses
-    normal text whitespace aggressively, uses a short raw-text tag whitelist,
-    and only has a basic outer-document trimming switch. Those defaults are good
-    for a first pass, but fidelity-oriented users will likely want a richer set
-    of import controls once the formatter grows more capable.
+    The HTML converter is not just an "import" step in the narrow sense. Its
+    real job is to turn bulky markup into a more concise Pug representation that
+    foregrounds signal and suppresses noise. That means its defaults can stay
+    opinionated, but those opinions must be intentional and adjustable because
+    "signal" depends on the user's goal: turning a webpage into a readable
+    document view, inspecting utility-class structure, studying comments,
+    preserving text boundaries for later editing, or extracting some other
+    structural story from the sample.
+    The current converter already makes several strong choices: it removes all
+    non-allowlisted attributes, collapses normal text whitespace aggressively,
+    trims comments and inline text, recognizes only a short raw-text tag list,
+    and offers only coarse outer-document and wrapper-collapse controls. Those
+    defaults are useful for a first pass, but they are stronger than the
+    formatter's own whitespace-sensitive model in a few important places. Task
+    `0007` should define which reductions are intentional ergonomic defaults,
+    which should become optional preservation controls, and how the importer can
+    emit concise Pug without pre-destructively normalizing content the formatter
+    would otherwise preserve.
   acceptance-criteria
-    criterion Evaluate and document which whitespace transformations in HTML import are intentional defaults versus candidates for configurable preservation.
-    criterion Add configurable front-matter and back-matter trimming or equivalent region-selection controls if that remains a confirmed need.
-    criterion Revisit the collapse-single-nested heuristic and define when wrapper removal is considered safe.
-    criterion Add tests for higher-fidelity conversion scenarios, especially around normal text, comments, and nested wrappers.
+    criterion Document the importer's purpose as configurable signal extraction rather than strict HTML reproduction, including at least two distinct use cases with different noise-versus-signal priorities.
+    criterion Evaluate each current normalization step in HTML import and classify it as a stable default, an optional preservation control, or behavior that should be narrowed to stay compatible with the formatter's whitespace-sensitive semantics.
+    criterion Add or refine importer controls for region selection, text and comment preservation, or wrapper collapse only where the task confirms they represent materially different user intents rather than cosmetic option churn.
+    criterion Revisit the `collapse-single-nested` heuristic and define concrete safety conditions for when wrapper removal is acceptable and when it would hide relevant structure.
+    criterion Add focused tests that cover contrasting import intents, including text-forward imports, structure-forward imports, comment-sensitive imports, and wrapper-heavy samples, so the tradeoffs are visible and reproducible.
+    criterion Add at least one stability test that demonstrates imported output does not destroy distinctions the formatter is designed to preserve in whitespace-sensitive text scenarios.
   review-items
-    item(status="open") Decide whether the converter should expose fidelity presets such as aggressive normalization versus preserve-more structure.
-    item(status="open") Confirm whether imported comments should always be kept by default now that tasks and docs may treat them as authored content.
-    item(status="open") Keep the API shared enough that future npm wrapping does not need a separate behavior matrix.
+    item(status="open") Decide whether importer intent should surface as named presets, composable low-level flags, or a small set of higher-level profiles that expand to flags.
+    item(status="open") Confirm which text-preservation differences actually matter in practice: inline text spacing, comment payload trimming, raw-text tag coverage, or some combination of those.
+    item(status="open") Keep the API shared enough that future CLI, library, and npm surfaces can describe one behavior matrix instead of inventing separate importer semantics.
