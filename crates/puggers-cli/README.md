@@ -20,6 +20,7 @@ Current controls let you:
 - keep selected attributes with repeated `--allow-attr`
 - trim the outer `html` / `head` / `body` shell with `--trim-outer-document`
 - collapse anonymous nested wrappers with `--collapse-single-nested`
+- preserve meaningful spaces around inline content with `--preserve-text-whitespace`
 - drop comments with `--drop-comments`
 - choose tabs or spaces with `--use-tabs` and `--indent-width`
 

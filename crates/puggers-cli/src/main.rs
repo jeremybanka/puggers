@@ -4,7 +4,7 @@ use std::fs;
 use std::io::{self, Read};
 use std::process::ExitCode;
 
-use puggers_core::{ConvertOptions, convert_html_to_pug};
+use puggers_core::{ConvertOptions, TextWhitespaceMode, convert_html_to_pug};
 
 fn main() -> ExitCode {
     match run() {
@@ -21,6 +21,7 @@ fn run() -> Result<(), String> {
     let mut allowed_attributes = BTreeSet::new();
     let mut trim_outer_document = false;
     let mut collapse_single_nested = false;
+    let mut text_whitespace = TextWhitespaceMode::Collapse;
     let mut keep_comments = true;
     let mut indent_width = 2;
     let mut use_tabs = false;
@@ -36,6 +37,7 @@ fn run() -> Result<(), String> {
             }
             "--trim-outer-document" => trim_outer_document = true,
             "--collapse-single-nested" => collapse_single_nested = true,
+            "--preserve-text-whitespace" => text_whitespace = TextWhitespaceMode::Preserve,
             "--drop-comments" => keep_comments = false,
             "--use-tabs" => use_tabs = true,
             "--indent-width" => {
@@ -78,6 +80,7 @@ fn run() -> Result<(), String> {
             allowed_attributes,
             trim_outer_document,
             collapse_single_nested,
+            text_whitespace,
             keep_comments,
             indent_width,
             use_tabs,
@@ -100,6 +103,7 @@ fn print_help() {
        --indent-width <count>       Set the indentation width for space mode\n\
        --trim-outer-document        Emit body children instead of html/head/body\n\
        --collapse-single-nested     Collapse anonymous nested div wrappers\n\
+       --preserve-text-whitespace   Keep meaningful spaces around inline content\n\
        --drop-comments              Remove HTML comments\n\
        --use-tabs                   Indent with tabs instead of spaces\n\
        -h, --help                   Show this help text"

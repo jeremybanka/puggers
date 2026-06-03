@@ -67,12 +67,22 @@ fn root_nodes_from_body(document: &NodeRef, options: &ConvertOptions) -> Vec<Nod
 }
 
 fn nodes_from_children(node: &NodeRef, options: &ConvertOptions) -> Vec<Node> {
-    node.children()
-        .filter_map(|child| node_from_dom(&child, options))
+    let children: Vec<_> = node.children().collect();
+
+    children
+        .iter()
+        .enumerate()
+        .filter_map(|(index, child)| {
+            node_from_dom(child, options, text_boundary_context(&children, index, options))
+        })
         .collect()
 }
 
-fn node_from_dom(node: &NodeRef, options: &ConvertOptions) -> Option<Node> {
+fn node_from_dom(
+    node: &NodeRef,
+    options: &ConvertOptions,
+    text_context: TextBoundaryContext,
+) -> Option<Node> {
     if let Some(doctype) = node.as_doctype() {
         return Some(Node::Doctype(doctype.name.to_string()));
     }
@@ -89,7 +99,7 @@ fn node_from_dom(node: &NodeRef, options: &ConvertOptions) -> Option<Node> {
 
     if let Some(text) = node.as_text() {
         let value = text.borrow();
-        return normalize_text(&value).map(Node::Text);
+        return normalize_text(&value, options.text_whitespace, text_context).map(Node::Text);
     }
 
     if let Some(element) = node.as_element() {
@@ -145,9 +155,84 @@ fn sanitize_attributes(
     filtered
 }
 
-fn normalize_text(input: &str) -> Option<String> {
+#[derive(Clone, Copy, Default)]
+struct TextBoundaryContext {
+    has_previous_signal: bool,
+    has_next_signal: bool,
+}
+
+fn text_boundary_context(
+    siblings: &[NodeRef],
+    index: usize,
+    options: &ConvertOptions,
+) -> TextBoundaryContext {
+    TextBoundaryContext {
+        has_previous_signal: siblings[..index]
+            .iter()
+            .rev()
+            .any(|sibling| dom_node_is_signal(sibling, options)),
+        has_next_signal: siblings[index + 1..]
+            .iter()
+            .any(|sibling| dom_node_is_signal(sibling, options)),
+    }
+}
+
+fn dom_node_is_signal(node: &NodeRef, options: &ConvertOptions) -> bool {
+    if node.as_doctype().is_some() || node.as_element().is_some() {
+        return true;
+    }
+
+    if let Some(comment) = node.as_comment() {
+        return options.keep_comments && !comment.borrow().trim().is_empty();
+    }
+
+    node.as_text()
+        .is_some_and(|text| !text.borrow().trim().is_empty())
+}
+
+fn normalize_text(
+    input: &str,
+    mode: TextWhitespaceMode,
+    context: TextBoundaryContext,
+) -> Option<String> {
     let collapsed = input.split_whitespace().collect::<Vec<_>>().join(" ");
-    (!collapsed.is_empty()).then_some(collapsed)
+
+    match mode {
+        TextWhitespaceMode::Collapse => (!collapsed.is_empty()).then_some(collapsed),
+        TextWhitespaceMode::Preserve => normalize_preserved_text(input, collapsed, context),
+    }
+}
+
+fn normalize_preserved_text(
+    input: &str,
+    collapsed: String,
+    context: TextBoundaryContext,
+) -> Option<String> {
+    if collapsed.is_empty() {
+        return (context.has_previous_signal
+            && context.has_next_signal
+            && input.chars().any(char::is_whitespace))
+        .then(|| String::from(" "));
+    }
+
+    let mut normalized = String::new();
+    if context.has_previous_signal && starts_with_whitespace(input) {
+        normalized.push(' ');
+    }
+    normalized.push_str(&collapsed);
+    if context.has_next_signal && ends_with_whitespace(input) {
+        normalized.push(' ');
+    }
+
+    Some(normalized)
+}
+
+fn starts_with_whitespace(input: &str) -> bool {
+    input.chars().next().is_some_and(char::is_whitespace)
+}
+
+fn ends_with_whitespace(input: &str) -> bool {
+    input.chars().next_back().is_some_and(char::is_whitespace)
 }
 
 fn collect_raw_text(node: &NodeRef) -> Option<String> {
@@ -204,7 +289,7 @@ fn render_node(node: &Node, depth: usize, options: &ConvertOptions) -> String {
         }
         Node::Doctype(name) => format!("{}doctype {}", indent(depth, options), name.trim()),
         Node::Comment(comment) => format!("{}// {}", indent(depth, options), comment.trim()),
-        Node::Text(text) => format!("{}| {}", indent(depth, options), text.trim()),
+        Node::Text(text) => format!("{}| {}", indent(depth, options), text),
         Node::Element(element) => render_element(element, depth, options),
     }
 }
@@ -264,7 +349,7 @@ fn render_element(element: &ElementNode, depth: usize, options: &ConvertOptions)
 
     if let [Node::Text(text)] = element.children.as_slice() {
         line.push(' ');
-        line.push_str(text.trim());
+        line.push_str(text);
         return line;
     }
 
