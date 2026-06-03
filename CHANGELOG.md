@@ -2,6 +2,20 @@
 
 All notable user-facing changes to `puggers` will be documented here.
 
+## 0.1.3 (2026-06-03)
+
+### Fixes
+
+#### Improve formatter recovery for malformed Pug input
+
+The `dprint-plugin-pug` formatter now recovers more gracefully from malformed
+Pug instead of dropping later structure when it encounters inconsistent
+indentation or invalid control-flow heads. It also records warning-level
+diagnostics for recoverable issues such as orphaned `else`/`default` branches,
+missing `include`/`extends` paths, and bare `when`/`while` expressions, while
+avoiding warnings for valid loop `else` branches, `default:` case shorthand,
+blank-line-separated child blocks, and multiline mixin-call argument layout.
+
 ## 0.1.2 (2026-06-02)
 
 ### Fixes
