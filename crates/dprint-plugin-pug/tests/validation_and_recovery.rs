@@ -146,3 +146,26 @@ default
         "default",
     );
 }
+
+#[test]
+fn does_not_warn_for_default_colon_shorthand_inside_case_blocks() {
+    let source = "\
+case pet
+  when 'dog': p bark
+  default: p mystery
+";
+    let report = format_source_with_diagnostics(source, &Configuration::default());
+
+    assert_same_text(
+        &report.formatted,
+        "case pet\n  when 'dog': p bark\n  default: p mystery\n",
+        "default colon shorthand should remain valid structured case syntax",
+    );
+    assert!(
+        !report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.message.contains("`default` with unexpected trailing content")
+        }),
+        "did not expect default colon shorthand to warn: {:?}",
+        report.diagnostics
+    );
+}

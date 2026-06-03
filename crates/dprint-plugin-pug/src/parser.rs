@@ -413,7 +413,11 @@ fn validate_control_flow_head(
     }
 
     let unexpected_payload = match head.kind {
-        ControlFlowKind::Else | ControlFlowKind::Default => !head.suffix.trim().is_empty(),
+        ControlFlowKind::Else => !head.suffix.trim().is_empty(),
+        ControlFlowKind::Default => {
+            let trimmed = head.suffix.trim_start();
+            !trimmed.is_empty() && !trimmed.starts_with(':')
+        }
         ControlFlowKind::If
         | ControlFlowKind::ElseIf
         | ControlFlowKind::Case
