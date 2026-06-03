@@ -201,9 +201,11 @@ fn normalize_text(
     context: TextBoundaryContext,
 ) -> Option<TextNode> {
     let collapsed = input.split_whitespace().collect::<Vec<_>>().join(" ");
-    let prose_paragraphs = (!collapsed.is_empty())
-        .then(|| vec![collapsed.clone()])
-        .unwrap_or_default();
+    let prose_paragraphs = if !collapsed.is_empty() {
+        vec![collapsed.clone()]
+    } else {
+        Vec::new()
+    };
 
     match mode {
         TextWhitespaceMode::Collapse => (!collapsed.is_empty()).then_some(TextNode {
