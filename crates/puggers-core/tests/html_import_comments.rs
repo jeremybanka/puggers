@@ -3,14 +3,14 @@ use puggers_core::{ConvertOptions, convert_html_to_pug};
 #[test]
 fn keeps_empty_comments_by_default() {
     let output = convert_html_to_pug(
-        "<!-- --><p>Hello</p>",
+        "<!doctype html><html><body><!-- --><p>Hello</p></body></html>",
         &ConvertOptions {
             trim_outer_document: true,
             ..Default::default()
         },
     );
 
-    assert_eq!(output, "//\np Hello\n");
+    assert_eq!(output, "//\n   \np Hello\n");
 }
 
 #[test]

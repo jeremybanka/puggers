@@ -97,8 +97,7 @@ fn node_from_dom(
         }
 
         let value = comment.borrow();
-        let trimmed = value.trim();
-        return (!trimmed.is_empty()).then(|| Node::Comment(trimmed.to_string()));
+        return Some(Node::Comment(comment_from_html(&value)));
     }
 
     if let Some(text) = node.as_text() {
@@ -186,8 +185,8 @@ fn dom_node_is_signal(node: &NodeRef, options: &ConvertOptions) -> bool {
         return true;
     }
 
-    if let Some(comment) = node.as_comment() {
-        return options.keep_comments && !comment.borrow().trim().is_empty();
+    if node.as_comment().is_some() {
+        return options.keep_comments;
     }
 
     node.as_text()
@@ -252,6 +251,27 @@ fn collect_raw_text(node: &NodeRef) -> Option<String> {
     (!trimmed.is_empty()).then(|| trimmed.to_string())
 }
 
+fn comment_from_html(value: &str) -> CommentNode {
+    if value.is_empty() {
+        return CommentNode {
+            inline_value: None,
+            block_lines: Vec::new(),
+        };
+    }
+
+    if !value.contains('\n') && value == value.trim() {
+        return CommentNode {
+            inline_value: Some(value.to_string()),
+            block_lines: Vec::new(),
+        };
+    }
+
+    CommentNode {
+        inline_value: None,
+        block_lines: value.split('\n').map(str::to_string).collect(),
+    }
+}
+
 fn collapse_single_nested(node: Node) -> Node {
     match node {
         Node::Element(mut element) => {
@@ -292,10 +312,28 @@ fn render_node(node: &Node, depth: usize, options: &ConvertOptions) -> String {
             format!("{}doctype html", indent(depth, options))
         }
         Node::Doctype(name) => format!("{}doctype {}", indent(depth, options), name.trim()),
-        Node::Comment(comment) => format!("{}// {}", indent(depth, options), comment.trim()),
+        Node::Comment(comment) => render_comment(comment, depth, options),
         Node::Text(text) => format!("{}| {}", indent(depth, options), text),
         Node::Element(element) => render_element(element, depth, options),
     }
+}
+
+fn render_comment(comment: &CommentNode, depth: usize, options: &ConvertOptions) -> String {
+    let mut output = format!("{}//", indent(depth, options));
+
+    if let Some(value) = &comment.inline_value {
+        output.push(' ');
+        output.push_str(value);
+        return output;
+    }
+
+    for line in &comment.block_lines {
+        output.push('\n');
+        output.push_str(&indent(depth + 1, options));
+        output.push_str(line);
+    }
+
+    output
 }
 
 fn render_element(element: &ElementNode, depth: usize, options: &ConvertOptions) -> String {
@@ -402,9 +440,15 @@ fn is_raw_text_tag(tag: &str) -> bool {
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Node {
     Doctype(String),
-    Comment(String),
+    Comment(CommentNode),
     Text(String),
     Element(ElementNode),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct CommentNode {
+    inline_value: Option<String>,
+    block_lines: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
