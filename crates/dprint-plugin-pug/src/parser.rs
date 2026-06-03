@@ -446,13 +446,7 @@ fn validate_statement_context(
 
     match head.kind {
         ControlFlowKind::Else => {
-            if !matches!(
-                previous_statement_head(prior_nodes),
-                Some(StatementHead::ControlFlow(ControlFlowHead {
-                    kind: ControlFlowKind::If | ControlFlowKind::ElseIf,
-                    ..
-                }))
-            ) {
+            if !previous_statement_head(prior_nodes).is_some_and(is_valid_else_predecessor) {
                 diagnostics.push(Diagnostic {
                     severity: DiagnosticSeverity::Warning,
                     line,
@@ -486,6 +480,24 @@ fn previous_statement_head(nodes: &[Node]) -> Option<&StatementHead> {
         Node::Statement(statement) => Some(&statement.head),
         Node::Comment(_) | Node::Text(_) | Node::RawText(_) => None,
     })
+}
+
+fn is_valid_else_predecessor(head: &StatementHead) -> bool {
+    matches!(
+        head,
+        StatementHead::ControlFlow(ControlFlowHead {
+            kind: ControlFlowKind::If | ControlFlowKind::ElseIf | ControlFlowKind::Each,
+            ..
+        })
+    ) || is_for_loop_head(head)
+}
+
+fn is_for_loop_head(head: &StatementHead) -> bool {
+    let StatementHead::Tag(head) = head else {
+        return false;
+    };
+
+    head.tag_name.as_deref() == Some("for")
 }
 
 fn control_flow_keyword(kind: ControlFlowKind) -> &'static str {

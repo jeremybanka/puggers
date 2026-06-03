@@ -87,6 +87,37 @@ else
 }
 
 #[test]
+fn does_not_warn_for_else_attached_to_each_or_for_loops() {
+    let source = "\
+ul
+  each item in items
+    li= item
+  else
+    li empty
+ul
+  for item in items
+    li= item
+  else
+    li empty
+";
+    let report = format_source_with_diagnostics(source, &Configuration::default());
+
+    assert_same_text(
+        &report.formatted,
+        "ul\n  each item in items\n    li= item\n  else\n    li empty\nul\n  for item in items\n    li= item\n  else\n    li empty\n",
+        "loop else branches should remain warning-free recoverable structure",
+    );
+    assert!(
+        !report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.message.contains("orphaned `else`")),
+        "did not expect loop else branches to be treated as orphaned: {:?}",
+        report.diagnostics
+    );
+}
+
+#[test]
 fn warns_for_invalid_default_heads_without_destructuring_the_case_block() {
     let source = "\
 case pet
