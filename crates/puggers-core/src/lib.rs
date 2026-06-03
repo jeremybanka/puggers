@@ -73,7 +73,11 @@ fn nodes_from_children(node: &NodeRef, options: &ConvertOptions) -> Vec<Node> {
         .iter()
         .enumerate()
         .filter_map(|(index, child)| {
-            node_from_dom(child, options, text_boundary_context(&children, index, options))
+            node_from_dom(
+                child,
+                options,
+                text_boundary_context(&children, index, options),
+            )
         })
         .collect()
 }
