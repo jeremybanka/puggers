@@ -15,14 +15,20 @@ issue(id="0012" status="open")
     attribute or quote-style rendering that genuinely means the same thing on
     both sides. The goal is not to force the importer and formatter into the
     same architecture, but to extract the shared policy and rendering pieces
-    that would otherwise drift.
+    that would otherwise drift. This task should also give us a more explicit
+    compatibility register, closer in spirit to the vendored-fixture inventory
+    work elsewhere in the repo, so we can see which formatter settings already
+    line up, which are intentionally importer-only, and which still need
+    alignment.
   acceptance-criteria
     criterion Define which formatter settings the converter should honor as true compatibility settings versus which remain importer-specific controls, and document that boundary.
     criterion Begin sharing at least one meaningful text-layout or rendering component between the converter and formatter rather than only mirroring behavior in parallel implementations.
     criterion Add tests that show matching settings produce intentionally aligned output decisions for width, indentation, and at least one other shared formatting concern.
+    criterion Add an explicit compatibility inventory or behavior register that shows which formatter settings currently align with converter behavior and which remain out of scope or pending.
     criterion Keep importer-only extraction behavior separate enough that shared code does not absorb DOM-selection or HTML-specific policy decisions.
     criterion Document the initial shared-core boundary so later compatibility work can extend it without reintroducing drift by accident.
   review-items
     item(status="open") Decide which settings belong in the first compatibility tranche: `lineWidth`, indentation, tabs, quote style, or only the subset already proven by tests.
     item(status="open") Confirm the first shared component is small but real, so `0012` proves the refactor direction instead of only restating intent.
+    item(status="open") Decide how much of the compatibility inventory should be backed by vendored-style fixture assertions versus hand-authored targeted cases.
     item(status="open") Make sure the importer can still diverge where HTML extraction policy truly differs from formatter rendering policy.

@@ -1,5 +1,5 @@
-issue(id="0007" status="open")
-  title Land baseline HTML-to-Pug correction and consistency fixes
+issue(id="0007" status="review")
+  title Land early HTML-to-Pug correction and consistency fixes
   user-story
     as-a maintainer of the puggers HTML converter
     i-want the importer to stop making a few avoidable normalization mistakes and to align more closely with the formatter's current whitespace and text-handling model
@@ -19,22 +19,24 @@ issue(id="0007" status="open")
     and offers only coarse outer-document and wrapper-collapse controls. Those
     defaults are useful for a first pass, but several were stronger than the
     formatter's own whitespace-sensitive model in avoidable ways. This task is
-    now centered on baseline corrections: preserving meaningful inline spacing
+    now centered on early correction work: preserving meaningful inline spacing
     when requested, preserving comments more faithfully by default, and making
     line-width-driven import output behave more like the formatter's current
-    prose and wrapping model without inventing HTML semantics that do not exist.
-    Broader questions such as full formatter-option parity, importer presets,
-    richer region-selection controls, and code sharing with the formatter should
-    be treated as follow-on tasks instead of keeping `0007` indefinitely broad.
+    prose and wrapping model without inventing HTML semantics that do not
+    exist. Broader questions such as full formatter-option parity, importer
+    presets, richer region-selection controls, and deeper code sharing with the
+    formatter should be treated as follow-on tasks instead of keeping `0007`
+    indefinitely broad or overstating how complete the importer is.
   acceptance-criteria
     criterion Document the importer's purpose as configurable signal extraction rather than strict HTML reproduction, including at least two distinct use cases with different noise-versus-signal priorities.
-    criterion Add baseline correction coverage for importer behaviors that were clearly too destructive relative to the formatter's current semantics, especially around inline text whitespace, comment preservation, and line-width-driven prose output.
+    criterion Add early correction coverage for importer behaviors that were clearly too destructive relative to the formatter's current semantics, especially around inline text whitespace, comment preservation, and line-width-driven prose output.
     criterion Ensure line-width-aware import output follows actual HTML whitespace semantics, including treating ordinary source line breaks as collapsible whitespace rather than inventing paragraph boundaries.
     criterion Add focused tests that cover contrasting import intents, including text-forward imports, structure-forward imports, comment-sensitive imports, and width-constrained prose examples, so the tradeoffs are visible and reproducible.
-    criterion Defer broader API-shape and full compatibility work to follow-on tasks once the baseline corrections are stable and intentional.
+    criterion Defer broader API-shape and full compatibility work to follow-on tasks once these early corrections are stable and intentional.
   review-items
     item(status="covered") The task is now explicitly framed around baseline corrections and consistency fixes, not full importer-feature design or full formatter-option parity.
     item(status="covered") The importer now has focused coverage and implementation for preserve-more inline text whitespace, comment preservation by default, and line-width-aware output that can emit reflowed dotted prose blocks.
     item(status="covered") The current line-width work now treats ordinary HTML source line breaks as collapsible whitespace instead of inventing paragraph boundaries during import.
-    item(status="open") Decide whether the remaining `collapse-single-nested` heuristic belongs in this task as a final correction pass or should move into a follow-on task about structural extraction policy.
-    item(status="open") Split full formatter-setting compatibility and the first formatter/importer code-sharing pass into `0012`, then move importer API-shape and profile design into later follow-on tasks so `0007` can close on a clear baseline-corrections milestone.
+    item(status="covered") Structural extraction work such as `collapse-single-nested` and richer region selection now belongs to `0013`, not to the correction-focused scope of `0007`.
+    item(status="covered") Full formatter-setting compatibility and the first formatter/importer code-sharing pass now belong to `0012`, while importer API-shape and profile design belong to later follow-on tasks.
+    item(status="covered") `0007` now moves to review as an intentionally modest early-corrections milestone, with broader compatibility, structural extraction, and API-shape work split into follow-on tasks.

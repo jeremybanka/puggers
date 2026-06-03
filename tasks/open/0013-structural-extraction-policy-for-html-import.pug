@@ -13,6 +13,9 @@ issue(id="0013" status="open")
     correction work. The output here should be a deliberate policy for wrapper
     removal and region extraction, with concrete examples of what is safe to
     drop, what must be preserved, and what should require an explicit option.
+    `collapse-single-nested` and richer region selection are distinct features,
+    but they belong together here because both are really about deciding what
+    structural context counts as noise.
   acceptance-criteria
     criterion Revisit `collapse-single-nested` and classify at least a few concrete wrapper-removal cases as safe, unsafe, or option-dependent.
     criterion Decide whether broader region-selection controls are needed beyond `trim_outer_document`, and either implement the minimal useful control set or document why the current boundary is sufficient for now.
