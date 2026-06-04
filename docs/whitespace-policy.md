@@ -5,7 +5,7 @@ This note captures the current formatter policy behind tasks `0010` and `0011`.
 ## Safe to normalize
 
 - Attribute separators inside `(...)` may be spaces, tabs, commas, or newlines in the input.
-- The formatter rewrites those separators to the canonical inline form `, `, or to one attribute per line when wrapping.
+- The formatter rewrites those separators to the canonical inline single-space form, or to one attribute per line when wrapping.
 - A missing separator after a quoted attribute value may be recovered when the next token is unambiguously another attribute.
 - A missing separator between a closed attribute list and inline tag text may be recovered as one space.
 - Tabs used only as structural separators are treated the same as spaces and normalize to a single space in formatted output.

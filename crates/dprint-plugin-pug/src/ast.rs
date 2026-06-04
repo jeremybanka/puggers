@@ -425,7 +425,7 @@ impl TagHead {
             output.push('(');
             for (index, attribute) in attributes.iter().enumerate() {
                 if index > 0 {
-                    output.push_str(", ");
+                    output.push(' ');
                 }
                 output.push_str(&attribute.to_source(config.quote_style()));
             }

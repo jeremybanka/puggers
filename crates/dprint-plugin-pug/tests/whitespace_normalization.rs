@@ -15,7 +15,7 @@ fn normalizes_space_tab_and_newline_separated_attributes() {
 
     assert_eq!(
         formatted,
-        "input(type=\"text\", disabled, data-count=items.length)\n"
+        "input(type=\"text\" disabled data-count=items.length)\n"
     );
 
     let multiline = "input(\n  type = 'text'\n\tdisabled\n  data-count = items.length\n)\n";
@@ -23,7 +23,7 @@ fn normalizes_space_tab_and_newline_separated_attributes() {
 
     assert_eq!(
         formatted_multiline,
-        "input(type=\"text\", disabled, data-count=items.length)\n"
+        "input(type=\"text\" disabled data-count=items.length)\n"
     );
 }
 
@@ -42,7 +42,7 @@ fn restores_a_missing_separator_between_quoted_attributes() {
 
     assert_eq!(
         formatted,
-        "input(type=\"text\", disabled, data-count=items.length)\n"
+        "input(type=\"text\" disabled data-count=items.length)\n"
     );
 }
 
