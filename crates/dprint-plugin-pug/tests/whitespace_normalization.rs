@@ -130,18 +130,15 @@ fn keeps_plain_text_doc_canonical_at_end_of_file() {
     let source = fs::read_to_string(&path).expect("plain-text.pug should read");
     let formatted = format_source(&source, &Configuration::default());
 
-    let source_trailing = source
-        .chars()
-        .rev()
-        .take_while(|ch| *ch == '\n')
-        .count();
-    let formatted_trailing = formatted
-        .chars()
-        .rev()
-        .take_while(|ch| *ch == '\n')
-        .count();
+    let source_trailing = source.chars().rev().take_while(|ch| *ch == '\n').count();
+    let formatted_trailing = formatted.chars().rev().take_while(|ch| *ch == '\n').count();
 
-    assert_eq!(source_trailing, 1, "unexpected source tail in {}", path.display());
+    assert_eq!(
+        source_trailing,
+        1,
+        "unexpected source tail in {}",
+        path.display()
+    );
     assert_eq!(
         formatted_trailing,
         1,
@@ -159,11 +156,7 @@ fn collapses_augmented_plain_text_doc_eof_blank_lines_in_one_pass() {
     let formatted = format_source(&augmented, &Configuration::default());
     let reformatted = format_source(&formatted, &Configuration::default());
 
-    let formatted_trailing = formatted
-        .chars()
-        .rev()
-        .take_while(|ch| *ch == '\n')
-        .count();
+    let formatted_trailing = formatted.chars().rev().take_while(|ch| *ch == '\n').count();
 
     assert_eq!(
         formatted_trailing,

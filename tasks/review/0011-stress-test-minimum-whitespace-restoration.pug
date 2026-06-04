@@ -11,8 +11,9 @@ issue(id="0011" status="review")
     this tricky because sometimes touching is correct, sometimes one space is
     required, and sometimes preserved authored spacing is the only safe choice.
     A dedicated restoration stress suite should validate the smallest safe
-    whitespace footprint across examples where missing spaces, extra spaces, or
-    misplaced line breaks visibly alter output.
+    whitespace footprint once structural compaction has already done its job,
+    across examples where missing spaces, zero-space adjacency, or preserved
+    text whitespace visibly alter output.
   acceptance-criteria
     criterion Add fixtures that exercise minimum-whitespace restoration for adjacent tags and text, punctuation boundaries, piped lines, interpolation, and prose-like dotted blocks.
     criterion Define expected output for cases where restored whitespace must be zero, one space, one blank line, or exact authored spacing.
@@ -21,4 +22,4 @@ issue(id="0011" status="review")
   review-items
     item(status="covered") Restoration coverage now checks both readable canonical output and source-significant cases such as trailing inline whitespace, space-sensitive tag heads, and quoted attribute recovery.
     item(status="covered") The policy note explicitly separates structural restoration from text payload preservation and keeps the whitespace-control examples front and center.
-    item(status="open") Confirm whether the next tranche should extend the same restoration rules beyond tag heads into other statement-head forms that still preserve authored spacing verbatim.
+    item(status="covered") Structural compaction in non-tag statement heads is now considered part of `0010`; this task stays focused on the minimum whitespace that must remain or be restored once structure has been normalized.
