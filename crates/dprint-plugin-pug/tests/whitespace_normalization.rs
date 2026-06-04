@@ -113,6 +113,82 @@ div(class=\"hero\")
 }
 
 #[test]
+fn compacts_repeated_spaces_in_non_tag_statement_heads() {
+    let source = "\
+doctype   html
+include    partials/nav
+extends    layouts/base
+block   append   scripts
+if   user.admin
+else if   user.editor
+case   kind
+when   'admin'
+default   
+each   item,   index   in   items
+while   remaining > 0
+mixin   button(label)
+-   const enabled = true
+=   user.name
+!=   html
+";
+    let formatted = format_source(source, &Configuration::default());
+
+    assert_eq!(
+        formatted,
+        "\
+doctype html
+include partials/nav
+extends layouts/base
+block append scripts
+if user.admin
+else if user.editor
+case kind
+when 'admin'
+default
+each item, index in items
+while remaining > 0
+mixin button(label)
+- const enabled = true
+= user.name
+!= html
+"
+    );
+}
+
+#[test]
+fn compacts_tab_separators_in_non_tag_statement_heads() {
+    let source = "\
+doctype\thtml
+include\t\tpartials/nav
+block\tappend\tscripts
+if\t\tuser.admin
+else if\t\tuser.editor
+each\titem,\tindex\tin\titems
+mixin\t\tbutton(label)
+-\t\tconst enabled = true
+=\t\tuser.name
+!=\t\thtml
+";
+    let formatted = format_source(source, &Configuration::default());
+
+    assert_eq!(
+        formatted,
+        "\
+doctype html
+include partials/nav
+block append scripts
+if user.admin
+else if user.editor
+each item, index in items
+mixin button(label)
+- const enabled = true
+= user.name
+!= html
+"
+    );
+}
+
+#[test]
 fn collapses_trailing_blank_lines_at_end_of_file_all_at_once() {
     let source = "p.\n  line one\n  \n  \n";
     let formatted = format_source(source, &Configuration::default());
