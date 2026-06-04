@@ -94,6 +94,100 @@ impl FilterHead {
     }
 }
 
+fn render_keyword_head(keyword: &str, suffix: &str) -> String {
+    match normalize_structural_suffix(suffix) {
+        Some(payload) if payload.starts_with(':') => format!("{keyword}{payload}"),
+        Some(payload) => format!("{keyword} {payload}"),
+        None => keyword.to_string(),
+    }
+}
+
+fn render_operator_head(operator: &str, suffix: &str) -> String {
+    match normalize_structural_suffix(suffix) {
+        Some(payload) => format!("{operator} {payload}"),
+        None => operator.to_string(),
+    }
+}
+
+fn render_attached_head(prefix: &str, suffix: &str) -> String {
+    match normalize_structural_suffix(suffix) {
+        Some(payload) => format!("{prefix}{payload}"),
+        None => prefix.to_string(),
+    }
+}
+
+fn normalize_structural_suffix(suffix: &str) -> Option<String> {
+    let trimmed = suffix.trim();
+    if trimmed.is_empty() {
+        return None;
+    }
+
+    let mut output = String::with_capacity(trimmed.len());
+    let mut pending_space = false;
+    let mut in_single_quote = false;
+    let mut in_double_quote = false;
+    let mut in_template_literal = false;
+    let mut escaped = false;
+
+    for ch in trimmed.chars() {
+        if escaped {
+            output.push(ch);
+            escaped = false;
+            continue;
+        }
+
+        if in_single_quote {
+            output.push(ch);
+            if ch == '\\' {
+                escaped = true;
+            } else if ch == '\'' {
+                in_single_quote = false;
+            }
+            continue;
+        }
+
+        if in_double_quote {
+            output.push(ch);
+            if ch == '\\' {
+                escaped = true;
+            } else if ch == '"' {
+                in_double_quote = false;
+            }
+            continue;
+        }
+
+        if in_template_literal {
+            output.push(ch);
+            if ch == '\\' {
+                escaped = true;
+            } else if ch == '`' {
+                in_template_literal = false;
+            }
+            continue;
+        }
+
+        if ch.is_whitespace() {
+            pending_space = true;
+            continue;
+        }
+
+        if pending_space && !output.is_empty() {
+            output.push(' ');
+        }
+        pending_space = false;
+        output.push(ch);
+
+        match ch {
+            '\'' => in_single_quote = true,
+            '"' => in_double_quote = true,
+            '`' => in_template_literal = true,
+            _ => {}
+        }
+    }
+
+    Some(output)
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IncludeHead {
     pub suffix: String,
@@ -101,7 +195,7 @@ pub struct IncludeHead {
 
 impl IncludeHead {
     pub fn to_source(&self) -> String {
-        format!("include{}", self.suffix.trim_end())
+        render_keyword_head("include", &self.suffix)
     }
 }
 
@@ -112,7 +206,7 @@ pub struct ExtendsHead {
 
 impl ExtendsHead {
     pub fn to_source(&self) -> String {
-        format!("extends{}", self.suffix.trim_end())
+        render_keyword_head("extends", &self.suffix)
     }
 }
 
@@ -125,7 +219,7 @@ pub struct BlockHead {
 
 impl BlockHead {
     pub fn to_source(&self) -> String {
-        format!("block{}", self.suffix.trim_end())
+        render_keyword_head("block", &self.suffix)
     }
 }
 
@@ -142,7 +236,7 @@ pub struct MixinHead {
 
 impl MixinHead {
     pub fn to_source(&self) -> String {
-        format!("mixin{}", self.suffix.trim_end())
+        render_keyword_head("mixin", &self.suffix)
     }
 }
 
@@ -153,7 +247,11 @@ pub struct MixinCallHead {
 
 impl MixinCallHead {
     pub fn to_source(&self) -> String {
-        format!("+{}", self.suffix.trim_end())
+        if self.suffix.contains('\n') {
+            format!("+{}", self.suffix.trim_end())
+        } else {
+            render_attached_head("+", &self.suffix)
+        }
     }
 }
 
@@ -165,7 +263,7 @@ pub struct CodeHead {
 
 impl CodeHead {
     pub fn to_source(&self) -> String {
-        format!("{}{}", self.kind.operator(), self.suffix.trim_end())
+        render_operator_head(self.kind.operator(), &self.suffix)
     }
 }
 
@@ -194,7 +292,7 @@ pub struct ControlFlowHead {
 
 impl ControlFlowHead {
     pub fn to_source(&self) -> String {
-        format!("{}{}", self.kind.keyword(), self.suffix.trim_end())
+        render_keyword_head(self.kind.keyword(), &self.suffix)
     }
 }
 
@@ -380,17 +478,10 @@ pub struct DoctypeHead {
 
 impl DoctypeHead {
     pub fn to_source(&self) -> String {
-        let mut output = String::from("doctype");
-
-        if let Some(spacing) = &self.spacing {
-            output.push_str(spacing);
+        match self.value.as_deref().and_then(normalize_structural_suffix) {
+            Some(value) => format!("doctype {value}"),
+            None => String::from("doctype"),
         }
-
-        if let Some(value) = &self.value {
-            output.push_str(value);
-        }
-
-        output.trim_end().to_string()
     }
 }
 

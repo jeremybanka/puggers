@@ -1,0 +1,15 @@
+doctype html
+include partials/nav
+extends layouts/base
+block append scripts
+if user.admin
+else if user.editor
+case kind
+when 'admin'
+default
+each item, index in items
+while remaining > 0
+mixin button(label)
+- const enabled = true
+= user.name
+!= html
