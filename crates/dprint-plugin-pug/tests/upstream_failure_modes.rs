@@ -63,8 +63,8 @@ fn upstream_failure_modes_have_a_pinned_current_behavior_split() {
     assert_eq!(
         format_counts.into_iter().collect::<Vec<_>>(),
         vec![
-            (FormatOutcome::Idempotent, 14),
-            (FormatOutcome::Rewritten, 41),
+            (FormatOutcome::Idempotent, 13),
+            (FormatOutcome::Rewritten, 42),
         ]
     );
 
@@ -72,8 +72,8 @@ fn upstream_failure_modes_have_a_pinned_current_behavior_split() {
         structure_counts.into_iter().collect::<Vec<_>>(),
         vec![
             (StructureCoverage::FullyStructured, 39),
-            (StructureCoverage::Mixed, 5),
-            (StructureCoverage::RawOnly, 11),
+            (StructureCoverage::Mixed, 6),
+            (StructureCoverage::RawOnly, 10),
         ]
     );
 

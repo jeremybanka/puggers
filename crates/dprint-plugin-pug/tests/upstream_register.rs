@@ -97,10 +97,10 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
             ((FixtureRole::Example, FormatOutcome::Rewritten), 16),
             ((FixtureRole::Case, FormatOutcome::Idempotent), 66),
             ((FixtureRole::Case, FormatOutcome::Rewritten), 242),
-            ((FixtureRole::AntiCase, FormatOutcome::Idempotent), 14),
-            ((FixtureRole::AntiCase, FormatOutcome::Rewritten), 41),
-            ((FixtureRole::Support, FormatOutcome::Idempotent), 13),
-            ((FixtureRole::Support, FormatOutcome::Rewritten), 64),
+            ((FixtureRole::AntiCase, FormatOutcome::Idempotent), 13),
+            ((FixtureRole::AntiCase, FormatOutcome::Rewritten), 42),
+            ((FixtureRole::Support, FormatOutcome::Idempotent), 12),
+            ((FixtureRole::Support, FormatOutcome::Rewritten), 65),
         ],
         "format outcome register drifted\n{report}"
     );
@@ -114,22 +114,22 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
             ),
             ((FixtureRole::Example, StructureCoverage::Mixed), 9),
             ((FixtureRole::Case, StructureCoverage::NoStatements), 4),
-            ((FixtureRole::Case, StructureCoverage::FullyStructured), 225),
-            ((FixtureRole::Case, StructureCoverage::Mixed), 75),
+            ((FixtureRole::Case, StructureCoverage::FullyStructured), 230),
+            ((FixtureRole::Case, StructureCoverage::Mixed), 70),
             ((FixtureRole::Case, StructureCoverage::RawOnly), 4),
             (
                 (FixtureRole::AntiCase, StructureCoverage::FullyStructured),
                 39
             ),
-            ((FixtureRole::AntiCase, StructureCoverage::Mixed), 5),
-            ((FixtureRole::AntiCase, StructureCoverage::RawOnly), 11),
+            ((FixtureRole::AntiCase, StructureCoverage::Mixed), 6),
+            ((FixtureRole::AntiCase, StructureCoverage::RawOnly), 10),
             ((FixtureRole::Support, StructureCoverage::NoStatements), 1),
             (
                 (FixtureRole::Support, StructureCoverage::FullyStructured),
-                72
+                74
             ),
-            ((FixtureRole::Support, StructureCoverage::Mixed), 2),
-            ((FixtureRole::Support, StructureCoverage::RawOnly), 2),
+            ((FixtureRole::Support, StructureCoverage::Mixed), 1),
+            ((FixtureRole::Support, StructureCoverage::RawOnly), 1),
         ],
         "structure coverage register drifted\n{report}"
     );

@@ -830,28 +830,34 @@ fn parse_tag_head(content: &str) -> Option<TagHead> {
     let mut inline_text = None;
     if cursor < content.len() {
         let remainder = &content[cursor..];
-        if !remainder
+        if remainder
             .chars()
             .next()
             .is_some_and(|ch| ch.is_whitespace())
         {
-            return None;
-        }
+            let separator_len = remainder
+                .chars()
+                .next()
+                .map(char::len_utf8)
+                .expect("whitespace remainder should have a first character");
+            let separator = &remainder[..separator_len];
+            let text = &remainder[separator_len..];
 
-        let spacing_len = remainder
-            .chars()
-            .take_while(|ch| ch.is_whitespace())
-            .map(char::len_utf8)
-            .sum();
-        let spacing = &remainder[..spacing_len];
-        let text = &remainder[spacing_len..];
-
-        if !text.is_empty() {
-            inline_space = Some(spacing.to_string());
+            if text.chars().any(|ch| !ch.is_whitespace()) {
+                inline_space = Some(separator.to_string());
+                inline_text = Some(InlineText {
+                    kind: classify_inline_text(text),
+                    content: text.to_string(),
+                });
+            }
+        } else if attributes.is_some() {
+            inline_space = Some(String::from(" "));
             inline_text = Some(InlineText {
-                kind: classify_inline_text(text),
-                content: text.to_string(),
+                kind: classify_inline_text(remainder),
+                content: remainder.to_string(),
             });
+        } else {
+            return None;
         }
     }
 
@@ -903,37 +909,321 @@ fn parse_attributes(content: &str) -> Option<Vec<Attribute>> {
     }
 
     let mut attributes = Vec::new();
-    for entry in split_top_level_attributes(trimmed) {
-        let entry = entry.trim();
-        if entry.is_empty() {
-            continue;
+    let mut cursor = 0;
+
+    while cursor < trimmed.len() {
+        cursor = skip_attribute_separators(trimmed, cursor);
+        if cursor >= trimmed.len() {
+            break;
         }
-        attributes.push(parse_attribute(entry)?);
+
+        let (attribute, next_cursor) = parse_attribute_entry(trimmed, cursor)?;
+        attributes.push(attribute);
+        cursor = next_cursor;
     }
 
     Some(attributes)
 }
 
-fn parse_attribute(content: &str) -> Option<Attribute> {
-    let trimmed = content.trim();
-    let Some(split_index) = find_top_level_equals(trimmed) else {
-        return Some(Attribute {
-            name: trimmed.to_string(),
-            value: None,
-        });
-    };
+fn skip_attribute_separators(content: &str, mut cursor: usize) -> usize {
+    while cursor < content.len() {
+        let ch = content[cursor..]
+            .chars()
+            .next()
+            .expect("cursor should remain on a character boundary");
+        if ch == ',' || ch.is_whitespace() {
+            cursor += ch.len_utf8();
+            continue;
+        }
+        break;
+    }
 
-    let name = trimmed[..split_index].trim();
-    let value = trimmed[split_index + 1..].trim();
+    cursor
+}
 
-    if name.is_empty() || value.is_empty() {
+fn parse_attribute_entry(content: &str, start: usize) -> Option<(Attribute, usize)> {
+    let name_end = consume_attribute_name_token(content, start)?;
+    let name = &content[start..name_end];
+    let mut cursor = skip_inline_attribute_whitespace(content, name_end);
+
+    if cursor >= content.len() || !content[cursor..].starts_with('=') {
+        return Some((
+            Attribute {
+                name: name.to_string(),
+                value: None,
+            },
+            name_end,
+        ));
+    }
+
+    cursor += '='.len_utf8();
+    cursor = skip_inline_attribute_whitespace(content, cursor);
+    let value_end = scan_attribute_value_end(content, cursor)?;
+    let value = &content[cursor..value_end];
+    if value.is_empty() {
         return None;
     }
 
-    Some(Attribute {
-        name: name.to_string(),
-        value: Some(parse_attribute_value(value)),
-    })
+    Some((
+        Attribute {
+            name: name.to_string(),
+            value: Some(parse_attribute_value(value)),
+        },
+        value_end,
+    ))
+}
+
+fn skip_inline_attribute_whitespace(content: &str, mut cursor: usize) -> usize {
+    while cursor < content.len() {
+        let ch = content[cursor..]
+            .chars()
+            .next()
+            .expect("cursor should remain on a character boundary");
+        if is_attribute_linebreak(ch) || !ch.is_whitespace() {
+            break;
+        }
+        cursor += ch.len_utf8();
+    }
+
+    cursor
+}
+
+fn scan_attribute_value_end(content: &str, start: usize) -> Option<usize> {
+    if start >= content.len() {
+        return None;
+    }
+
+    let mut cursor = start;
+    let mut in_quote = None;
+    let mut escaped = false;
+    let mut paren_depth = 0isize;
+    let mut bracket_depth = 0isize;
+    let mut brace_depth = 0isize;
+    let mut can_terminate_without_separator = false;
+
+    while cursor < content.len() {
+        if can_terminate_without_separator && starts_attribute_candidate(content, cursor) {
+            return Some(cursor);
+        }
+
+        let ch = content[cursor..]
+            .chars()
+            .next()
+            .expect("cursor should remain on a character boundary");
+
+        if let Some(quote) = in_quote {
+            if escaped {
+                escaped = false;
+                cursor += ch.len_utf8();
+                continue;
+            }
+
+            if ch == '\\' {
+                escaped = true;
+                cursor += ch.len_utf8();
+                continue;
+            }
+
+            if ch == quote {
+                in_quote = None;
+                can_terminate_without_separator =
+                    paren_depth == 0 && bracket_depth == 0 && brace_depth == 0;
+            }
+
+            cursor += ch.len_utf8();
+            continue;
+        }
+
+        match ch {
+            '\'' | '"' => {
+                in_quote = Some(ch);
+                can_terminate_without_separator = false;
+                cursor += ch.len_utf8();
+            }
+            '(' => {
+                paren_depth += 1;
+                can_terminate_without_separator = false;
+                cursor += ch.len_utf8();
+            }
+            ')' => {
+                paren_depth -= 1;
+                can_terminate_without_separator =
+                    paren_depth == 0 && bracket_depth == 0 && brace_depth == 0;
+                cursor += ch.len_utf8();
+            }
+            '[' => {
+                bracket_depth += 1;
+                can_terminate_without_separator = false;
+                cursor += ch.len_utf8();
+            }
+            ']' => {
+                bracket_depth -= 1;
+                can_terminate_without_separator =
+                    paren_depth == 0 && bracket_depth == 0 && brace_depth == 0;
+                cursor += ch.len_utf8();
+            }
+            '{' => {
+                brace_depth += 1;
+                can_terminate_without_separator = false;
+                cursor += ch.len_utf8();
+            }
+            '}' => {
+                brace_depth -= 1;
+                can_terminate_without_separator =
+                    paren_depth == 0 && bracket_depth == 0 && brace_depth == 0;
+                cursor += ch.len_utf8();
+            }
+            ',' if paren_depth == 0 && bracket_depth == 0 && brace_depth == 0 => {
+                return Some(cursor);
+            }
+            ch if is_attribute_linebreak(ch)
+                && paren_depth == 0
+                && bracket_depth == 0
+                && brace_depth == 0 =>
+            {
+                return Some(cursor);
+            }
+            ch if ch.is_whitespace()
+                && paren_depth == 0
+                && bracket_depth == 0
+                && brace_depth == 0 =>
+            {
+                let next_cursor = skip_horizontal_attribute_whitespace(content, cursor);
+                if next_cursor >= content.len()
+                    || content[next_cursor..].starts_with(',')
+                    || content[next_cursor..]
+                        .chars()
+                        .next()
+                        .is_some_and(is_attribute_linebreak)
+                {
+                    return Some(cursor);
+                }
+                if can_terminate_without_separator
+                    && starts_attribute_candidate(content, next_cursor)
+                {
+                    return Some(cursor);
+                }
+                if looks_like_next_attribute(content, next_cursor) {
+                    return Some(cursor);
+                }
+                can_terminate_without_separator = false;
+                cursor = next_cursor;
+            }
+            _ => {
+                can_terminate_without_separator = false;
+                cursor += ch.len_utf8();
+            }
+        }
+    }
+
+    Some(cursor)
+}
+
+fn skip_horizontal_attribute_whitespace(content: &str, mut cursor: usize) -> usize {
+    while cursor < content.len() {
+        let ch = content[cursor..]
+            .chars()
+            .next()
+            .expect("cursor should remain on a character boundary");
+        if is_attribute_linebreak(ch) || !ch.is_whitespace() {
+            break;
+        }
+        cursor += ch.len_utf8();
+    }
+
+    cursor
+}
+
+fn looks_like_next_attribute(content: &str, start: usize) -> bool {
+    if start >= content.len() {
+        return false;
+    }
+
+    let Some(name_end) = consume_attribute_name_token(content, start) else {
+        return false;
+    };
+
+    let cursor = skip_inline_attribute_whitespace(content, name_end);
+    cursor >= content.len()
+        || content[cursor..].starts_with('=')
+        || content[cursor..].starts_with(',')
+        || content[cursor..]
+            .chars()
+            .next()
+            .is_some_and(is_attribute_linebreak)
+}
+
+fn starts_attribute_candidate(content: &str, start: usize) -> bool {
+    consume_attribute_name_token(content, start).is_some()
+}
+
+fn consume_attribute_name_token(content: &str, start: usize) -> Option<usize> {
+    if start >= content.len() {
+        return None;
+    }
+
+    let first = content[start..].chars().next()?;
+    if matches!(first, '\'' | '"') {
+        return consume_quoted_segment(content, start);
+    }
+
+    if !is_attribute_name_start(first) {
+        return None;
+    }
+
+    let mut cursor = start + first.len_utf8();
+    while cursor < content.len() {
+        let ch = content[cursor..]
+            .chars()
+            .next()
+            .expect("cursor should remain on a character boundary");
+        if !is_attribute_name_continue(ch) {
+            break;
+        }
+        cursor += ch.len_utf8();
+    }
+
+    Some(cursor)
+}
+
+fn consume_quoted_segment(content: &str, start: usize) -> Option<usize> {
+    let quote = content[start..].chars().next()?;
+    let mut cursor = start + quote.len_utf8();
+    let mut escaped = false;
+
+    while cursor < content.len() {
+        let ch = content[cursor..].chars().next()?;
+        if escaped {
+            escaped = false;
+            cursor += ch.len_utf8();
+            continue;
+        }
+
+        if ch == '\\' {
+            escaped = true;
+            cursor += ch.len_utf8();
+            continue;
+        }
+
+        cursor += ch.len_utf8();
+        if ch == quote {
+            return Some(cursor);
+        }
+    }
+
+    None
+}
+
+fn is_attribute_name_start(ch: char) -> bool {
+    ch.is_ascii_alphabetic() || matches!(ch, '_' | ':' | '@' | '[')
+}
+
+fn is_attribute_name_continue(ch: char) -> bool {
+    ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-' | ':' | '@' | '.' | '$' | '[' | ']')
+}
+
+fn is_attribute_linebreak(ch: char) -> bool {
+    matches!(ch, '\n' | '\r')
 }
 
 fn parse_attribute_value(content: &str) -> AttributeValue {
@@ -989,100 +1279,6 @@ fn is_wrapped_in_single_top_level_quote(content: &str, quote: char) -> bool {
     }
 
     close_index == Some(content.len() - quote.len_utf8())
-}
-
-fn find_top_level_equals(content: &str) -> Option<usize> {
-    let mut in_quote = None;
-    let mut escaped = false;
-    let mut paren_depth = 0isize;
-    let mut bracket_depth = 0isize;
-    let mut brace_depth = 0isize;
-
-    for (index, ch) in content.char_indices() {
-        if let Some(quote) = in_quote {
-            if escaped {
-                escaped = false;
-                continue;
-            }
-
-            if ch == '\\' {
-                escaped = true;
-                continue;
-            }
-
-            if ch == quote {
-                in_quote = None;
-            }
-            continue;
-        }
-
-        match ch {
-            '\'' | '"' => in_quote = Some(ch),
-            '(' => paren_depth += 1,
-            ')' => paren_depth -= 1,
-            '[' => bracket_depth += 1,
-            ']' => bracket_depth -= 1,
-            '{' => brace_depth += 1,
-            '}' => brace_depth -= 1,
-            '=' if paren_depth == 0 && bracket_depth == 0 && brace_depth == 0 => {
-                return Some(index);
-            }
-            _ => {}
-        }
-    }
-
-    None
-}
-
-fn split_top_level_attributes(content: &str) -> Vec<&str> {
-    let mut parts = Vec::new();
-    let mut start = 0;
-    let mut in_quote = None;
-    let mut escaped = false;
-    let mut paren_depth = 0isize;
-    let mut bracket_depth = 0isize;
-    let mut brace_depth = 0isize;
-
-    for (index, ch) in content.char_indices() {
-        if let Some(quote) = in_quote {
-            if escaped {
-                escaped = false;
-                continue;
-            }
-
-            if ch == '\\' {
-                escaped = true;
-                continue;
-            }
-
-            if ch == quote {
-                in_quote = None;
-            }
-            continue;
-        }
-
-        match ch {
-            '\'' | '"' => in_quote = Some(ch),
-            '(' => paren_depth += 1,
-            ')' => paren_depth -= 1,
-            '[' => bracket_depth += 1,
-            ']' => bracket_depth -= 1,
-            '{' => brace_depth += 1,
-            '}' => brace_depth -= 1,
-            ',' if paren_depth == 0 && bracket_depth == 0 && brace_depth == 0 => {
-                parts.push(&content[start..index]);
-                start = index + ch.len_utf8();
-            }
-            '\n' if paren_depth == 0 && bracket_depth == 0 && brace_depth == 0 => {
-                parts.push(&content[start..index]);
-                start = index + ch.len_utf8();
-            }
-            _ => {}
-        }
-    }
-
-    parts.push(&content[start..]);
-    parts
 }
 
 fn parse_tag_name(content: &str, start: usize) -> Option<(&str, usize)> {

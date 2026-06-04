@@ -101,7 +101,7 @@ pub struct IncludeHead {
 
 impl IncludeHead {
     pub fn to_source(&self) -> String {
-        format!("include{}", self.suffix)
+        format!("include{}", self.suffix.trim_end())
     }
 }
 
@@ -112,7 +112,7 @@ pub struct ExtendsHead {
 
 impl ExtendsHead {
     pub fn to_source(&self) -> String {
-        format!("extends{}", self.suffix)
+        format!("extends{}", self.suffix.trim_end())
     }
 }
 
@@ -125,7 +125,7 @@ pub struct BlockHead {
 
 impl BlockHead {
     pub fn to_source(&self) -> String {
-        format!("block{}", self.suffix)
+        format!("block{}", self.suffix.trim_end())
     }
 }
 
@@ -142,7 +142,7 @@ pub struct MixinHead {
 
 impl MixinHead {
     pub fn to_source(&self) -> String {
-        format!("mixin{}", self.suffix)
+        format!("mixin{}", self.suffix.trim_end())
     }
 }
 
@@ -153,7 +153,7 @@ pub struct MixinCallHead {
 
 impl MixinCallHead {
     pub fn to_source(&self) -> String {
-        format!("+{}", self.suffix)
+        format!("+{}", self.suffix.trim_end())
     }
 }
 
@@ -165,7 +165,7 @@ pub struct CodeHead {
 
 impl CodeHead {
     pub fn to_source(&self) -> String {
-        format!("{}{}", self.kind.operator(), self.suffix)
+        format!("{}{}", self.kind.operator(), self.suffix.trim_end())
     }
 }
 
@@ -194,7 +194,7 @@ pub struct ControlFlowHead {
 
 impl ControlFlowHead {
     pub fn to_source(&self) -> String {
-        format!("{}{}", self.kind.keyword(), self.suffix)
+        format!("{}{}", self.kind.keyword(), self.suffix.trim_end())
     }
 }
 
@@ -334,8 +334,11 @@ impl TagHead {
             output.push(')');
         }
 
-        if let (Some(inline_space), Some(inline_text)) = (&self.inline_space, &self.inline_text) {
-            output.push_str(inline_space);
+        if self.inline_space.is_some() && self.inline_text.is_some() {
+            output.push(' ');
+        }
+
+        if let Some(inline_text) = &self.inline_text {
             output.push_str(&inline_text.content);
         }
 
@@ -387,7 +390,7 @@ impl DoctypeHead {
             output.push_str(value);
         }
 
-        output
+        output.trim_end().to_string()
     }
 }
 
