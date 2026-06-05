@@ -168,7 +168,31 @@ fn parse_block(
         nodes.push(node);
     }
 
+    if mode == ParseMode::RawText {
+        trim_blank_raw_text_edges(&mut nodes);
+    }
+
     (nodes, index)
+}
+
+fn trim_blank_raw_text_edges(nodes: &mut Vec<Node>) {
+    let leading_non_blank = nodes
+        .iter()
+        .position(|node| !matches!(node, Node::RawText(text) if text.content.is_empty()))
+        .unwrap_or(nodes.len());
+    if leading_non_blank > 0 {
+        nodes.drain(..leading_non_blank);
+    }
+
+    let trailing_blank_count = nodes
+        .iter()
+        .rev()
+        .take_while(|node| matches!(node, Node::RawText(text) if text.content.is_empty()))
+        .count();
+    if trailing_blank_count > 0 {
+        let keep_len = nodes.len() - trailing_blank_count;
+        nodes.truncate(keep_len);
+    }
 }
 
 fn block_has_children(lines: &[LexedLine], start_index: usize, parent_indent: usize) -> bool {

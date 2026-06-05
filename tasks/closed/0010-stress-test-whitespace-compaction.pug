@@ -1,4 +1,4 @@
-issue(id="0010" status="review")
+issue(id="0010" status="closed")
   title Stress test aggressive whitespace compaction
   user-story
     as-a maintainer of puggers
@@ -22,5 +22,5 @@ issue(id="0010" status="review")
   review-items
     item(status="covered") The stress suite now exercises hand-authored Pug cases around attribute separators, recoverable missing separators, inline trailing whitespace, and tab-driven structural normalization.
     item(status="covered") `docs/whitespace-policy.md` records which separator compactions are safe, conditional, or unsafe so later work can reuse the policy instead of rediscovering it.
-    item(status="open") Validate blank-line compaction more broadly across plain statements, nested blocks, comments, filters, dotted text, raw-text tags, and mixed-content files before closing the compaction track.
+    item(status="covered") Blank-line compaction is now validated across plain statements, nested blocks, comments, filters, dotted text, raw-text tags, and mixed-content files.
     item(status="covered") Repeated structural spaces and tabs in non-tag statement heads are now compacted and verified as part of this task's compaction policy.
