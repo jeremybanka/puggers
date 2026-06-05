@@ -47,10 +47,10 @@ fn parses_statement_heads_into_structured_ast() {
                 &statement.head,
                 StatementHead::Tag(head)
                     if head.tag_name.as_deref() == Some("p")
-                        && head.inline_space.as_deref() == Some("   ")
+                        && head.inline_space.as_deref() == Some(" ")
                         && head.inline_text.as_ref().is_some_and(|text|
                             text.kind == InlineTextKind::Plain
-                                && text.content == "hello world"
+                                && text.content == "  hello world"
                         )
             )
     ));

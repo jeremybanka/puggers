@@ -14,10 +14,7 @@ pub fn format(document: &Document, config: &Configuration) -> String {
         write_node(&mut output, node, 0, config);
     }
 
-    if !output.ends_with('\n') {
-        output.push('\n');
-    }
-
+    collapse_trailing_blank_lines(&mut output);
     output
 }
 
@@ -158,8 +155,11 @@ fn write_wrapped_tag_head(
     write_indent(output, depth, config.indent_width(), config.use_tabs());
     output.push(')');
 
-    if let (Some(inline_space), Some(inline_text)) = (&head.inline_space, &head.inline_text) {
-        output.push_str(inline_space);
+    if head.inline_space.is_some() && head.inline_text.is_some() {
+        output.push(' ');
+    }
+
+    if let Some(inline_text) = &head.inline_text {
         output.push_str(&inline_text.content);
     }
 }
@@ -294,5 +294,25 @@ fn write_indent(output: &mut String, depth: usize, indent_width: usize, use_tabs
         for _ in 0..indent_width {
             output.push(' ');
         }
+    }
+}
+
+fn collapse_trailing_blank_lines(output: &mut String) {
+    if !output.ends_with('\n') {
+        output.push('\n');
+    }
+
+    while let Some(last_newline) = output.rfind('\n') {
+        let prefix = &output[..last_newline];
+        let Some(line_start) = prefix.rfind('\n').map(|index| index + 1) else {
+            break;
+        };
+        if !output[line_start..last_newline]
+            .chars()
+            .all(char::is_whitespace)
+        {
+            break;
+        }
+        output.truncate(line_start);
     }
 }

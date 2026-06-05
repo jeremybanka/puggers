@@ -1,0 +1,24 @@
+issue(id="0015" status="open")
+  title Add configurable text-payload whitespace compaction with opt-out control
+  user-story
+    as-a maintainer of puggers
+    i-want a configurable policy for compacting repeated spaces and tabs inside text payloads
+    so-that teams can use tighter default output while still disabling the behavior where authored text spacing must be preserved
+  premise.
+    The current formatter policy intentionally distinguishes structural
+    whitespace from text payload whitespace. That keeps authored text safe in
+    Pug contexts where repeated spaces or tabs may still be meaningful, but it
+    leaves open a future policy for projects that want more aggressive cleanup
+    in prose-like content. Any such behavior should have explicit configuration,
+    should default to the formatter's preferred behavior unless opted out, and
+    should document its rendering assumptions while avoiding whitespace-
+    preserving regions such as preformatted output, raw text blocks, or other
+    contexts where repeated spacing is intended content.
+  acceptance-criteria
+    criterion Define the exact scope of text-payload whitespace compaction, including which Pug text contexts are eligible by default and which must remain untouched.
+    criterion Add focused fixtures showing safe cases, unsafe cases, and ambiguous cases for repeated spaces and tabs between words.
+    criterion Specify the user-facing configuration shape and the default behavior, making clear how projects opt out when authored spacing should win.
+    criterion Document the rendering assumptions and risks, including HTML whitespace collapse versus preserved-whitespace contexts such as preformatted output or CSS white-space controls.
+  review-items
+    item(status="open") Decide whether the option belongs in the formatter core, the importer, or both.
+    item(status="open") Confirm whether the default-enabled behavior should begin with plain inline text only before considering piped lines, dotted prose, or broader block-text contexts.

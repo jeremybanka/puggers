@@ -1,0 +1,22 @@
+issue(id="0016" status="closed")
+  title Canonicalize inline attributes to space-separated form
+  user-story
+    as-a maintainer of puggers
+    i-want inline attributes to format in a more idiomatic Pug style
+    so-that canonical output matches common Pug conventions without unnecessary punctuation
+  premise.
+    The formatter previously canonicalized inline attribute separators to commas,
+    even though Pug treats commas as optional and common examples use simple
+    space-separated attributes. That comma style predated the whitespace tasks,
+    but it proved less desirable as the default canonical output. The formatter
+    now prefers single-space separators between inline attributes while still
+    accepting commas, spaces, tabs, and newlines in the input.
+  acceptance-criteria
+    criterion Format inline attribute lists with single spaces between attributes in canonical output.
+    criterion Continue to accept comma-, space-, tab-, and newline-separated attribute input without parse regressions.
+    criterion Keep wrapped multiline attribute layout behavior unchanged.
+    criterion Rebaseline checked-in docs and tests so canonical fixtures match the new attribute style.
+  review-items
+    item(status="covered") Inline attribute formatting now emits space-separated canonical output instead of commas.
+    item(status="covered") Attribute, whitespace-normalization, line-width, and docs-idempotence coverage all pass with the new style.
+    item(status="covered") The checked-in Pug docs under `docs/pug/2026-05-31` have been reformatted to the new canonical attribute style.

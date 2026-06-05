@@ -34,7 +34,7 @@ fn keeps_short_attribute_lists_inline_even_with_line_width() {
         },
     );
 
-    assert_eq!(formatted, source);
+    assert_eq!(formatted, "a.link(href=\"/docs\" title=\"Docs\") Docs\n");
 }
 
 #[test]

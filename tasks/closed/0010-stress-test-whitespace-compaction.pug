@@ -1,0 +1,26 @@
+issue(id="0010" status="closed")
+  title Stress test aggressive whitespace compaction
+  user-story
+    as-a maintainer of puggers
+    i-want a focused stress suite for whitespace compaction
+    so-that we can measure how far normalization can go before semantics or readability break
+  premise.
+    Several future formatter improvements will be tempted to compact whitespace:
+    collapsing redundant spaces, trimming blank lines, or minimizing
+    statement-head and attribute-list separators. In Pug, those moves can be
+    deceptively dangerous once they cross from structural whitespace into text
+    payloads such as piped text, dotted blocks, inline tag text, and
+    interpolation-heavy prose. A dedicated stress test task should push
+    structural compaction hard on representative and adversarial fixtures so we
+    can identify the exact boundaries where normalization stops being safe and
+    where text payload policies must remain separate.
+  acceptance-criteria
+    criterion Add a fixture suite that exercises aggressive structural whitespace compaction across statement heads, attribute lists, comments, blank lines, and other grammar-closed separators.
+    criterion Record which structural compaction transforms are safe, conditionally safe, or clearly unsafe, with examples for each category and with text-payload cases called out as out of scope for this task.
+    criterion Include cases where compaction changes rendered output, not just source appearance, so regressions are obvious.
+    criterion Produce a short summary of compaction findings that later formatting tasks can treat as policy input rather than rediscovering ad hoc.
+  review-items
+    item(status="covered") The stress suite now exercises hand-authored Pug cases around attribute separators, recoverable missing separators, inline trailing whitespace, and tab-driven structural normalization.
+    item(status="covered") `docs/whitespace-policy.md` records which separator compactions are safe, conditional, or unsafe so later work can reuse the policy instead of rediscovering it.
+    item(status="covered") Blank-line compaction is now validated across plain statements, nested blocks, comments, filters, dotted text, raw-text tags, and mixed-content files.
+    item(status="covered") Repeated structural spaces and tabs in non-tag statement heads are now compacted and verified as part of this task's compaction policy.

@@ -59,7 +59,7 @@ fn normalizes_attribute_spacing_and_defaults_to_double_quotes() {
 
     assert_eq!(
         formatted,
-        "input(type=\"text\", disabled, data-empty=\"\", data-count=items.length)\n"
+        "input(type=\"text\" disabled data-empty=\"\" data-count=items.length)\n"
     );
 }
 
@@ -74,7 +74,7 @@ fn supports_single_quotes_when_configured() {
         },
     );
 
-    assert_eq!(formatted, "input(type='text', title='Hello world')\n");
+    assert_eq!(formatted, "input(type='text' title='Hello world')\n");
 }
 
 #[test]
@@ -84,6 +84,6 @@ fn preserves_attribute_order_while_normalizing_formatting() {
 
     assert_eq!(
         formatted,
-        "a(data-z=\"last\", aria-label=\"Docs\", href=\"/docs\") Docs\n"
+        "a(data-z=\"last\" aria-label=\"Docs\" href=\"/docs\") Docs\n"
     );
 }

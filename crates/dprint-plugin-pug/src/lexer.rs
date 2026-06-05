@@ -6,8 +6,14 @@ pub struct LexedLine {
 }
 
 pub fn lex(source: &str) -> Vec<LexedLine> {
-    source
-        .lines()
+    let mut lines = source.split('\n').collect::<Vec<_>>();
+    if source.ends_with('\n') {
+        lines.pop();
+    }
+
+    lines
+        .into_iter()
+        .map(|line| line.strip_suffix('\r').unwrap_or(line))
         .map(|line| {
             let indent = line.chars().take_while(|ch| *ch == ' ').count();
             LexedLine {

@@ -1,4 +1,4 @@
-issue(id="0011" status="open")
+issue(id="0011" status="closed")
   title Stress test minimum whitespace restoration
   user-story
     as-a maintainer of puggers
@@ -11,14 +11,15 @@ issue(id="0011" status="open")
     this tricky because sometimes touching is correct, sometimes one space is
     required, and sometimes preserved authored spacing is the only safe choice.
     A dedicated restoration stress suite should validate the smallest safe
-    whitespace footprint across examples where missing spaces, extra spaces, or
-    misplaced line breaks visibly alter output.
+    whitespace footprint once structural compaction has already done its job,
+    across examples where missing spaces, zero-space adjacency, or preserved
+    text whitespace visibly alter output.
   acceptance-criteria
     criterion Add fixtures that exercise minimum-whitespace restoration for adjacent tags and text, punctuation boundaries, piped lines, interpolation, and prose-like dotted blocks.
     criterion Define expected output for cases where restored whitespace must be zero, one space, one blank line, or exact authored spacing.
     criterion Include adversarial examples where a naive “always add one space” rule would be wrong.
     criterion Produce guidance that later text-formatting and line-width tasks can use when deciding whether and how to restore spacing.
   review-items
-    item(status="open") Decide whether minimum whitespace restoration should be evaluated from rendered HTML expectations, source readability expectations, or both.
-    item(status="open") Confirm whether restoration policy differs between inline text and block-oriented prose contexts.
-    item(status="open") Keep examples from the whitespace-control docs prominent because they capture real user expectations better than abstract synthetic cases alone.
+    item(status="covered") Restoration coverage now checks both readable canonical output and source-significant cases such as trailing inline whitespace, space-sensitive tag heads, and quoted attribute recovery.
+    item(status="covered") The policy note explicitly separates structural restoration from text payload preservation and keeps the whitespace-control examples front and center.
+    item(status="covered") Structural compaction in non-tag statement heads is now considered part of `0010`; this task stays focused on the minimum whitespace that must remain or be restored once structure has been normalized.
