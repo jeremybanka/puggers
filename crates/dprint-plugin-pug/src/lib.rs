@@ -14,7 +14,7 @@ use dprint_core::configuration::{ConfigKeyMap, GlobalConfiguration};
 #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
 use dprint_core::generate_plugin_code;
 use dprint_core::plugins::{
-    CheckConfigUpdatesMessage, ConfigChange, FileMatchingInfo, PluginInfo,
+    CheckConfigUpdatesMessage, ConfigChange, FileMatchingInfo, FormatError, PluginInfo,
     PluginResolveConfigurationResult, SyncFormatRequest, SyncHostFormatRequest, SyncPluginHandler,
 };
 
@@ -84,7 +84,7 @@ impl SyncPluginHandler<Configuration> for PugPluginHandler {
     fn check_config_updates(
         &self,
         _message: CheckConfigUpdatesMessage,
-    ) -> anyhow::Result<Vec<ConfigChange>> {
+    ) -> Result<Vec<ConfigChange>, FormatError> {
         Ok(Vec::new())
     }
 
