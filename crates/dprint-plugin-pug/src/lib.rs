@@ -84,7 +84,7 @@ impl SyncPluginHandler<Configuration> for PugPluginHandler {
     fn check_config_updates(
         &self,
         _message: CheckConfigUpdatesMessage,
-    ) -> anyhow::Result<Vec<ConfigChange>> {
+    ) -> Result<Vec<ConfigChange>, FormatError> {
         Ok(Vec::new())
     }
 
