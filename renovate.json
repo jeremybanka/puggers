@@ -18,14 +18,6 @@
     {
       "customType": "regex",
       "managerFilePatterns": ["/^mise\\.toml$/"],
-      "matchStrings": ["just = \"(?<currentValue>[^\"]+)\""],
-      "depNameTemplate": "casey/just",
-      "datasourceTemplate": "github-releases",
-      "versioningTemplate": "semver-coerced"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": ["/^mise\\.toml$/"],
       "matchStrings": ["\"cargo:knope\" = \"(?<currentValue>[^\"]+)\""],
       "depNameTemplate": "knope",
       "datasourceTemplate": "crate",
@@ -53,6 +45,10 @@
       "matchDepNames": ["knope"],
       "matchDatasources": ["crate"],
       "dependencyDashboardApproval": true
+    },
+    {
+      "matchManagers": ["cargo"],
+      "rangeStrategy": "pin"
     },
     {
       "matchManagers": ["github-actions"],
