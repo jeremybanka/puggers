@@ -14,7 +14,7 @@ use dprint_core::configuration::{ConfigKeyMap, GlobalConfiguration};
 #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
 use dprint_core::generate_plugin_code;
 use dprint_core::plugins::{
-    CheckConfigUpdatesMessage, ConfigChange, FileMatchingInfo, PluginInfo,
+    CheckConfigUpdatesMessage, ConfigChange, FileMatchingInfo, FormatError, PluginInfo,
     PluginResolveConfigurationResult, SyncFormatRequest, SyncHostFormatRequest, SyncPluginHandler,
 };
 
