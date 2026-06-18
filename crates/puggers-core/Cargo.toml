@@ -7,4 +7,4 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-kuchikiki = "0.8.2"
+kuchikiki = "=0.8.2"
