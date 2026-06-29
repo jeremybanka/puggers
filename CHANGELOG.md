@@ -2,6 +2,12 @@
 
 All notable user-facing changes to `puggers` will be documented here.
 
+## 0.1.6 (2026-06-24)
+
+### Fixes
+
+- Keep the dprint plugin compatible with dprint-core 0.68
+
 ## 0.1.5 (2026-06-05)
 
 ### Fixes
