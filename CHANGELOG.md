@@ -2,6 +2,16 @@
 
 All notable user-facing changes to `puggers` will be documented here.
 
+## 0.1.8 (2026-06-30)
+
+### Fixes
+
+#### Share formatter options with HTML import
+
+Moved overlapping indentation, width, quote-style, and prose-wrapping behavior
+behind shared core options so formatted Pug and imported HTML use the same
+rendering policy.
+
 ## 0.1.7 (2026-06-30)
 
 ### Fixes
