@@ -18,7 +18,8 @@ that is easier to scan and edit.
 Current controls let you:
 
 - keep selected attributes with repeated `--allow-attr`
-- trim the outer `html` / `head` / `body` shell with `--trim-outer-document`
+- choose a root region with `--root 'html>body article'`
+- trim the outer `html` / `head` / `body` shell with the legacy `--trim-outer-document`
 - collapse single-child structural chains with `--collapse-single-nested <mode>`
 - preserve meaningful spaces around inline content with `--preserve-text-whitespace`
 - drop comments with `--drop-comments`
@@ -40,7 +41,7 @@ Readable document view:
 
 ```sh
 printf '%s' '<article><h1>Hello</h1><p>Intro</p></article>' \
-  | cargo run -p puggers -- --trim-outer-document
+  | cargo run -p puggers -- --root article
 ```
 
 Inspect structure and Tailwind-heavy markup:

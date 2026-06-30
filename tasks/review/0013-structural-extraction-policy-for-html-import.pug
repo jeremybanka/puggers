@@ -1,4 +1,4 @@
-issue(id="0013" status="open")
+issue(id="0013" status="review")
   title Define structural extraction policy for HTML import
   user-story
     as-a maintainer of the puggers HTML converter
@@ -46,6 +46,6 @@ issue(id="0013" status="open")
   review-items
     item(status="covered") The anonymous wrapper collapse flag is now an explicit collapse mode with off, top-wins, bottom-wins, and best-tag-wins semantics.
     item(status="covered") The first best-tag hierarchy is defined globally inside puggers, while leaving custom hierarchy configuration as a possible future extension.
-    item(status="open") Replace or compatibility-map `trim_outer_document` and `--trim-outer-document` to the new root-selection model without leaving two competing structural-selection concepts.
-    item(status="open") Define the root path grammar and no-match behavior tightly enough that future CLI and npm surfaces can share the same semantics.
-    item(status="open") Update the structural extraction policy doc once `--root` is implemented so it describes root selection instead of saying broader region selection is deferred.
+    item(status="covered") Root selection is now the explicit model through `ConvertOptions::root`, `RootSelection`, and `--root`; `trim_outer_document` and `--trim-outer-document` remain compatibility shortcuts for body children.
+    item(status="covered") The root path grammar and no-match behavior are covered by core and CLI tests, including direct-child `>`, descendant whitespace, and typed `RootNotFound` errors.
+    item(status="covered") The structural extraction policy doc now describes root selection instead of deferring broader region selection.

@@ -5,20 +5,32 @@ view. Structural extraction is separate from formatter compatibility and text
 layout: formatter settings decide how generated Pug is rendered, while importer
 structural policy decides which HTML scaffolding is represented at all.
 
-## Document Shells
+## Root Selection
 
 By default, import preserves the parsed document shell. A full document can
 therefore emit `doctype html`, `html`, `head`, and `body` nodes.
 
-`trim_outer_document` is the only document-shell selector today. When enabled,
-it emits all parsed `body` children. It does not select `main`, discard
-headers, discard footers, trim front matter, trim back matter, or accept a CSS
-selector.
+`root` / `--root` selects the first element matching a small root path grammar
+and emits that element as the generated Pug root. For example,
+`--root 'html>body article'` selects the first `article` descendant found under
+the direct `html > body` path.
 
-Broader region selection is intentionally deferred. Selector-based extraction
-needs a clear API for misses, multiple matches, diagnostics, and CLI/npm
-behavior. Until that shape exists, `trim_outer_document` stays a body-shell
-control rather than becoming a proxy for content-region extraction.
+The root path grammar intentionally starts small:
+
+- A tag name selects an element by tag.
+- `>` means direct child.
+- Whitespace means descendant.
+- Matching uses the first complete path match in document order.
+
+If a root path does not match, `try_convert_html_to_pug` returns
+`ConvertError::RootNotFound`. The CLI reports that error and exits
+unsuccessfully. The older infallible `convert_html_to_pug` remains available for
+callers that cannot handle diagnostics.
+
+`trim_outer_document` / `--trim-outer-document` remains as a compatibility
+shortcut for emitting all parsed `body` children. New region-selection behavior
+should use `root` / `--root` so callers can name the structural region they
+actually want.
 
 ## Single-Child Collapse
 

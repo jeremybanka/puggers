@@ -1,4 +1,5 @@
 use std::collections::BTreeSet;
+use std::fmt;
 
 pub mod formatting;
 
@@ -11,6 +12,7 @@ pub use formatting::{PugFormatOptions, QuoteStyle};
 pub struct ConvertOptions {
     pub allowed_attributes: BTreeSet<String>,
     pub preserve_id_and_class_shorthand: bool,
+    pub root: Option<RootSelection>,
     pub trim_outer_document: bool,
     pub collapse_single_nested: CollapseSingleNestedMode,
     pub text_whitespace: TextWhitespaceMode,
@@ -23,6 +25,7 @@ impl Default for ConvertOptions {
         Self {
             allowed_attributes: BTreeSet::new(),
             preserve_id_and_class_shorthand: true,
+            root: None,
             trim_outer_document: false,
             collapse_single_nested: CollapseSingleNestedMode::default(),
             text_whitespace: TextWhitespaceMode::default(),
@@ -30,6 +33,138 @@ impl Default for ConvertOptions {
             formatting: PugFormatOptions::default(),
         }
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RootSelection {
+    source: String,
+    steps: Vec<RootSelectionStep>,
+}
+
+impl RootSelection {
+    pub fn parse(input: &str) -> Result<Self, RootSelectionParseError> {
+        let mut steps = Vec::new();
+        let mut index = 0;
+        let mut pending_relation = RootSelectionRelation::Descendant;
+        let mut expecting_tag = true;
+        let chars: Vec<_> = input.char_indices().collect();
+
+        while index < input.len() {
+            let Some((next_index, ch)) = chars
+                .iter()
+                .copied()
+                .find(|(char_index, _)| *char_index >= index)
+            else {
+                break;
+            };
+
+            if ch.is_whitespace() {
+                index = next_index + ch.len_utf8();
+                continue;
+            }
+
+            if ch == '>' {
+                if expecting_tag {
+                    return Err(RootSelectionParseError::new(input));
+                }
+
+                pending_relation = RootSelectionRelation::DirectChild;
+                expecting_tag = true;
+                index = next_index + ch.len_utf8();
+                continue;
+            }
+
+            let tag_start = next_index;
+            let mut tag_end = tag_start;
+            for (char_index, tag_ch) in input[tag_start..].char_indices() {
+                if tag_ch.is_whitespace() || tag_ch == '>' {
+                    break;
+                }
+
+                tag_end = tag_start + char_index + tag_ch.len_utf8();
+            }
+
+            let tag = input[tag_start..tag_end].to_ascii_lowercase();
+            if tag.is_empty()
+                || !tag
+                    .chars()
+                    .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '-' | '_'))
+            {
+                return Err(RootSelectionParseError::new(input));
+            }
+
+            let relation = if steps.is_empty() {
+                RootSelectionRelation::Descendant
+            } else {
+                pending_relation
+            };
+            steps.push(RootSelectionStep { relation, tag });
+            pending_relation = RootSelectionRelation::Descendant;
+            expecting_tag = false;
+            index = tag_end;
+        }
+
+        if steps.is_empty() || expecting_tag {
+            return Err(RootSelectionParseError::new(input));
+        }
+
+        Ok(Self {
+            source: input.trim().to_string(),
+            steps,
+        })
+    }
+
+    fn source(&self) -> &str {
+        &self.source
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RootSelectionParseError {
+    input: String,
+}
+
+impl RootSelectionParseError {
+    fn new(input: &str) -> Self {
+        Self {
+            input: input.to_string(),
+        }
+    }
+}
+
+impl fmt::Display for RootSelectionParseError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "invalid root selection: {}", self.input)
+    }
+}
+
+impl std::error::Error for RootSelectionParseError {}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ConvertError {
+    RootNotFound { root: String },
+}
+
+impl fmt::Display for ConvertError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::RootNotFound { root } => write!(formatter, "root not found: {root}"),
+        }
+    }
+}
+
+impl std::error::Error for ConvertError {}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct RootSelectionStep {
+    relation: RootSelectionRelation,
+    tag: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum RootSelectionRelation {
+    DirectChild,
+    Descendant,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -49,8 +184,24 @@ pub enum TextWhitespaceMode {
 }
 
 pub fn convert_html_to_pug(input: &str, options: &ConvertOptions) -> String {
+    try_convert_html_to_pug(input, options).unwrap_or_default()
+}
+
+pub fn try_convert_html_to_pug(
+    input: &str,
+    options: &ConvertOptions,
+) -> Result<String, ConvertError> {
     let document = parse_html().one(input);
-    let mut nodes = if options.trim_outer_document {
+    let mut nodes = if let Some(root) = &options.root {
+        let root_node =
+            find_root_selection(&document, root).ok_or_else(|| ConvertError::RootNotFound {
+                root: root.source().to_string(),
+            })?;
+
+        node_from_dom(&root_node, options, TextBoundaryContext::default())
+            .map(|node| vec![node])
+            .unwrap_or_default()
+    } else if options.trim_outer_document {
         root_nodes_from_body(&document, options)
     } else {
         nodes_from_children(&document, options)
@@ -65,10 +216,65 @@ pub fn convert_html_to_pug(input: &str, options: &ConvertOptions) -> String {
 
     let rendered = render_nodes(&nodes, 0, options);
     if rendered.is_empty() {
-        String::new()
+        Ok(String::new())
     } else {
-        format!("{rendered}\n")
+        Ok(format!("{rendered}\n"))
     }
+}
+
+fn find_root_selection(document: &NodeRef, root: &RootSelection) -> Option<NodeRef> {
+    find_root_step_matches(document, root, 0)
+}
+
+fn find_root_step_matches(
+    current: &NodeRef,
+    root: &RootSelection,
+    step_index: usize,
+) -> Option<NodeRef> {
+    if step_index >= root.steps.len() {
+        return Some(current.clone());
+    }
+
+    let step = &root.steps[step_index];
+    let candidates = match step.relation {
+        RootSelectionRelation::DirectChild => direct_child_elements_matching(current, &step.tag),
+        RootSelectionRelation::Descendant => descendant_elements_matching(current, &step.tag),
+    };
+
+    for candidate in candidates {
+        if let Some(matched) = find_root_step_matches(&candidate, root, step_index + 1) {
+            return Some(matched);
+        }
+    }
+
+    None
+}
+
+fn direct_child_elements_matching(node: &NodeRef, tag: &str) -> Vec<NodeRef> {
+    node.children()
+        .filter(|child| element_tag_matches(child, tag))
+        .collect()
+}
+
+fn descendant_elements_matching(node: &NodeRef, tag: &str) -> Vec<NodeRef> {
+    let mut matches = Vec::new();
+    collect_descendant_elements_matching(node, tag, &mut matches);
+    matches
+}
+
+fn collect_descendant_elements_matching(node: &NodeRef, tag: &str, matches: &mut Vec<NodeRef>) {
+    for child in node.children() {
+        if element_tag_matches(&child, tag) {
+            matches.push(child.clone());
+        }
+
+        collect_descendant_elements_matching(&child, tag, matches);
+    }
+}
+
+fn element_tag_matches(node: &NodeRef, expected: &str) -> bool {
+    node.as_element()
+        .is_some_and(|element| element.name.local.as_ref().eq_ignore_ascii_case(expected))
 }
 
 fn root_nodes_from_body(document: &NodeRef, options: &ConvertOptions) -> Vec<Node> {
