@@ -1,4 +1,4 @@
-pub use crate::ast::QuoteStyle;
+pub use puggers_core::QuoteStyle;
 
 use serde::{Deserialize, Serialize};
 
@@ -26,5 +26,14 @@ impl Configuration {
 
     pub fn use_tabs(&self) -> bool {
         self.use_tabs.unwrap_or(false)
+    }
+
+    pub fn format_options(&self) -> puggers_core::PugFormatOptions {
+        puggers_core::PugFormatOptions {
+            indent_width: self.indent_width(),
+            line_width: self.line_width(),
+            use_tabs: self.use_tabs(),
+            quote_style: self.quote_style(),
+        }
     }
 }

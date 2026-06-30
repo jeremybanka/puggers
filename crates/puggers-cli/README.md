@@ -24,6 +24,7 @@ Current controls let you:
 - drop comments with `--drop-comments`
 - choose tabs or spaces with `--use-tabs` and `--indent-width`
 - reflow prose and wrap long inline tag text with `--line-width`
+- choose single or double quotes for rendered attributes with `--quote-style`
 
 By default, the converter is opinionated: it strips most attributes, keeps
 comments, and aggressively normalizes ordinary text. That makes it useful for
@@ -45,7 +46,8 @@ printf '%s' '<div class="grid gap-6 md:grid-cols-2"><a href="/docs">Docs</a></di
   | cargo run -p puggers -- \
       --trim-outer-document \
       --allow-attr class \
-      --allow-attr href
+      --allow-attr href \
+      --quote-style single
 ```
 
 ## Example Output

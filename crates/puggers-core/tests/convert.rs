@@ -1,6 +1,6 @@
 use std::collections::BTreeSet;
 
-use puggers_core::{ConvertOptions, convert_html_to_pug};
+use puggers_core::{ConvertOptions, PugFormatOptions, QuoteStyle, convert_html_to_pug};
 
 fn options_with_attributes(attributes: &[&str]) -> ConvertOptions {
     ConvertOptions {
@@ -84,10 +84,47 @@ fn supports_tab_indentation() {
         "<div><p>Hello</p></div>",
         &ConvertOptions {
             trim_outer_document: true,
-            use_tabs: true,
+            formatting: PugFormatOptions {
+                use_tabs: true,
+                ..Default::default()
+            },
             ..Default::default()
         },
     );
 
     assert_eq!(output, "div\n\tp Hello\n");
+}
+
+#[test]
+fn supports_configured_space_indentation_width() {
+    let output = convert_html_to_pug(
+        "<div><p>Hello</p></div>",
+        &ConvertOptions {
+            trim_outer_document: true,
+            formatting: PugFormatOptions {
+                indent_width: 4,
+                ..Default::default()
+            },
+            ..Default::default()
+        },
+    );
+
+    assert_eq!(output, "div\n    p Hello\n");
+}
+
+#[test]
+fn renders_imported_attributes_with_configured_quote_style() {
+    let output = convert_html_to_pug(
+        "<a href=\"/docs\" title=\"Jeremy's docs\">Docs</a>",
+        &ConvertOptions {
+            trim_outer_document: true,
+            formatting: PugFormatOptions {
+                quote_style: QuoteStyle::Single,
+                ..Default::default()
+            },
+            ..options_with_attributes(&["href", "title"])
+        },
+    );
+
+    assert_eq!(output, "a(href='/docs', title='Jeremy\\'s docs') Docs\n");
 }

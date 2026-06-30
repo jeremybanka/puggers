@@ -114,6 +114,7 @@ name = "dprint-plugin-pug"
 version = "0.1.6"
 dependencies = [
  "dprint-core",
+ "puggers-core",
  "serde",
  "serde_json",
 ]
@@ -511,6 +512,7 @@ name = "puggers-core"
 version = "0.1.6"
 dependencies = [
  "kuchikiki",
+ "serde",
 ]
 
 [[package]]

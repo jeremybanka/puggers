@@ -4,7 +4,9 @@ use std::fs;
 use std::io::{self, Read};
 use std::process::ExitCode;
 
-use puggers_core::{ConvertOptions, TextWhitespaceMode, convert_html_to_pug};
+use puggers_core::{
+    ConvertOptions, PugFormatOptions, QuoteStyle, TextWhitespaceMode, convert_html_to_pug,
+};
 
 fn main() -> ExitCode {
     match run() {
@@ -26,6 +28,7 @@ fn run() -> Result<(), String> {
     let mut indent_width = 2;
     let mut line_width = None;
     let mut use_tabs = false;
+    let mut quote_style = QuoteStyle::Double;
     let mut input_path = None;
 
     while let Some(argument) = args.next() {
@@ -41,6 +44,20 @@ fn run() -> Result<(), String> {
             "--preserve-text-whitespace" => text_whitespace = TextWhitespaceMode::Preserve,
             "--drop-comments" => keep_comments = false,
             "--use-tabs" => use_tabs = true,
+            "--quote-style" => {
+                let value = args
+                    .next()
+                    .ok_or_else(|| String::from("missing value after --quote-style"))?;
+                quote_style = match value.as_str() {
+                    "double" => QuoteStyle::Double,
+                    "single" => QuoteStyle::Single,
+                    _ => {
+                        return Err(format!(
+                            "invalid --quote-style value {value}: expected double or single"
+                        ));
+                    }
+                };
+            }
             "--indent-width" => {
                 let value = args
                     .next()
@@ -93,9 +110,12 @@ fn run() -> Result<(), String> {
             collapse_single_nested,
             text_whitespace,
             keep_comments,
-            indent_width,
-            line_width,
-            use_tabs,
+            formatting: PugFormatOptions {
+                indent_width,
+                line_width,
+                use_tabs,
+                quote_style,
+            },
             ..Default::default()
         },
     );
@@ -114,6 +134,7 @@ fn print_help() {
        --allow-attr <name>          Keep an attribute during conversion\n\
        --indent-width <count>       Set the indentation width for space mode\n\
        --line-width <count>         Reflow prose and wrap long inline tag text\n\
+       --quote-style <style>        Render attributes with double or single quotes\n\
        --trim-outer-document        Emit body children instead of html/head/body\n\
        --collapse-single-nested     Collapse anonymous nested div wrappers\n\
        --preserve-text-whitespace   Keep meaningful spaces around inline content\n\

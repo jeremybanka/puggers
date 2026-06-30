@@ -3,6 +3,7 @@ use crate::ast::{
     TextBlockKind,
 };
 use crate::config::Configuration;
+use puggers_core::{PugFormatOptions, formatting};
 
 pub fn format(document: &Document, config: &Configuration) -> String {
     let mut output = String::new();
@@ -23,17 +24,11 @@ fn write_node(output: &mut String, node: &Node, depth: usize, config: &Configura
         Node::Statement(statement) => write_statement(output, statement, depth, config),
         Node::Comment(comment) => write_comment(output, comment, depth, config),
         Node::Text(text) => {
-            write_indent(output, depth, config.indent_width(), config.use_tabs());
+            formatting::write_indent(output, depth, &config.format_options());
             output.push('|');
             output.push_str(&text.content);
         }
-        Node::RawText(text) => write_raw_text(
-            output,
-            text,
-            depth,
-            config.indent_width(),
-            config.use_tabs(),
-        ),
+        Node::RawText(text) => write_raw_text(output, text, depth, &config.format_options()),
     }
 }
 
@@ -43,7 +38,7 @@ fn write_statement(
     depth: usize,
     config: &Configuration,
 ) {
-    write_indent(output, depth, config.indent_width(), config.use_tabs());
+    formatting::write_indent(output, depth, &config.format_options());
     match &element.head {
         StatementHead::Tag(head) if should_wrap_attributes(head, depth, config) => {
             write_wrapped_tag_head(output, head, depth, config)
@@ -57,7 +52,7 @@ fn write_statement(
     if let Some(lines) = reflowed_text_block_lines(element, depth, config) {
         for line in lines {
             output.push('\n');
-            write_indent(output, depth + 1, config.indent_width(), config.use_tabs());
+            formatting::write_indent(output, depth + 1, &config.format_options());
             output.push_str(&line);
         }
         return;
@@ -70,7 +65,7 @@ fn write_statement(
 }
 
 fn write_comment(output: &mut String, comment: &CommentNode, depth: usize, config: &Configuration) {
-    write_indent(output, depth, config.indent_width(), config.use_tabs());
+    formatting::write_indent(output, depth, &config.format_options());
     match comment.kind {
         CommentKind::Buffered => output.push_str("//"),
         CommentKind::Unbuffered => output.push_str("//-"),
@@ -83,13 +78,7 @@ fn write_comment(output: &mut String, comment: &CommentNode, depth: usize, confi
 
     for child in &comment.children {
         output.push('\n');
-        write_raw_text(
-            output,
-            child,
-            depth + 1,
-            config.indent_width(),
-            config.use_tabs(),
-        );
+        write_raw_text(output, child, depth + 1, &config.format_options());
     }
 }
 
@@ -103,7 +92,9 @@ fn reflowed_text_block_lines(
     }
 
     let line_width = config.line_width()?;
-    let available_width = line_width.checked_sub(display_width(depth + 1, config))?;
+    let format_options = config.format_options();
+    let available_width =
+        line_width.checked_sub(formatting::display_width(depth + 1, &format_options))?;
     if available_width == 0 {
         return None;
     }
@@ -114,7 +105,12 @@ fn reflowed_text_block_lines(
         return None;
     }
 
-    Some(wrap_words(&segments, available_width))
+    Some(formatting::wrap_words(
+        segments
+            .iter()
+            .flat_map(|segment| segment.split_whitespace()),
+        available_width,
+    ))
 }
 
 fn should_wrap_attributes(head: &TagHead, depth: usize, config: &Configuration) -> bool {
@@ -131,7 +127,7 @@ fn should_wrap_attributes(head: &TagHead, depth: usize, config: &Configuration) 
     }
 
     let rendered = head.to_source(config);
-    display_width(depth, config) + rendered.len() > line_width
+    formatting::display_width(depth, &config.format_options()) + rendered.len() > line_width
 }
 
 fn write_wrapped_tag_head(
@@ -146,13 +142,13 @@ fn write_wrapped_tag_head(
     if let Some(attributes) = &head.attributes {
         for attribute in attributes {
             output.push('\n');
-            write_indent(output, depth + 1, config.indent_width(), config.use_tabs());
+            formatting::write_indent(output, depth + 1, &config.format_options());
             output.push_str(&attribute.to_source(config.quote_style()));
         }
     }
 
     output.push('\n');
-    write_indent(output, depth, config.indent_width(), config.use_tabs());
+    formatting::write_indent(output, depth, &config.format_options());
     output.push(')');
 
     if head.inline_space.is_some() && head.inline_text.is_some() {
@@ -182,14 +178,6 @@ fn tag_head_prefix(head: &TagHead) -> String {
     }
 
     output
-}
-
-fn display_width(depth: usize, config: &Configuration) -> usize {
-    if config.use_tabs() {
-        depth
-    } else {
-        depth * config.indent_width()
-    }
 }
 
 fn plain_prose_segments(children: &[Node]) -> Option<Vec<String>> {
@@ -223,78 +211,21 @@ fn plain_prose_segments(children: &[Node]) -> Option<Vec<String>> {
     Some(segments)
 }
 
-fn wrap_words(segments: &[String], available_width: usize) -> Vec<String> {
-    let mut lines = Vec::new();
-    let mut current = String::new();
-
-    for word in segments
-        .iter()
-        .flat_map(|segment| segment.split_whitespace())
-    {
-        let next_len = if current.is_empty() {
-            word.len()
-        } else {
-            current.len() + 1 + word.len()
-        };
-
-        if !current.is_empty() && next_len > available_width {
-            lines.push(current);
-            current = word.to_string();
-            continue;
-        }
-
-        if !current.is_empty() {
-            current.push(' ');
-        }
-        current.push_str(word);
-    }
-
-    if !current.is_empty() {
-        lines.push(current);
-    }
-
-    lines
-}
-
 fn write_raw_text(
     output: &mut String,
     text: &RawTextNode,
     depth: usize,
-    indent_width: usize,
-    use_tabs: bool,
+    options: &PugFormatOptions,
 ) {
     if text.content.is_empty() && !text.preserve_base_indent && text.extra_indent == 0 {
         return;
     }
 
-    write_indent(output, depth, indent_width, use_tabs);
+    formatting::write_indent(output, depth, options);
     for _ in 0..text.extra_indent {
         output.push(' ');
     }
     output.push_str(&text.content);
-}
-
-fn write_indent(output: &mut String, depth: usize, indent_width: usize, use_tabs: bool) {
-    if depth == 0 {
-        return;
-    }
-
-    if use_tabs {
-        for _ in 0..depth {
-            output.push('\t');
-        }
-        return;
-    }
-
-    if indent_width == 0 {
-        return;
-    }
-
-    for _ in 0..depth {
-        for _ in 0..indent_width {
-            output.push(' ');
-        }
-    }
 }
 
 fn collapse_trailing_blank_lines(output: &mut String) {

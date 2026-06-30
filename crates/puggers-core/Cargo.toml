@@ -8,3 +8,4 @@ repository.workspace = true
 
 [dependencies]
 kuchikiki = "=0.8.2"
+serde = { version = "=1.0.228", features = ["derive"] }

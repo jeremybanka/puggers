@@ -1,7 +1,11 @@
 use std::collections::BTreeSet;
 
+pub mod formatting;
+
 use kuchikiki::traits::TendrilSink;
 use kuchikiki::{NodeRef, parse_html};
+
+pub use formatting::{PugFormatOptions, QuoteStyle};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ConvertOptions {
@@ -11,9 +15,7 @@ pub struct ConvertOptions {
     pub collapse_single_nested: bool,
     pub text_whitespace: TextWhitespaceMode,
     pub keep_comments: bool,
-    pub indent_width: usize,
-    pub line_width: Option<usize>,
-    pub use_tabs: bool,
+    pub formatting: PugFormatOptions,
 }
 
 impl Default for ConvertOptions {
@@ -25,9 +27,7 @@ impl Default for ConvertOptions {
             collapse_single_nested: false,
             text_whitespace: TextWhitespaceMode::default(),
             keep_comments: true,
-            indent_width: 2,
-            line_width: None,
-            use_tabs: false,
+            formatting: PugFormatOptions::default(),
         }
     }
 }
@@ -324,17 +324,28 @@ fn render_nodes(nodes: &[Node], depth: usize, options: &ConvertOptions) -> Strin
 fn render_node(node: &Node, depth: usize, options: &ConvertOptions) -> String {
     match node {
         Node::Doctype(name) if name.eq_ignore_ascii_case("html") => {
-            format!("{}doctype html", indent(depth, options))
+            format!(
+                "{}doctype html",
+                formatting::indent(depth, &options.formatting)
+            )
         }
-        Node::Doctype(name) => format!("{}doctype {}", indent(depth, options), name.trim()),
+        Node::Doctype(name) => format!(
+            "{}doctype {}",
+            formatting::indent(depth, &options.formatting),
+            name.trim()
+        ),
         Node::Comment(comment) => render_comment(comment, depth, options),
-        Node::Text(text) => format!("{}| {}", indent(depth, options), text.content),
+        Node::Text(text) => format!(
+            "{}| {}",
+            formatting::indent(depth, &options.formatting),
+            text.content
+        ),
         Node::Element(element) => render_element(element, depth, options),
     }
 }
 
 fn render_comment(comment: &CommentNode, depth: usize, options: &ConvertOptions) -> String {
-    let mut output = format!("{}//", indent(depth, options));
+    let mut output = format!("{}//", formatting::indent(depth, &options.formatting));
 
     if let Some(value) = &comment.inline_value {
         output.push(' ');
@@ -344,7 +355,7 @@ fn render_comment(comment: &CommentNode, depth: usize, options: &ConvertOptions)
 
     for line in &comment.block_lines {
         output.push('\n');
-        output.push_str(&indent(depth + 1, options));
+        output.push_str(&formatting::indent(depth + 1, &options.formatting));
         output.push_str(line);
     }
 
@@ -352,7 +363,11 @@ fn render_comment(comment: &CommentNode, depth: usize, options: &ConvertOptions)
 }
 
 fn render_element(element: &ElementNode, depth: usize, options: &ConvertOptions) -> String {
-    let mut line = format!("{}{}", indent(depth, options), element.tag);
+    let mut line = format!(
+        "{}{}",
+        formatting::indent(depth, &options.formatting),
+        element.tag
+    );
     let mut trailing_attributes = Vec::new();
 
     for attribute in &element.attributes {
@@ -384,7 +399,7 @@ fn render_element(element: &ElementNode, depth: usize, options: &ConvertOptions)
             }
         }
 
-        trailing_attributes.push(render_attribute(attribute));
+        trailing_attributes.push(render_attribute(attribute, options));
     }
 
     if !trailing_attributes.is_empty() {
@@ -398,7 +413,7 @@ fn render_element(element: &ElementNode, depth: usize, options: &ConvertOptions)
         output.push('.');
         for raw_line in raw_text.lines() {
             output.push('\n');
-            output.push_str(&indent(depth + 1, options));
+            output.push_str(&formatting::indent(depth + 1, &options.formatting));
             output.push_str(raw_line);
         }
         return output;
@@ -437,11 +452,14 @@ fn should_wrap_inline_text(
     depth: usize,
     options: &ConvertOptions,
 ) -> bool {
-    let Some(line_width) = options.line_width else {
+    let Some(line_width) = options.formatting.line_width else {
         return false;
     };
 
-    display_width(depth, options) + line_prefix.trim_start().len() + 1 + text.content.len()
+    formatting::display_width(depth, &options.formatting)
+        + line_prefix.trim_start().len()
+        + 1
+        + text.content.len()
         > line_width
 }
 
@@ -451,9 +469,9 @@ fn should_render_prose_block(
     depth: usize,
     options: &ConvertOptions,
 ) -> bool {
-    if options.line_width.is_none() || text.prose_paragraphs.is_empty() {
+    if options.formatting.line_width.is_none() || text.prose_paragraphs.is_empty() {
         return false;
-    }
+    };
 
     if text.prose_paragraphs.len() > 1 {
         return true;
@@ -470,9 +488,9 @@ fn render_prose_block(
 ) -> String {
     line.push('.');
 
-    let available_width = options
-        .line_width
-        .and_then(|line_width| line_width.checked_sub(display_width(depth + 1, options)));
+    let available_width = options.formatting.line_width.and_then(|line_width| {
+        line_width.checked_sub(formatting::display_width(depth + 1, &options.formatting))
+    });
 
     for (index, paragraph) in text.prose_paragraphs.iter().enumerate() {
         if index > 0 {
@@ -482,7 +500,7 @@ fn render_prose_block(
         let wrapped_lines = wrap_prose_paragraph(paragraph, available_width);
         for wrapped_line in wrapped_lines {
             line.push('\n');
-            line.push_str(&indent(depth + 1, options));
+            line.push_str(&formatting::indent(depth + 1, &options.formatting));
             line.push_str(&wrapped_line);
         }
     }
@@ -499,69 +517,17 @@ fn wrap_prose_paragraph(paragraph: &str, available_width: Option<usize>) -> Vec<
         return vec![paragraph.to_string()];
     }
 
-    wrap_words(
-        &paragraph
-            .split_whitespace()
-            .map(str::to_string)
-            .collect::<Vec<_>>(),
-        available_width,
-    )
+    formatting::wrap_words(paragraph.split_whitespace(), available_width)
 }
 
-fn wrap_words(words: &[String], available_width: usize) -> Vec<String> {
-    let mut lines = Vec::new();
-    let mut current = String::new();
-
-    for word in words {
-        let next_len = if current.is_empty() {
-            word.len()
-        } else {
-            current.len() + 1 + word.len()
-        };
-
-        if !current.is_empty() && next_len > available_width {
-            lines.push(current);
-            current = word.clone();
-            continue;
-        }
-
-        if !current.is_empty() {
-            current.push(' ');
-        }
-        current.push_str(word);
-    }
-
-    if !current.is_empty() {
-        lines.push(current);
-    }
-
-    lines
-}
-
-fn render_attribute(attribute: &Attribute) -> String {
+fn render_attribute(attribute: &Attribute, options: &ConvertOptions) -> String {
     match &attribute.value {
-        Some(value) => format!("{}=\"{}\"", attribute.name, escape_attr_value(value)),
+        Some(value) => format!(
+            "{}={}",
+            attribute.name,
+            formatting::render_attribute_value(value, options.formatting.quote_style)
+        ),
         None => attribute.name.clone(),
-    }
-}
-
-fn escape_attr_value(value: &str) -> String {
-    value.replace('\\', "\\\\").replace('"', "\\\"")
-}
-
-fn indent(depth: usize, options: &ConvertOptions) -> String {
-    if options.use_tabs {
-        "\t".repeat(depth)
-    } else {
-        " ".repeat(depth * options.indent_width)
-    }
-}
-
-fn display_width(depth: usize, options: &ConvertOptions) -> usize {
-    if options.use_tabs {
-        depth
-    } else {
-        depth * options.indent_width
     }
 }
 
