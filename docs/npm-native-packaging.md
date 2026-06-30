@@ -62,19 +62,19 @@ just test-npm
 Generate a native package directory for the current host target:
 
 ```sh
-just package-npm-native
+just dist-npm-native-directory
 ```
 
 Generate and pack a tarball:
 
 ```sh
-just pack-npm-native
+just dist-npm-native
 ```
 
 Pass an explicit target when packaging artifacts built elsewhere:
 
 ```sh
-PUGGERS_RELEASE_DIR=target/release just pack-npm-native linux-x64-glibc
+PUGGERS_RELEASE_DIR=target/release just dist-npm-native linux-x64-glibc
 ```
 
 Supported target names are:

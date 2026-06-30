@@ -37,6 +37,12 @@ switch (command) {
   case "local":
     copyLocalArtifacts();
     break;
+  case "directory":
+    createNativePackage(target);
+    break;
+  case "tarball":
+    packNativePackage(nativePackageDirectory(target));
+    break;
   case "package":
     createNativePackage(target);
     break;
@@ -64,7 +70,7 @@ function createNativePackage(packageTarget: string): string {
   const version = readWorkspaceVersion();
   const metadata = nativeTargetMetadata(packageTarget);
   const artifacts = resolveNativeArtifacts(packageTarget);
-  const packageDirectory = join(root, "target", "npm", "@puggers", packageTarget);
+  const packageDirectory = nativePackageDirectory(packageTarget);
 
   rmSync(packageDirectory, { recursive: true, force: true });
   mkdirSync(packageDirectory, { recursive: true });
@@ -107,7 +113,12 @@ function createNativePackage(packageTarget: string): string {
   return packageDirectory;
 }
 
+function nativePackageDirectory(packageTarget: string): string {
+  return join(root, "target", "npm", "@puggers", packageTarget);
+}
+
 function packNativePackage(packageDirectory: string): never {
+  assertExists(join(packageDirectory, "package.json"), "native npm package metadata");
   runPnpm(["pack", "--pack-destination", join(root, "target", "npm")], packageDirectory);
 }
 
