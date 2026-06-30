@@ -2,6 +2,14 @@
 
 All notable user-facing changes to `puggers` will be documented here.
 
+## 0.1.7 (2026-06-30)
+
+### Fixes
+
+#### Avoid false warning diagnostics for `unless` conditionals
+
+The formatter now models Pug `unless` statements as control flow, so valid `unless`/`else` branches no longer report orphaned `else` recovery warnings.
+
 ## 0.1.6 (2026-06-24)
 
 ### Fixes
