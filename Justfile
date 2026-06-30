@@ -44,10 +44,13 @@ fmt-cargo-check:
 c:
     just check
 check:
+    just check-versions
     just check-cargo
     just check-clippy
     just check-wasm
     just check-npm
+check-versions:
+    node scripts/check-version-alignment.mjs
 check-cargo:
     cargo check --workspace
 check-clippy:

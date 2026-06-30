@@ -23,6 +23,16 @@ This keeps the CLI implementation in Rust while giving Node users a typed
 The first npm surface is not a browser or bundler package. A wasm package can
 be added later when browser support has its own tests and initialization model.
 
+## Versioning
+
+The npm packages use the same version as the Rust workspace and crates. Knope
+updates the top-level `packages/puggers/package.json` and the private
+`packages/native/*/package.json` placeholders during release preparation.
+
+Keep those placeholder versions aligned: pnpm rewrites the top-level package's
+`workspace:*` optional dependencies to the linked package versions when packing
+or publishing.
+
 ## Local Build
 
 Install the declared toolchain:
