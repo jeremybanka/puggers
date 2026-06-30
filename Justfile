@@ -95,9 +95,9 @@ build-npm-dist-native *args:
     just build-npm-dist-native-directory {{ args }}
     just build-npm-dist-native-tarball {{ args }}
 build-npm-dist-native-directory *args:
-    node scripts/npm-native.ts directory {{ args }}
+    node scripts/npm-native.ts dist {{ args }}
 build-npm-dist-native-tarball *args:
-    node scripts/npm-native.ts tarball {{ args }}
+    pnpm --dir "$(node scripts/npm-native.ts dist-dir {{ args }})" pack --pack-destination "$(pwd)/target/npm"
 build-npm-dist-package:
     pnpm --filter puggers pack --pack-destination target/npm
 
@@ -121,9 +121,11 @@ publish-crates-cli:
 publish-crates-dprint:
     cargo publish -p dprint-plugin-pug
 publish-npm-native *args:
-    node scripts/npm-native.ts publish {{ args }}
+    just build-npm-dist-native-directory {{ args }}
+    pnpm --dir "$(node scripts/npm-native.ts dist-dir {{ args }})" publish --access public
 publish-npm-native-provenance *args:
-    PUGGERS_NPM_PROVENANCE=1 node scripts/npm-native.ts publish {{ args }}
+    just build-npm-dist-native-directory {{ args }}
+    pnpm --dir "$(node scripts/npm-native.ts dist-dir {{ args }})" publish --access public --provenance
 publish-npm:
     pnpm --filter puggers publish --access public
 publish-npm-provenance:

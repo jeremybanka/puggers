@@ -9,7 +9,6 @@ import {
   writeFileSync
 } from "node:fs";
 import { arch, platform, report } from "node:process";
-import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -37,33 +36,21 @@ switch (command) {
   case "local":
     copyLocalArtifacts();
     break;
-  case "directory":
+  case "dist":
     createNativePackage(target);
     break;
-  case "tarball":
-    packNativePackage(nativePackageDirectory(target));
-    break;
-  case "package":
-    createNativePackage(target);
-    break;
-  case "pack":
-    packNativePackage(createNativePackage(target));
-    break;
-  case "publish":
-    publishNativePackage(createNativePackage(target));
+  case "dist-dir":
+    console.log(nativePackageDirectory(target));
     break;
   default:
     throw new Error(`unknown npm native command: ${command}`);
 }
 
 function copyLocalArtifacts(): void {
-  const outputDirectory = join(root, "packages", "puggers", ".native");
-  mkdirSync(outputDirectory, { recursive: true });
-
-  const artifacts = resolveNativeArtifacts(target);
-  copyFileSync(artifacts.executablePath, join(outputDirectory, artifacts.outputExecutableName));
-  copyFileSync(artifacts.addonPath, join(outputDirectory, "puggers.node"));
-  chmodIfPossible(join(outputDirectory, artifacts.outputExecutableName));
+  copyNativeArtifacts(
+    join(root, "packages", "puggers", ".native"),
+    resolveNativeArtifacts(target)
+  );
 }
 
 function createNativePackage(packageTarget: string): string {
@@ -73,11 +60,7 @@ function createNativePackage(packageTarget: string): string {
   const packageDirectory = nativePackageDirectory(packageTarget);
 
   rmSync(packageDirectory, { recursive: true, force: true });
-  mkdirSync(packageDirectory, { recursive: true });
-
-  copyFileSync(artifacts.executablePath, join(packageDirectory, artifacts.outputExecutableName));
-  copyFileSync(artifacts.addonPath, join(packageDirectory, "puggers.node"));
-  chmodIfPossible(join(packageDirectory, artifacts.outputExecutableName));
+  copyNativeArtifacts(packageDirectory, artifacts);
 
   writeFileSync(
     join(packageDirectory, "package.json"),
@@ -117,33 +100,11 @@ function nativePackageDirectory(packageTarget: string): string {
   return join(root, "target", "npm", "@puggers", packageTarget);
 }
 
-function packNativePackage(packageDirectory: string): never {
-  assertExists(join(packageDirectory, "package.json"), "native npm package metadata");
-  runPnpm(["pack", "--pack-destination", join(root, "target", "npm")], packageDirectory);
-}
-
-function publishNativePackage(packageDirectory: string): never {
-  const args = ["publish", "--access", "public"];
-  if (publishWithProvenance()) {
-    args.push("--provenance");
-  }
-
-  runPnpm(args, packageDirectory);
-}
-
-function runPnpm(args: string[], cwd: string): never {
-  const result = spawnSync("pnpm", args, { cwd, stdio: "inherit" });
-  if (result.error != null) {
-    throw result.error;
-  }
-
-  process.exit(result.status ?? 1);
-}
-
-function publishWithProvenance(): boolean {
-  return ["1", "true", "yes"].includes(
-    (process.env.PUGGERS_NPM_PROVENANCE ?? "").toLowerCase()
-  );
+function copyNativeArtifacts(outputDirectory: string, artifacts: NativeArtifacts): void {
+  mkdirSync(outputDirectory, { recursive: true });
+  copyFileSync(artifacts.executablePath, join(outputDirectory, artifacts.outputExecutableName));
+  copyFileSync(artifacts.addonPath, join(outputDirectory, "puggers.node"));
+  chmodIfPossible(join(outputDirectory, artifacts.outputExecutableName));
 }
 
 function resolveNativeArtifacts(packageTarget: string): NativeArtifacts {
