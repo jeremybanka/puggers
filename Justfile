@@ -103,5 +103,9 @@ publish-crates:
     cargo publish -p dprint-plugin-pug
 publish-npm-native *args:
     node scripts/npm-native.mjs publish {{ args }}
+publish-npm-native-provenance *args:
+    PUGGERS_NPM_PROVENANCE=1 node scripts/npm-native.mjs publish {{ args }}
 publish-npm:
+    pnpm --filter puggers publish --access public
+publish-npm-provenance:
     pnpm --filter puggers publish --access public --provenance

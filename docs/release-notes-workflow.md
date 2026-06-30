@@ -53,6 +53,9 @@ just publish-npm-native <target>
 just publish-npm
 ```
 
+When publishing from a supported CI environment with npm provenance, use
+`just publish-npm-native-provenance <target>` and `just publish-npm-provenance`.
+
 After the initial manual publish, the merged `release` pull request triggers
 the `Release` workflow, which publishes with crates.io trusted publishing
 instead of a long-lived crates.io token and then runs `knope release`.

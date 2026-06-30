@@ -96,7 +96,12 @@ function packNativePackage(packageDirectory) {
 }
 
 function publishNativePackage(packageDirectory) {
-  runPnpm(["publish", "--access", "public", "--provenance"], packageDirectory);
+  const args = ["publish", "--access", "public"];
+  if (publishWithProvenance()) {
+    args.push("--provenance");
+  }
+
+  runPnpm(args, packageDirectory);
 }
 
 function runPnpm(args, cwd) {
@@ -106,6 +111,12 @@ function runPnpm(args, cwd) {
   }
 
   process.exit(result.status ?? 1);
+}
+
+function publishWithProvenance() {
+  return ["1", "true", "yes"].includes(
+    (process.env.PUGGERS_NPM_PROVENANCE ?? "").toLowerCase()
+  );
 }
 
 function resolveNativeArtifacts(packageTarget) {

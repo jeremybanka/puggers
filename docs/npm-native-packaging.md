@@ -106,5 +106,13 @@ Then publish the top-level package:
 just publish-npm
 ```
 
+For CI-backed publishes with npm provenance, use the provenance variants:
+
+```sh
+just publish-npm-native-provenance linux-x64-glibc
+just publish-npm-provenance
+```
+
 Use npm trusted publishing/provenance for both package layers once the npm
-package names have been claimed.
+package names have been claimed and the trusted publisher relationships are
+configured.
