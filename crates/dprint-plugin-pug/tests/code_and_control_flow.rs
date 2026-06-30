@@ -25,6 +25,10 @@ else if admin
   p Admin
 else
   p Guest
+unless user
+  p Anonymous
+else
+  p Known
 case friends
   when 0
     p You have no friends
@@ -42,7 +46,7 @@ ul
     assert_keyword_statements_are_explicitly_modeled(
         &document.children,
         &[
-            "if", "else if", "else", "case", "when", "default", "each", "while",
+            "if", "else if", "else", "unless", "case", "when", "default", "each", "while",
         ],
     );
 }

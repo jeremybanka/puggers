@@ -118,6 +118,31 @@ ul
 }
 
 #[test]
+fn does_not_warn_for_else_attached_to_unless() {
+    let source = "\
+unless user
+  p Anonymous
+else
+  p Signed in
+";
+    let report = format_source_with_diagnostics(source, &Configuration::default());
+
+    assert_same_text(
+        &report.formatted,
+        "unless user\n  p Anonymous\nelse\n  p Signed in\n",
+        "unless else branches should remain valid conditional structure",
+    );
+    assert!(
+        !report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.message.contains("orphaned `else`")),
+        "did not expect unless else branches to be treated as orphaned: {:?}",
+        report.diagnostics
+    );
+}
+
+#[test]
 fn warns_for_invalid_default_heads_without_destructuring_the_case_block() {
     let source = "\
 case pet

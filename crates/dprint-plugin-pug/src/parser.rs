@@ -458,6 +458,7 @@ fn validate_control_flow_head(
     let missing_payload = match head.kind {
         ControlFlowKind::If
         | ControlFlowKind::ElseIf
+        | ControlFlowKind::Unless
         | ControlFlowKind::Case
         | ControlFlowKind::When
         | ControlFlowKind::Each
@@ -484,6 +485,7 @@ fn validate_control_flow_head(
         }
         ControlFlowKind::If
         | ControlFlowKind::ElseIf
+        | ControlFlowKind::Unless
         | ControlFlowKind::Case
         | ControlFlowKind::When
         | ControlFlowKind::Each
@@ -552,7 +554,10 @@ fn is_valid_else_predecessor(head: &StatementHead) -> bool {
     matches!(
         head,
         StatementHead::ControlFlow(ControlFlowHead {
-            kind: ControlFlowKind::If | ControlFlowKind::ElseIf | ControlFlowKind::Each,
+            kind: ControlFlowKind::If
+                | ControlFlowKind::ElseIf
+                | ControlFlowKind::Unless
+                | ControlFlowKind::Each,
             ..
         })
     ) || is_for_loop_head(head)
@@ -571,6 +576,7 @@ fn control_flow_keyword(kind: ControlFlowKind) -> &'static str {
         ControlFlowKind::If => "if",
         ControlFlowKind::ElseIf => "else if",
         ControlFlowKind::Else => "else",
+        ControlFlowKind::Unless => "unless",
         ControlFlowKind::Case => "case",
         ControlFlowKind::When => "when",
         ControlFlowKind::Default => "default",
@@ -639,6 +645,7 @@ fn parse_control_flow_head(content: &str) -> Option<ControlFlowHead> {
     const KEYWORDS: &[(ControlFlowKind, &str)] = &[
         (ControlFlowKind::ElseIf, "else if"),
         (ControlFlowKind::Else, "else"),
+        (ControlFlowKind::Unless, "unless"),
         (ControlFlowKind::If, "if"),
         (ControlFlowKind::Case, "case"),
         (ControlFlowKind::When, "when"),
