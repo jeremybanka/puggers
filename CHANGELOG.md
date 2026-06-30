@@ -2,6 +2,29 @@
 
 All notable user-facing changes to `puggers` will be documented here.
 
+## 0.1.9 (2026-06-30)
+
+### Features
+
+#### Remove trim outer document in favor of root selection
+
+Removed `trim_outer_document` and `--trim-outer-document`; use explicit
+`root` / `--root` selection instead. The main core conversion API is now
+fallible so missing roots return an error instead of being hidden.
+
+### Fixes
+
+#### Add explicit HTML import root selection
+
+HTML import now supports a `--root` path such as `html>body article`, plus a
+fallible core conversion API that reports missing roots with a typed error.
+
+#### Add explicit HTML import collapse modes
+
+HTML import can now collapse single-child structural chains with off, top-wins,
+bottom-wins, or best-tag-wins behavior while preserving source-attributed
+wrappers as structural boundaries.
+
 ## 0.1.8 (2026-06-30)
 
 ### Fixes
