@@ -1,6 +1,6 @@
 use std::collections::BTreeSet;
 
-use puggers_core::{ConvertOptions, convert_html_to_pug};
+use puggers_core::{ConvertOptions, PugFormatOptions, convert_html_to_pug};
 
 fn options_with_attributes(attributes: &[&str]) -> ConvertOptions {
     ConvertOptions {
@@ -18,7 +18,10 @@ fn keeps_short_inline_text_inline_when_line_width_allows_it() {
         "<p>Hello there</p>",
         &ConvertOptions {
             trim_outer_document: true,
-            line_width: Some(40),
+            formatting: PugFormatOptions {
+                line_width: Some(40),
+                ..Default::default()
+            },
             ..Default::default()
         },
     );
@@ -32,7 +35,10 @@ fn reflows_long_inline_prose_into_a_dotted_block_when_line_width_is_exceeded() {
         "<p>Hello there this sentence should not stay inline once line width is small</p>",
         &ConvertOptions {
             trim_outer_document: true,
-            line_width: Some(30),
+            formatting: PugFormatOptions {
+                line_width: Some(30),
+                ..Default::default()
+            },
             ..Default::default()
         },
     );
@@ -49,7 +55,10 @@ fn counts_tag_shorthand_and_attributes_when_deciding_to_wrap_inline_text() {
         "<a class=\"link primary\" href=\"/docs\">Documentation</a>",
         &ConvertOptions {
             trim_outer_document: true,
-            line_width: Some(24),
+            formatting: PugFormatOptions {
+                line_width: Some(24),
+                ..Default::default()
+            },
             ..options_with_attributes(&["class", "href"])
         },
     );
@@ -66,7 +75,10 @@ fn treats_source_line_breaks_as_collapsible_whitespace_when_reflowing_prose() {
         "<p>First paragraph should wrap here\nSecond paragraph also wraps</p>",
         &ConvertOptions {
             trim_outer_document: true,
-            line_width: Some(24),
+            formatting: PugFormatOptions {
+                line_width: Some(24),
+                ..Default::default()
+            },
             ..Default::default()
         },
     );

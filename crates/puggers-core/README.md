@@ -7,7 +7,7 @@
 ```rust
 use std::collections::BTreeSet;
 
-use puggers_core::{ConvertOptions, convert_html_to_pug};
+use puggers_core::{ConvertOptions, PugFormatOptions, QuoteStyle, convert_html_to_pug};
 
 let allowed_attributes = BTreeSet::from([
     String::from("class"),
@@ -18,6 +18,10 @@ let output = convert_html_to_pug(
     &ConvertOptions {
         allowed_attributes,
         trim_outer_document: true,
+        formatting: PugFormatOptions {
+            quote_style: QuoteStyle::Single,
+            ..Default::default()
+        },
         ..Default::default()
     },
 );

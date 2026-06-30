@@ -1,4 +1,4 @@
-issue(id="0012" status="open")
+issue(id="0012" status="closed")
   title Align the HTML converter with formatter settings and shared text layout logic
   user-story
     as-a maintainer of puggers
@@ -28,7 +28,8 @@ issue(id="0012" status="open")
     criterion Keep importer-only extraction behavior separate enough that shared code does not absorb DOM-selection or HTML-specific policy decisions.
     criterion Document the initial shared-core boundary so later compatibility work can extend it without reintroducing drift by accident.
   review-items
-    item(status="open") Decide which settings belong in the first compatibility tranche: `lineWidth`, indentation, tabs, quote style, or only the subset already proven by tests.
-    item(status="open") Confirm the first shared component is small but real, so `0012` proves the refactor direction instead of only restating intent.
-    item(status="open") Decide how much of the compatibility inventory should be backed by vendored-style fixture assertions versus hand-authored targeted cases.
-    item(status="open") Make sure the importer can still diverge where HTML extraction policy truly differs from formatter rendering policy.
+    item(status="covered") The first compatibility tranche covers `lineWidth`, `indentWidth`, `useTabs`, and `quoteStyle` through `puggers-core::PugFormatOptions`.
+    item(status="covered") The shared component is now code-backed: indentation, display width, prose word wrapping, and quoted attribute rendering live in `puggers-core`.
+    item(status="covered") Compatibility inventory is documented in `docs/importer-formatter-compatibility.md` and backed by focused cross-surface tests.
+    item(status="covered") Importer-only extraction controls remain on `ConvertOptions` outside the shared formatting option type.
+    item(status="covered") Review accepted the pre-1.0 `ConvertOptions::formatting` API change and confirmed `quoteStyle` as a fully shared puggers ecosystem option; wasm diagnostic dead-code cleanup is intentionally separate future work.

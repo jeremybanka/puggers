@@ -19,7 +19,13 @@ Point `dprint` at the generated Wasm file:
   ],
   "pug": {
     "quoteStyle": "single",
-    "lineWidth": 80
+    "lineWidth": 80,
+    "indentWidth": 2,
+    "useTabs": false
   }
 }
 ```
+
+The plugin resolves overlapping formatting settings into
+`puggers-core::PugFormatOptions`, the same shared option type used by the HTML
+converter.

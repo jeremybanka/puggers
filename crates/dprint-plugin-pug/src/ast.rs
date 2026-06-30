@@ -1,4 +1,5 @@
 use crate::config;
+pub use puggers_core::QuoteStyle;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Document {
@@ -325,48 +326,6 @@ impl ControlFlowKind {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum QuoteStyle {
-    Double,
-    Single,
-}
-
-impl QuoteStyle {
-    fn delimiter(self) -> char {
-        match self {
-            QuoteStyle::Double => '"',
-            QuoteStyle::Single => '\'',
-        }
-    }
-
-    fn escape_quoted_value(self, value: &str) -> String {
-        let delimiter = self.delimiter();
-        let mut escaped = String::new();
-        let mut chars = value.chars().peekable();
-
-        while let Some(ch) = chars.next() {
-            if ch == '\\'
-                && let Some(next) = chars.peek().copied()
-                && next == delimiter
-            {
-                escaped.push(ch);
-                escaped.push(next);
-                chars.next();
-                continue;
-            }
-
-            if ch == delimiter {
-                escaped.push('\\');
-            }
-
-            escaped.push(ch);
-        }
-
-        escaped
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Attribute {
     pub name: String,
@@ -463,9 +422,7 @@ impl AttributeValue {
     fn to_source(&self, quote_style: QuoteStyle) -> String {
         match self {
             AttributeValue::Quoted { value, .. } => {
-                let delimiter = quote_style.delimiter();
-                let escaped = quote_style.escape_quoted_value(value);
-                format!("{delimiter}{escaped}{delimiter}")
+                puggers_core::formatting::render_attribute_value(value, quote_style)
             }
             AttributeValue::Expression(value) => value.clone(),
         }
