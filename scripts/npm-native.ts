@@ -12,6 +12,9 @@ import { arch, platform, report } from "node:process";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { cli, options, required } from "comline";
+import { z } from "zod/v4";
+
 type SupportedArch = "arm64" | "x64";
 type SupportedOs = "darwin" | "linux" | "win32";
 type LinuxLibc = "glibc" | "musl";
@@ -28,34 +31,92 @@ interface NativeTargetMetadata {
   libc?: LinuxLibc;
 }
 
-const root = fileURLToPath(new URL("..", import.meta.url));
-const command = process.argv[2] ?? "local";
-const target = process.argv[3] ?? process.env.PUGGERS_NPM_TARGET ?? detectTarget();
+const supportedTargets = [
+  "darwin-arm64",
+  "darwin-x64",
+  "linux-arm64-glibc",
+  "linux-arm64-musl",
+  "linux-x64-glibc",
+  "linux-x64-musl",
+  "win32-arm64",
+  "win32-x64"
+] as const;
+type SupportedTarget = (typeof supportedTargets)[number];
 
-switch (command) {
-  case "local":
-    copyLocalArtifacts();
+const targetSchema = z.enum(supportedTargets);
+const cliTargetSchema = targetSchema.optional();
+const nativeTargetMetadataByTarget = {
+  "darwin-arm64": { os: "darwin", cpu: "arm64" },
+  "darwin-x64": { os: "darwin", cpu: "x64" },
+  "linux-arm64-glibc": { os: "linux", cpu: "arm64", libc: "glibc" },
+  "linux-arm64-musl": { os: "linux", cpu: "arm64", libc: "musl" },
+  "linux-x64-glibc": { os: "linux", cpu: "x64", libc: "glibc" },
+  "linux-x64-musl": { os: "linux", cpu: "x64", libc: "musl" },
+  "win32-arm64": { os: "win32", cpu: "arm64" },
+  "win32-x64": { os: "win32", cpu: "x64" }
+} satisfies Record<SupportedTarget, NativeTargetMetadata>;
+
+const cliRoutes = required({
+  "stage-local": null,
+  "stage-dist": null,
+  "print-dist-path": null
+});
+
+const targetOptions = options(
+  "stage native npm artifacts",
+  z.object({
+    target: cliTargetSchema
+  }),
+  {
+    target: {
+      description: "native npm target triple",
+      example: "--target=linux-x64-glibc",
+      flag: "t",
+      required: false
+    }
+  }
+);
+
+const routeOptions = {
+  "stage-local": targetOptions,
+  "stage-dist": targetOptions,
+  "print-dist-path": targetOptions
+};
+
+const npmNativeCli = cli({
+  cliName: "npm-native",
+  cliDescription: "Stage native puggers npm artifacts.",
+  discoverConfigPath: () => undefined,
+  routes: cliRoutes,
+  routeOptions
+});
+
+const root = fileURLToPath(new URL("..", import.meta.url));
+const { inputs } = npmNativeCli(process.argv);
+const target = inputs.opts.target ?? readTargetFromEnv() ?? detectTarget();
+
+switch (inputs.case) {
+  case "stage-local":
+    stageLocalArtifacts(target);
     break;
-  case "dist":
-    createNativePackage(target);
+  case "stage-dist":
+    stageNativePackage(target);
     break;
-  case "dist-dir":
+  case "print-dist-path":
     console.log(nativePackageDirectory(target));
     break;
-  default:
-    throw new Error(`unknown npm native command: ${command}`);
 }
 
-function copyLocalArtifacts(): void {
+function stageLocalArtifacts(target: SupportedTarget): void {
   copyNativeArtifacts(
     join(root, "packages", "puggers", ".native"),
     resolveNativeArtifacts(target)
   );
 }
 
-function createNativePackage(packageTarget: string): string {
+function stageNativePackage(packageTarget: SupportedTarget): string {
   const version = readWorkspaceVersion();
-  const metadata = nativeTargetMetadata(packageTarget);
+  const metadata = nativeTargetMetadataByTarget[packageTarget];
   const artifacts = resolveNativeArtifacts(packageTarget);
   const packageDirectory = nativePackageDirectory(packageTarget);
 
@@ -77,7 +138,7 @@ function createNativePackage(packageTarget: string): string {
         preferUnplugged: true,
         os: [metadata.os],
         cpu: [metadata.cpu],
-        ...(metadata.libc == null ? {} : { libc: [metadata.libc] }),
+        ...("libc" in metadata ? { libc: [metadata.libc] } : {}),
         files: [artifacts.outputExecutableName, "puggers.node", "README.md"],
         publishConfig: {
           access: "public"
@@ -96,7 +157,7 @@ function createNativePackage(packageTarget: string): string {
   return packageDirectory;
 }
 
-function nativePackageDirectory(packageTarget: string): string {
+function nativePackageDirectory(packageTarget: SupportedTarget): string {
   return join(root, "target", "npm", "@puggers", packageTarget);
 }
 
@@ -107,7 +168,7 @@ function copyNativeArtifacts(outputDirectory: string, artifacts: NativeArtifacts
   chmodIfPossible(join(outputDirectory, artifacts.outputExecutableName));
 }
 
-function resolveNativeArtifacts(packageTarget: string): NativeArtifacts {
+function resolveNativeArtifacts(packageTarget: SupportedTarget): NativeArtifacts {
   const releaseDirectory = process.env.PUGGERS_RELEASE_DIR ?? join(root, "target", "release");
   const outputExecutableName = packageTarget.startsWith("win32-") ? "puggers.exe" : "puggers";
   const sourceExecutableName = platform === "win32" ? "puggers.exe" : "puggers";
@@ -133,51 +194,29 @@ function resolveNativeArtifacts(packageTarget: string): NativeArtifacts {
   };
 }
 
-function detectTarget(): string {
+function detectTarget(): SupportedTarget {
   if (platform === "darwin") {
-    return `darwin-${supportedArch()}`;
+    return parseTarget(`darwin-${supportedArch()}`);
   }
 
   if (platform === "linux") {
-    return `linux-${supportedArch()}-${detectLinuxLibc()}`;
+    return parseTarget(`linux-${supportedArch()}-${detectLinuxLibc()}`);
   }
 
   if (platform === "win32") {
-    return `win32-${supportedArch()}`;
+    return parseTarget(`win32-${supportedArch()}`);
   }
 
   throw new Error(`unsupported platform: ${platform}`);
 }
 
-function nativeTargetMetadata(packageTarget: string): NativeTargetMetadata {
-  const [targetOs, targetCpu, targetLibc] = packageTarget.split("-");
-  if (
-    !isSupportedOs(targetOs) ||
-    !isSupportedArch(targetCpu)
-  ) {
-    throw new Error(`unsupported npm native target: ${packageTarget}`);
-  }
+function readTargetFromEnv(): SupportedTarget | undefined {
+  const target = process.env.PUGGERS_NPM_TARGET;
+  return target == null || target === "" ? undefined : parseTarget(target);
+}
 
-  if (targetOs === "linux") {
-    if (!isLinuxLibc(targetLibc)) {
-      throw new Error(`linux npm native targets must specify glibc or musl: ${packageTarget}`);
-    }
-
-    return {
-      os: targetOs,
-      cpu: targetCpu,
-      libc: targetLibc
-    };
-  }
-
-  if (targetLibc != null) {
-    throw new Error(`only linux npm native targets may specify libc: ${packageTarget}`);
-  }
-
-  return {
-    os: targetOs,
-    cpu: targetCpu
-  };
+function parseTarget(target: string): SupportedTarget {
+  return targetSchema.parse(target);
 }
 
 function supportedArch(): SupportedArch {
@@ -259,16 +298,4 @@ function chmodIfPossible(path: string): void {
   } catch {
     // Windows and readonly filesystems can ignore this; package managers preserve executable metadata where supported.
   }
-}
-
-function isSupportedOs(value: string | undefined): value is SupportedOs {
-  return value === "darwin" || value === "linux" || value === "win32";
-}
-
-function isSupportedArch(value: string | undefined): value is SupportedArch {
-  return value === "arm64" || value === "x64";
-}
-
-function isLinuxLibc(value: string | undefined): value is LinuxLibc {
-  return value === "glibc" || value === "musl";
 }

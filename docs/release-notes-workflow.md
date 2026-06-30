@@ -49,12 +49,13 @@ npm publishing is also ordered. Publish every generated native platform package
 for the release version before publishing the top-level `puggers` package:
 
 ```sh
-just publish-npm-native <target>
+just publish-npm-native --target=<target>
 just publish-npm
 ```
 
 When publishing from a supported CI environment with npm provenance, use
-`just publish-npm-native-provenance <target>` and `just publish-npm-provenance`.
+`just publish-npm-native-provenance --target=<target>` and
+`just publish-npm-provenance`.
 
 After the initial manual publish, the merged `release` pull request triggers
 the `Release` workflow, which publishes with crates.io trusted publishing

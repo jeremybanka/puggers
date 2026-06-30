@@ -11,9 +11,15 @@ importers:
       '@types/node':
         specifier: 26.0.1
         version: 26.0.1
+      comline:
+        specifier: 0.5.0
+        version: 0.5.0(zod@4.4.3)
       typescript:
         specifier: 6.0.3
         version: 6.0.3
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
 
   packages/native/darwin-arm64: {}
 
@@ -223,6 +229,9 @@ packages:
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
 
+  '@standard-schema/spec@1.1.0':
+    resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
   '@tybys/wasm-util@0.10.3':
     resolution: {integrity: sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg==}
 
@@ -249,6 +258,17 @@ packages:
   cac@7.0.0:
     resolution: {integrity: sha512-tixWYgm5ZoOD+3g6UTea91eow5z6AAHaho3g0V9CNSNb45gM8SmflpAc+GRd1InC4AqN/07Unrgp56Y94N9hJQ==}
     engines: {node: '>=20.19.0'}
+
+  comline@0.5.0:
+    resolution: {integrity: sha512-icuB44PASbBttcdIBIS/PqSA4PHJ1vDECnlGCo1Sig/03YGH9Z8MSqmNJ/YWrT8HTAqspbcg7kkxUmXxKv7SNw==}
+    peerDependencies:
+      arktype: ^2.1.28
+      zod: ^4.2.0
+    peerDependenciesMeta:
+      arktype:
+        optional: true
+      zod:
+        optional: true
 
   defu@6.1.7:
     resolution: {integrity: sha512-7z22QmUWiQ/2d0KkdYmANbRUVABpZ9SNYyH5vx6PZ+nE5bcC0l7uFvEfHlyld/HcGBFTL536ClDt3DEcSlEJAQ==}
@@ -352,6 +372,9 @@ packages:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
     hasBin: true
 
+  treetrunks@0.1.8:
+    resolution: {integrity: sha512-fD1vRlo9LqlSxjnKlyZvJ6U4hrOIwNUrSEl+3npElgpm7UvwwVqh6ncl8663IqhIxMy34BQILddW5vgz/NaGbA==}
+
   tsdown@0.22.3:
     resolution: {integrity: sha512-louqbfA8Qf//B9jTTL0FPtXTNpjCWv1VPkbcmQMph2pTpzs+LnB1tbe4tDDRVpo2BjF5SgUXaTZe45SxB8pWHg==}
     engines: {node: ^22.18.0 || >=24.11.0}
@@ -399,6 +422,9 @@ packages:
 
   undici-types@8.3.0:
     resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==}
+
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
 snapshots:
 
@@ -518,6 +544,8 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.1': {}
 
+  '@standard-schema/spec@1.1.0': {}
+
   '@tybys/wasm-util@0.10.3':
     dependencies:
       tslib: 2.8.1
@@ -542,6 +570,13 @@ snapshots:
   birpc@4.0.0: {}
 
   cac@7.0.0: {}
+
+  comline@0.5.0(zod@4.4.3):
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      treetrunks: 0.1.8
+    optionalDependencies:
+      zod: 4.4.3
 
   defu@6.1.7: {}
 
@@ -625,6 +660,8 @@ snapshots:
 
   tree-kill@1.2.2: {}
 
+  treetrunks@0.1.8: {}
+
   tsdown@0.22.3(typescript@6.0.3):
     dependencies:
       ansis: 4.3.1
@@ -661,3 +698,5 @@ snapshots:
       quansync: 1.0.0
 
   undici-types@8.3.0: {}
+
+  zod@4.4.3: {}

@@ -85,7 +85,7 @@ build-npm-native-cli:
 build-npm-native-addon:
     cargo build -p puggers-node --release --locked
 build-npm-native-local:
-    node scripts/npm-native.ts local
+    node scripts/npm-native.ts stage-local
 build-npm-js:
     pnpm --filter puggers build
 build-npm-dist:
@@ -95,9 +95,9 @@ build-npm-dist-native *args:
     just build-npm-dist-native-directory {{ args }}
     just build-npm-dist-native-tarball {{ args }}
 build-npm-dist-native-directory *args:
-    node scripts/npm-native.ts dist {{ args }}
+    node scripts/npm-native.ts stage-dist {{ args }}
 build-npm-dist-native-tarball *args:
-    pnpm --dir "$(node scripts/npm-native.ts dist-dir {{ args }})" pack --pack-destination "$(pwd)/target/npm"
+    pnpm --dir "$(node scripts/npm-native.ts print-dist-path {{ args }})" pack --pack-destination "$(pwd)/target/npm"
 build-npm-dist-package:
     pnpm --filter puggers pack --pack-destination target/npm
 
@@ -122,10 +122,10 @@ publish-crates-dprint:
     cargo publish -p dprint-plugin-pug
 publish-npm-native *args:
     just build-npm-dist-native-directory {{ args }}
-    pnpm --dir "$(node scripts/npm-native.ts dist-dir {{ args }})" publish --access public
+    pnpm --dir "$(node scripts/npm-native.ts print-dist-path {{ args }})" publish --access public
 publish-npm-native-provenance *args:
     just build-npm-dist-native-directory {{ args }}
-    pnpm --dir "$(node scripts/npm-native.ts dist-dir {{ args }})" publish --access public --provenance
+    pnpm --dir "$(node scripts/npm-native.ts print-dist-path {{ args }})" publish --access public --provenance
 publish-npm:
     pnpm --filter puggers publish --access public
 publish-npm-provenance:

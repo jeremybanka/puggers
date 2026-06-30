@@ -61,7 +61,8 @@ just test-npm
 
 The `scripts/npm-native.ts` helper only stages native files and package
 metadata. `pnpm pack` and `pnpm publish` stay in the Justfile so release actions
-remain visible at the command layer.
+remain visible at the command layer. Its routes are `stage-local`,
+`stage-dist`, and `print-dist-path`.
 
 Generate a native package directory for the current host target:
 
@@ -78,8 +79,11 @@ just build-npm-dist-native
 Pass an explicit target when packaging artifacts built elsewhere:
 
 ```sh
-PUGGERS_RELEASE_DIR=target/release just build-npm-dist-native linux-x64-glibc
+PUGGERS_RELEASE_DIR=target/release just build-npm-dist-native --target=linux-x64-glibc
 ```
+
+Use `--target=<target>` or `PUGGERS_NPM_TARGET=<target>` to override host target
+detection.
 
 Supported target names are:
 
@@ -101,7 +105,7 @@ the already-built artifacts.
 Publish all native packages first:
 
 ```sh
-just publish-npm-native linux-x64-glibc
+just publish-npm-native --target=linux-x64-glibc
 ```
 
 Then publish the top-level package:
@@ -113,7 +117,7 @@ just publish-npm
 For CI-backed publishes with npm provenance, use the provenance variants:
 
 ```sh
-just publish-npm-native-provenance linux-x64-glibc
+just publish-npm-native-provenance --target=linux-x64-glibc
 just publish-npm-provenance
 ```
 

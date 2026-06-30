@@ -111,7 +111,7 @@ published yet.
 For npm, publish all native platform packages first, then the top-level package:
 
 ```sh
-just publish-npm-native <target>
+just publish-npm-native --target=<target>
 just publish-npm
 ```
 
