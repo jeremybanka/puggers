@@ -1,0 +1,7 @@
+{
+  "name": "@puggers/linux-x64-musl",
+  "version": "0.1.8",
+  "private": true,
+  "description": "Workspace placeholder for the generated linux-x64-musl native puggers package.",
+  "license": "MIT"
+}

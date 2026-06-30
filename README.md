@@ -5,10 +5,11 @@ Workspace for a small family of Pug tools.
 ## Tooling
 
 This repo uses `mise` as the source of truth for local tool versions, including
-Rust.
+Rust, Node, and pnpm.
 
 ```sh
 mise install
+pnpm install
 ```
 
 ## Formatting
@@ -29,12 +30,27 @@ checked-in upstream fixture corpus from bulk formatting.
 - `crates/dprint-plugin-pug`: the existing tiny `dprint` formatter plugin
 - `crates/puggers-core`: shared Rust library for conversion and other reusable logic
 - `crates/puggers-cli`: the `puggers` CLI package built on top of `puggers-core`
+- `crates/puggers-node`: native Node-API bindings for the npm package
 
 ## CLI
 
 ```sh
 cargo run -p puggers -- --help
 ```
+
+## npm
+
+The npm package lives in `packages/puggers`. It is an ESM-only TypeScript
+package built with `tsdown`, backed by native platform packages that carry the
+Rust CLI executable and Node-API addon.
+
+```sh
+just build-npm
+just test-npm
+```
+
+The native npm packaging policy and publish order are documented in
+[`docs/npm-native-packaging.md`](docs/npm-native-packaging.md).
 
 Example:
 

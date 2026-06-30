@@ -26,8 +26,11 @@ t:
     just test
 test:
     just test-cargo
+    just test-npm
 test-cargo:
     cargo test
+test-npm:
+    pnpm --filter puggers test
 
 # STATIC ANALYSIS
 f:
@@ -44,12 +47,15 @@ check:
     just check-cargo
     just check-clippy
     just check-wasm
+    just check-npm
 check-cargo:
     cargo check --workspace
 check-clippy:
     cargo clippy --workspace --all-targets -- -D warnings
 check-wasm:
     cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release
+check-npm:
+    pnpm --filter puggers build
 
 # BUILD SYSTEM
 b:
@@ -57,10 +63,24 @@ b:
 build:
     just build-cargo
     just build-wasm
+    just build-npm
 build-cargo:
     cargo build --workspace
 build-wasm:
     cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release
+build-npm-native:
+    cargo build -p puggers --release --locked
+    cargo build -p puggers-node --release --locked
+    node scripts/npm-native.mjs local
+build-npm:
+    just build-npm-native
+    pnpm --filter puggers build
+package-npm-native *args:
+    node scripts/npm-native.mjs package {{ args }}
+pack-npm-native *args:
+    node scripts/npm-native.mjs pack {{ args }}
+pack-npm:
+    pnpm --filter puggers pack --pack-destination target/npm
 
 # RELEASE SYSTEM
 n:
@@ -78,3 +98,7 @@ publish-crates:
     cargo publish -p puggers-core
     cargo publish -p puggers
     cargo publish -p dprint-plugin-pug
+publish-npm-native *args:
+    node scripts/npm-native.mjs publish {{ args }}
+publish-npm:
+    pnpm --filter puggers publish --access public --provenance

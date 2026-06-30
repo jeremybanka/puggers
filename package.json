@@ -1,0 +1,10 @@
+{
+  "name": "puggers-workspace",
+  "private": true,
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "build:npm": "pnpm --filter puggers build",
+    "test:npm": "pnpm --filter puggers test",
+    "pack:npm": "pnpm --filter puggers pack --pack-destination target/npm"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "name": "puggers",
+  "version": "0.1.8",
+  "description": "Native npm CLI and Node API for converting HTML to Pug.",
+  "type": "module",
+  "bin": {
+    "puggers": "./dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeremybanka/puggers.git"
+  },
+  "keywords": [
+    "html",
+    "pug",
+    "converter",
+    "native"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=26"
+  },
+  "preferUnplugged": true,
+  "scripts": {
+    "build": "tsdown",
+    "test": "node --test test/*.test.mjs",
+    "pack:dry-run": "pnpm pack --dry-run"
+  },
+  "optionalDependencies": {
+    "@puggers/darwin-arm64": "workspace:*",
+    "@puggers/darwin-x64": "workspace:*",
+    "@puggers/linux-arm64-glibc": "workspace:*",
+    "@puggers/linux-arm64-musl": "workspace:*",
+    "@puggers/linux-x64-glibc": "workspace:*",
+    "@puggers/linux-x64-musl": "workspace:*",
+    "@puggers/win32-arm64": "workspace:*",
+    "@puggers/win32-x64": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "26.0.1",
+    "tsdown": "0.22.3",
+    "typescript": "6.0.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

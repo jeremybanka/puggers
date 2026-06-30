@@ -1,1 +1,5 @@
 target/
+node_modules/
+packages/*/.native/
+packages/*/dist/
+target/npm/
