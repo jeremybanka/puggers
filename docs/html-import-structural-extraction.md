@@ -22,15 +22,13 @@ The root path grammar intentionally starts small:
 - Whitespace means descendant.
 - Matching uses the first complete path match in document order.
 
-If a root path does not match, `try_convert_html_to_pug` returns
-`ConvertError::RootNotFound`. The CLI reports that error and exits
-unsuccessfully. The older infallible `convert_html_to_pug` remains available for
-callers that cannot handle diagnostics.
+If a root path does not match, `convert_html_to_pug` returns
+`ConvertError::RootNotFound`. The CLI reports that error, writes no converted
+Pug to stdout, and exits unsuccessfully.
 
-`trim_outer_document` / `--trim-outer-document` remains as a compatibility
-shortcut for emitting all parsed `body` children. New region-selection behavior
-should use `root` / `--root` so callers can name the structural region they
-actually want.
+The older `trim_outer_document` / `--trim-outer-document` control has been
+removed. New region-selection behavior should use `root` / `--root` so callers
+can name the structural region they actually want.
 
 ## Single-Child Collapse
 

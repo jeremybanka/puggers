@@ -19,7 +19,6 @@ Current controls let you:
 
 - keep selected attributes with repeated `--allow-attr`
 - choose a root region with `--root 'html>body article'`
-- trim the outer `html` / `head` / `body` shell with the legacy `--trim-outer-document`
 - collapse single-child structural chains with `--collapse-single-nested <mode>`
 - preserve meaningful spaces around inline content with `--preserve-text-whitespace`
 - drop comments with `--drop-comments`
@@ -49,7 +48,7 @@ Inspect structure and Tailwind-heavy markup:
 ```sh
 printf '%s' '<div class="grid gap-6 md:grid-cols-2"><a href="/docs">Docs</a></div>' \
   | cargo run -p puggers -- \
-      --trim-outer-document \
+      --root div \
       --collapse-single-nested best-tag-wins \
       --allow-attr class \
       --allow-attr href \
@@ -61,7 +60,7 @@ printf '%s' '<div class="grid gap-6 md:grid-cols-2"><a href="/docs">Docs</a></di
 ```sh
 printf '<div class="card"><a href="/docs">Docs</a></div>' \
   | cargo run -p puggers -- \
-      --trim-outer-document \
+      --root div \
       --allow-attr class \
       --allow-attr href
 ```

@@ -1,11 +1,19 @@
-use puggers_core::{ConvertOptions, TextWhitespaceMode, convert_html_to_pug};
+use puggers_core::{ConvertOptions, RootSelection, TextWhitespaceMode, convert_html_to_pug};
+
+fn convert(input: &str, options: &ConvertOptions) -> String {
+    convert_html_to_pug(input, options).expect("conversion should succeed")
+}
+
+fn root(value: &str) -> RootSelection {
+    RootSelection::parse(value).expect("root path should parse")
+}
 
 #[test]
 fn collapses_normal_text_whitespace_by_default() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<p>  Hello   there  </p>",
         &ConvertOptions {
-            trim_outer_document: true,
+            root: Some(root("p")),
             ..Default::default()
         },
     );
@@ -15,10 +23,10 @@ fn collapses_normal_text_whitespace_by_default() {
 
 #[test]
 fn preserve_mode_keeps_meaningful_spaces_around_inline_tags() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<p>\n  If I do, whitespace is <strong>respected</strong> and <em>everybody</em> is happy.\n</p>",
         &ConvertOptions {
-            trim_outer_document: true,
+            root: Some(root("p")),
             text_whitespace: TextWhitespaceMode::Preserve,
             ..Default::default()
         },
@@ -32,10 +40,10 @@ fn preserve_mode_keeps_meaningful_spaces_around_inline_tags() {
 
 #[test]
 fn preserve_mode_keeps_whitespace_only_separators_between_inline_elements() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<p><strong>Hello</strong> <em>there</em></p>",
         &ConvertOptions {
-            trim_outer_document: true,
+            root: Some(root("p")),
             text_whitespace: TextWhitespaceMode::Preserve,
             ..Default::default()
         },

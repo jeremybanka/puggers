@@ -8,14 +8,14 @@
 use std::collections::BTreeSet;
 
 use puggers_core::{
-    ConvertOptions, PugFormatOptions, QuoteStyle, RootSelection, try_convert_html_to_pug,
+    ConvertOptions, PugFormatOptions, QuoteStyle, RootSelection, convert_html_to_pug,
 };
 
 let allowed_attributes = BTreeSet::from([
     String::from("class"),
 ]);
 
-let output = try_convert_html_to_pug(
+let output = convert_html_to_pug(
     r#"<main><article class="card"><p>Hello</p></article></main>"#,
     &ConvertOptions {
         allowed_attributes,

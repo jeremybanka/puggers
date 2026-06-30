@@ -6,7 +6,7 @@ use std::process::ExitCode;
 
 use puggers_core::{
     CollapseSingleNestedMode, ConvertOptions, PugFormatOptions, QuoteStyle, RootSelection,
-    TextWhitespaceMode, try_convert_html_to_pug,
+    TextWhitespaceMode, convert_html_to_pug,
 };
 
 fn main() -> ExitCode {
@@ -23,7 +23,6 @@ fn run() -> Result<(), String> {
     let mut args = env::args().skip(1);
     let mut allowed_attributes = BTreeSet::new();
     let mut root = None;
-    let mut trim_outer_document = false;
     let mut collapse_single_nested = CollapseSingleNestedMode::Off;
     let mut text_whitespace = TextWhitespaceMode::Collapse;
     let mut keep_comments = true;
@@ -47,7 +46,6 @@ fn run() -> Result<(), String> {
                     .ok_or_else(|| String::from("missing value after --root"))?;
                 root = Some(RootSelection::parse(&value).map_err(|error| error.to_string())?);
             }
-            "--trim-outer-document" => trim_outer_document = true,
             "--collapse-single-nested" => {
                 let value = args
                     .next()
@@ -115,12 +113,11 @@ fn run() -> Result<(), String> {
         buffer
     };
 
-    let output = try_convert_html_to_pug(
+    let output = convert_html_to_pug(
         &input,
         &ConvertOptions {
             allowed_attributes,
             root,
-            trim_outer_document,
             collapse_single_nested,
             text_whitespace,
             keep_comments,
@@ -151,7 +148,6 @@ fn print_help() {
        --line-width <count>         Reflow prose and wrap long inline tag text\n\
        --quote-style <style>        Render attributes with double or single quotes\n\
        --root <path>                Emit the first root matching a path like html>body article\n\
-       --trim-outer-document        Emit body children instead of html/head/body\n\
        --collapse-single-nested <mode>\n\
                                     Collapse single-child structural chains with off,\n\
                                     top-wins, bottom-wins, or best-tag-wins\n\

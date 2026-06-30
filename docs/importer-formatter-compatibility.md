@@ -16,7 +16,6 @@ for wrapper, shell, and region-selection behavior.
 | `--allow-attr` | Importer-only | Determines which HTML attributes survive extraction. |
 | id/class shorthand preference | Importer-only | Chooses whether imported `id` and `class` values become Pug shorthand. |
 | `--root` | Importer-only | Selects the first matching import root with direct-child and descendant path semantics. |
-| `--trim-outer-document` | Importer-only / compatibility | Selects body children instead of the parsed outer document shell. Prefer `--root` for new region-selection behavior. |
 | `--collapse-single-nested` | Importer-only | Collapses source-anonymous single-child structural chains according to the selected mode. |
 | `--preserve-text-whitespace` | Importer-only | Changes how HTML text payload whitespace is normalized. |
 | `--drop-comments` | Importer-only | Removes HTML comments during import. |

@@ -30,9 +30,8 @@ issue(id="0013" status="review")
     explicit root path such as `html>body article`, where the first `article`
     found under `html > body` becomes the emitted root. The CLI should expose
     this as a shell-safe `--root` option, for example
-    `--root 'html>body article'`, and `trim_outer_document` should be replaced
-    or reduced to a compatibility spelling for the equivalent body-root
-    selection.
+    `--root 'html>body article'`, and `trim_outer_document` should be removed
+    to keep the structural selection surface small.
   acceptance-criteria
     criterion Revisit `collapse-single-nested` and classify at least a few concrete wrapper-removal cases as safe, unsafe, or option-dependent.
     criterion Implement single-child structural collapse as an explicit option with off, top-wins, bottom-wins, and best-tag-wins behavior, including a concrete example such as `div > section > div` collapsing to `section` when best-tag policy applies.
@@ -46,6 +45,7 @@ issue(id="0013" status="review")
   review-items
     item(status="covered") The anonymous wrapper collapse flag is now an explicit collapse mode with off, top-wins, bottom-wins, and best-tag-wins semantics.
     item(status="covered") The first best-tag hierarchy is defined globally inside puggers, while leaving custom hierarchy configuration as a possible future extension.
-    item(status="covered") Root selection is now the explicit model through `ConvertOptions::root`, `RootSelection`, and `--root`; `trim_outer_document` and `--trim-outer-document` remain compatibility shortcuts for body children.
+    item(status="covered") Root selection is now the explicit model through `ConvertOptions::root`, `RootSelection`, and `--root`; `trim_outer_document` and `--trim-outer-document` were removed to keep the surface small.
     item(status="covered") The root path grammar and no-match behavior are covered by core and CLI tests, including direct-child `>`, descendant whitespace, and typed `RootNotFound` errors.
     item(status="covered") The structural extraction policy doc now describes root selection instead of deferring broader region selection.
+    item(status="covered") Richer root selectors such as ids, classes, and attributes are intentionally deferred to task `0018`.

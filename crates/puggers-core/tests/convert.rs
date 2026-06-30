@@ -1,8 +1,17 @@
 use std::collections::BTreeSet;
 
 use puggers_core::{
-    CollapseSingleNestedMode, ConvertOptions, PugFormatOptions, QuoteStyle, convert_html_to_pug,
+    CollapseSingleNestedMode, ConvertOptions, PugFormatOptions, QuoteStyle, RootSelection,
+    convert_html_to_pug,
 };
+
+fn convert(input: &str, options: &ConvertOptions) -> String {
+    convert_html_to_pug(input, options).expect("conversion should succeed")
+}
+
+fn root(value: &str) -> RootSelection {
+    RootSelection::parse(value).expect("root path should parse")
+}
 
 fn options_with_attributes(attributes: &[&str]) -> ConvertOptions {
     ConvertOptions {
@@ -16,7 +25,7 @@ fn options_with_attributes(attributes: &[&str]) -> ConvertOptions {
 
 #[test]
 fn removes_all_attributes_by_default() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<div id=\"shell\" class=\"layout stack\" data-x=\"1\"><a href=\"/docs\">Docs</a></div>",
         &ConvertOptions::default(),
     );
@@ -26,7 +35,7 @@ fn removes_all_attributes_by_default() {
 
 #[test]
 fn keeps_allowlisted_attributes_and_prefers_pug_shorthand() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<div id=\"shell\" class=\"layout stack\" data-x=\"1\"><a href=\"/docs\">Docs</a></div>",
         &options_with_attributes(&["id", "class", "href"]),
     );
@@ -38,11 +47,11 @@ fn keeps_allowlisted_attributes_and_prefers_pug_shorthand() {
 }
 
 #[test]
-fn trims_the_outer_document_when_requested() {
-    let output = convert_html_to_pug(
+fn selects_the_requested_root() {
+    let output = convert(
         "<!doctype html><html><head><title>Ignored</title></head><body><main><h1>Hello</h1></main></body></html>",
         &ConvertOptions {
-            trim_outer_document: true,
+            root: Some(root("html>body>main")),
             ..Default::default()
         },
     );
@@ -52,10 +61,10 @@ fn trims_the_outer_document_when_requested() {
 
 #[test]
 fn collapses_single_nested_anonymous_divs() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<div><div><section><p>Hello</p></section></div></div>",
         &ConvertOptions {
-            trim_outer_document: true,
+            root: Some(root("div")),
             collapse_single_nested: CollapseSingleNestedMode::BestTagWins,
             ..Default::default()
         },
@@ -66,26 +75,23 @@ fn collapses_single_nested_anonymous_divs() {
 
 #[test]
 fn preserves_raw_text_blocks_for_script_and_textarea() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<textarea>\nline one\n  line two\n</textarea><script>console.log('hi');</script>",
-        &ConvertOptions {
-            trim_outer_document: true,
-            ..Default::default()
-        },
+        &ConvertOptions::default(),
     );
 
     assert_eq!(
         output,
-        "textarea.\n  line one\n    line two\nscript.\n  console.log('hi');\n"
+        "html\n  head\n  body\n    textarea.\n      line one\n        line two\n    script.\n      console.log('hi');\n"
     );
 }
 
 #[test]
 fn supports_tab_indentation() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<div><p>Hello</p></div>",
         &ConvertOptions {
-            trim_outer_document: true,
+            root: Some(root("div")),
             formatting: PugFormatOptions {
                 use_tabs: true,
                 ..Default::default()
@@ -99,10 +105,10 @@ fn supports_tab_indentation() {
 
 #[test]
 fn supports_configured_space_indentation_width() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<div><p>Hello</p></div>",
         &ConvertOptions {
-            trim_outer_document: true,
+            root: Some(root("div")),
             formatting: PugFormatOptions {
                 indent_width: 4,
                 ..Default::default()
@@ -116,10 +122,10 @@ fn supports_configured_space_indentation_width() {
 
 #[test]
 fn renders_imported_attributes_with_configured_quote_style() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<a href=\"/docs\" title=\"Jeremy's docs\">Docs</a>",
         &ConvertOptions {
-            trim_outer_document: true,
+            root: Some(root("a")),
             formatting: PugFormatOptions {
                 quote_style: QuoteStyle::Single,
                 ..Default::default()

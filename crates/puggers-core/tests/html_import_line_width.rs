@@ -1,6 +1,14 @@
 use std::collections::BTreeSet;
 
-use puggers_core::{ConvertOptions, PugFormatOptions, convert_html_to_pug};
+use puggers_core::{ConvertOptions, PugFormatOptions, RootSelection, convert_html_to_pug};
+
+fn convert(input: &str, options: &ConvertOptions) -> String {
+    convert_html_to_pug(input, options).expect("conversion should succeed")
+}
+
+fn root(value: &str) -> RootSelection {
+    RootSelection::parse(value).expect("root path should parse")
+}
 
 fn options_with_attributes(attributes: &[&str]) -> ConvertOptions {
     ConvertOptions {
@@ -14,10 +22,10 @@ fn options_with_attributes(attributes: &[&str]) -> ConvertOptions {
 
 #[test]
 fn keeps_short_inline_text_inline_when_line_width_allows_it() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<p>Hello there</p>",
         &ConvertOptions {
-            trim_outer_document: true,
+            root: Some(root("p")),
             formatting: PugFormatOptions {
                 line_width: Some(40),
                 ..Default::default()
@@ -31,10 +39,10 @@ fn keeps_short_inline_text_inline_when_line_width_allows_it() {
 
 #[test]
 fn reflows_long_inline_prose_into_a_dotted_block_when_line_width_is_exceeded() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<p>Hello there this sentence should not stay inline once line width is small</p>",
         &ConvertOptions {
-            trim_outer_document: true,
+            root: Some(root("p")),
             formatting: PugFormatOptions {
                 line_width: Some(30),
                 ..Default::default()
@@ -51,10 +59,10 @@ fn reflows_long_inline_prose_into_a_dotted_block_when_line_width_is_exceeded() {
 
 #[test]
 fn counts_tag_shorthand_and_attributes_when_deciding_to_wrap_inline_text() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<a class=\"link primary\" href=\"/docs\">Documentation</a>",
         &ConvertOptions {
-            trim_outer_document: true,
+            root: Some(root("a")),
             formatting: PugFormatOptions {
                 line_width: Some(24),
                 ..Default::default()
@@ -71,10 +79,10 @@ fn counts_tag_shorthand_and_attributes_when_deciding_to_wrap_inline_text() {
 
 #[test]
 fn treats_source_line_breaks_as_collapsible_whitespace_when_reflowing_prose() {
-    let output = convert_html_to_pug(
+    let output = convert(
         "<p>First paragraph should wrap here\nSecond paragraph also wraps</p>",
         &ConvertOptions {
-            trim_outer_document: true,
+            root: Some(root("p")),
             formatting: PugFormatOptions {
                 line_width: Some(24),
                 ..Default::default()

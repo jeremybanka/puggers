@@ -13,7 +13,6 @@ pub struct ConvertOptions {
     pub allowed_attributes: BTreeSet<String>,
     pub preserve_id_and_class_shorthand: bool,
     pub root: Option<RootSelection>,
-    pub trim_outer_document: bool,
     pub collapse_single_nested: CollapseSingleNestedMode,
     pub text_whitespace: TextWhitespaceMode,
     pub keep_comments: bool,
@@ -26,7 +25,6 @@ impl Default for ConvertOptions {
             allowed_attributes: BTreeSet::new(),
             preserve_id_and_class_shorthand: true,
             root: None,
-            trim_outer_document: false,
             collapse_single_nested: CollapseSingleNestedMode::default(),
             text_whitespace: TextWhitespaceMode::default(),
             keep_comments: true,
@@ -183,14 +181,7 @@ pub enum TextWhitespaceMode {
     Preserve,
 }
 
-pub fn convert_html_to_pug(input: &str, options: &ConvertOptions) -> String {
-    try_convert_html_to_pug(input, options).unwrap_or_default()
-}
-
-pub fn try_convert_html_to_pug(
-    input: &str,
-    options: &ConvertOptions,
-) -> Result<String, ConvertError> {
+pub fn convert_html_to_pug(input: &str, options: &ConvertOptions) -> Result<String, ConvertError> {
     let document = parse_html().one(input);
     let mut nodes = if let Some(root) = &options.root {
         let root_node =
@@ -201,8 +192,6 @@ pub fn try_convert_html_to_pug(
         node_from_dom(&root_node, options, TextBoundaryContext::default())
             .map(|node| vec![node])
             .unwrap_or_default()
-    } else if options.trim_outer_document {
-        root_nodes_from_body(&document, options)
     } else {
         nodes_from_children(&document, options)
     };
@@ -275,15 +264,6 @@ fn collect_descendant_elements_matching(node: &NodeRef, tag: &str, matches: &mut
 fn element_tag_matches(node: &NodeRef, expected: &str) -> bool {
     node.as_element()
         .is_some_and(|element| element.name.local.as_ref().eq_ignore_ascii_case(expected))
-}
-
-fn root_nodes_from_body(document: &NodeRef, options: &ConvertOptions) -> Vec<Node> {
-    document
-        .select_first("body")
-        .ok()
-        .map(|body| nodes_from_children(body.as_node(), options))
-        .filter(|children| !children.is_empty())
-        .unwrap_or_else(|| nodes_from_children(document, options))
 }
 
 fn nodes_from_children(node: &NodeRef, options: &ConvertOptions) -> Vec<Node> {
