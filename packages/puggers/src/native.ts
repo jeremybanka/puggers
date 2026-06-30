@@ -96,17 +96,43 @@ function resolveSupportedArch(): "arm64" | "x64" {
 }
 
 function detectLinuxLibc(): "glibc" | "musl" {
-  const report = process.report?.getReport();
-  const header = typeof report === "string" ? JSON.parse(report).header : report?.header;
+  const rawReport: unknown = process.report?.getReport();
+  const report =
+    typeof rawReport === "string" ? (JSON.parse(rawReport) as unknown) : rawReport;
 
-  if (header != null && "glibcVersionRuntime" in header) {
+  if (report == null || typeof report !== "object") {
+    return detectLinuxLibcFromLdd();
+  }
+
+  if (!("header" in report)) {
+    return detectLinuxLibcFromLdd();
+  }
+
+  const { header } = report;
+  if (header != null && typeof header === "object" && "glibcVersionRuntime" in header) {
     return "glibc";
   }
 
-  if (Array.isArray(report?.sharedObjects) && report.sharedObjects.some((path) => path.includes("libc.musl-") || path.includes("ld-musl-"))) {
+  if (!("sharedObjects" in report)) {
+    return detectLinuxLibcFromLdd();
+  }
+
+  const { sharedObjects } = report;
+  if (
+    Array.isArray(sharedObjects) &&
+    sharedObjects.some(
+      (path) =>
+        typeof path === "string" &&
+        (path.includes("libc.musl-") || path.includes("ld-musl-"))
+    )
+  ) {
     return "musl";
   }
 
+  return detectLinuxLibcFromLdd();
+}
+
+function detectLinuxLibcFromLdd(): "glibc" | "musl" {
   try {
     return readFileSync("/usr/bin/ldd", "utf8").includes("musl") ? "musl" : "glibc";
   } catch {

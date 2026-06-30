@@ -5,8 +5,13 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 
+interface PackageJson {
+  version?: string;
+  optionalDependencies?: Record<string, string>;
+}
+
 const workspaceVersion = readWorkspaceVersion();
-const packageJsonPaths = [
+const packageJsonPaths: string[] = [
   "packages/puggers/package.json",
   "packages/native/darwin-arm64/package.json",
   "packages/native/darwin-x64/package.json",
@@ -18,7 +23,7 @@ const packageJsonPaths = [
   "packages/native/win32-x64/package.json"
 ];
 
-const errors = [];
+const errors: string[] = [];
 
 for (const packageJsonPath of packageJsonPaths) {
   const packageJson = readJson(packageJsonPath);
@@ -47,7 +52,7 @@ if (errors.length > 0) {
 
 console.log(`All npm package manifests match workspace version ${workspaceVersion}.`);
 
-function readWorkspaceVersion() {
+function readWorkspaceVersion(): string {
   const cargoToml = readFileSync(join(root, "Cargo.toml"), "utf8");
   const match = cargoToml.match(/\[workspace\.package\][\s\S]*?version = "([^"]+)"/);
   if (match == null) {
@@ -57,6 +62,6 @@ function readWorkspaceVersion() {
   return match[1];
 }
 
-function readJson(path) {
-  return JSON.parse(readFileSync(join(root, path), "utf8"));
+function readJson(path: string): PackageJson {
+  return JSON.parse(readFileSync(join(root, path), "utf8")) as PackageJson;
 }

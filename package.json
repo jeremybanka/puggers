@@ -1,10 +1,16 @@
 {
   "name": "puggers-workspace",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@11.9.0",
   "scripts": {
+    "check:scripts": "tsc -p scripts/tsconfig.json",
     "build:npm": "pnpm --filter puggers build",
     "test:npm": "pnpm --filter puggers test",
     "pack:npm": "pnpm --filter puggers pack --pack-destination target/npm"
+  },
+  "devDependencies": {
+    "@types/node": "26.0.1",
+    "typescript": "6.0.3"
   }
 }

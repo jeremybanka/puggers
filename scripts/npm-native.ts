@@ -13,6 +13,22 @@ import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+type SupportedArch = "arm64" | "x64";
+type SupportedOs = "darwin" | "linux" | "win32";
+type LinuxLibc = "glibc" | "musl";
+
+interface NativeArtifacts {
+  executablePath: string;
+  addonPath: string;
+  outputExecutableName: string;
+}
+
+interface NativeTargetMetadata {
+  os: SupportedOs;
+  cpu: SupportedArch;
+  libc?: LinuxLibc;
+}
+
 const root = fileURLToPath(new URL("..", import.meta.url));
 const command = process.argv[2] ?? "local";
 const target = process.argv[3] ?? process.env.PUGGERS_NPM_TARGET ?? detectTarget();
@@ -34,7 +50,7 @@ switch (command) {
     throw new Error(`unknown npm native command: ${command}`);
 }
 
-function copyLocalArtifacts() {
+function copyLocalArtifacts(): void {
   const outputDirectory = join(root, "packages", "puggers", ".native");
   mkdirSync(outputDirectory, { recursive: true });
 
@@ -44,7 +60,7 @@ function copyLocalArtifacts() {
   chmodIfPossible(join(outputDirectory, artifacts.outputExecutableName));
 }
 
-function createNativePackage(packageTarget) {
+function createNativePackage(packageTarget: string): string {
   const version = readWorkspaceVersion();
   const metadata = nativeTargetMetadata(packageTarget);
   const artifacts = resolveNativeArtifacts(packageTarget);
@@ -91,11 +107,11 @@ function createNativePackage(packageTarget) {
   return packageDirectory;
 }
 
-function packNativePackage(packageDirectory) {
+function packNativePackage(packageDirectory: string): never {
   runPnpm(["pack", "--pack-destination", join(root, "target", "npm")], packageDirectory);
 }
 
-function publishNativePackage(packageDirectory) {
+function publishNativePackage(packageDirectory: string): never {
   const args = ["publish", "--access", "public"];
   if (publishWithProvenance()) {
     args.push("--provenance");
@@ -104,7 +120,7 @@ function publishNativePackage(packageDirectory) {
   runPnpm(args, packageDirectory);
 }
 
-function runPnpm(args, cwd) {
+function runPnpm(args: string[], cwd: string): never {
   const result = spawnSync("pnpm", args, { cwd, stdio: "inherit" });
   if (result.error != null) {
     throw result.error;
@@ -113,13 +129,13 @@ function runPnpm(args, cwd) {
   process.exit(result.status ?? 1);
 }
 
-function publishWithProvenance() {
+function publishWithProvenance(): boolean {
   return ["1", "true", "yes"].includes(
     (process.env.PUGGERS_NPM_PROVENANCE ?? "").toLowerCase()
   );
 }
 
-function resolveNativeArtifacts(packageTarget) {
+function resolveNativeArtifacts(packageTarget: string): NativeArtifacts {
   const releaseDirectory = process.env.PUGGERS_RELEASE_DIR ?? join(root, "target", "release");
   const outputExecutableName = packageTarget.startsWith("win32-") ? "puggers.exe" : "puggers";
   const sourceExecutableName = platform === "win32" ? "puggers.exe" : "puggers";
@@ -145,7 +161,7 @@ function resolveNativeArtifacts(packageTarget) {
   };
 }
 
-function detectTarget() {
+function detectTarget(): string {
   if (platform === "darwin") {
     return `darwin-${supportedArch()}`;
   }
@@ -161,31 +177,38 @@ function detectTarget() {
   throw new Error(`unsupported platform: ${platform}`);
 }
 
-function nativeTargetMetadata(packageTarget) {
+function nativeTargetMetadata(packageTarget: string): NativeTargetMetadata {
   const [targetOs, targetCpu, targetLibc] = packageTarget.split("-");
   if (
-    !["darwin", "linux", "win32"].includes(targetOs) ||
-    !["arm64", "x64"].includes(targetCpu)
+    !isSupportedOs(targetOs) ||
+    !isSupportedArch(targetCpu)
   ) {
     throw new Error(`unsupported npm native target: ${packageTarget}`);
   }
 
-  if (targetOs === "linux" && !["glibc", "musl"].includes(targetLibc ?? "")) {
-    throw new Error(`linux npm native targets must specify glibc or musl: ${packageTarget}`);
+  if (targetOs === "linux") {
+    if (!isLinuxLibc(targetLibc)) {
+      throw new Error(`linux npm native targets must specify glibc or musl: ${packageTarget}`);
+    }
+
+    return {
+      os: targetOs,
+      cpu: targetCpu,
+      libc: targetLibc
+    };
   }
 
-  if (targetOs !== "linux" && targetLibc != null) {
+  if (targetLibc != null) {
     throw new Error(`only linux npm native targets may specify libc: ${packageTarget}`);
   }
 
   return {
     os: targetOs,
-    cpu: targetCpu,
-    libc: targetLibc
+    cpu: targetCpu
   };
 }
 
-function supportedArch() {
+function supportedArch(): SupportedArch {
   if (arch === "arm64" || arch === "x64") {
     return arch;
   }
@@ -193,22 +216,46 @@ function supportedArch() {
   throw new Error(`unsupported architecture: ${arch}`);
 }
 
-function detectLinuxLibc() {
-  const runtimeReport = report?.getReport();
-  const header =
-    typeof runtimeReport === "string" ? JSON.parse(runtimeReport).header : runtimeReport?.header;
+function detectLinuxLibc(): LinuxLibc {
+  const runtimeReport: unknown = report?.getReport();
+  const parsedReport =
+    typeof runtimeReport === "string"
+      ? (JSON.parse(runtimeReport) as unknown)
+      : runtimeReport;
 
-  if (header != null && "glibcVersionRuntime" in header) {
+  if (parsedReport == null || typeof parsedReport !== "object") {
+    return detectLinuxLibcFromLdd();
+  }
+
+  if (!("header" in parsedReport)) {
+    return detectLinuxLibcFromLdd();
+  }
+
+  const { header } = parsedReport;
+  if (header != null && typeof header === "object" && "glibcVersionRuntime" in header) {
     return "glibc";
   }
 
+  if (!("sharedObjects" in parsedReport)) {
+    return detectLinuxLibcFromLdd();
+  }
+
+  const { sharedObjects } = parsedReport;
   if (
-    Array.isArray(runtimeReport?.sharedObjects) &&
-    runtimeReport.sharedObjects.some((path) => path.includes("libc.musl-") || path.includes("ld-musl-"))
+    Array.isArray(sharedObjects) &&
+    sharedObjects.some(
+      (path) =>
+        typeof path === "string" &&
+        (path.includes("libc.musl-") || path.includes("ld-musl-"))
+    )
   ) {
     return "musl";
   }
 
+  return detectLinuxLibcFromLdd();
+}
+
+function detectLinuxLibcFromLdd(): LinuxLibc {
   try {
     return readFileSync("/usr/bin/ldd", "utf8").includes("musl") ? "musl" : "glibc";
   } catch {
@@ -216,7 +263,7 @@ function detectLinuxLibc() {
   }
 }
 
-function readWorkspaceVersion() {
+function readWorkspaceVersion(): string {
   const cargoToml = readFileSync(join(root, "Cargo.toml"), "utf8");
   const match = cargoToml.match(/\[workspace\.package\][\s\S]*?version = "([^"]+)"/);
   if (match == null) {
@@ -226,7 +273,7 @@ function readWorkspaceVersion() {
   return match[1];
 }
 
-function assertExists(path, label) {
+function assertExists(path: string, label: string): void {
   if (!existsSync(path)) {
     throw new Error(
       `missing ${label} at ${path}. Run cargo build -p puggers --release and cargo build -p puggers-node --release first.`
@@ -234,10 +281,22 @@ function assertExists(path, label) {
   }
 }
 
-function chmodIfPossible(path) {
+function chmodIfPossible(path: string): void {
   try {
     chmodSync(path, 0o755);
   } catch {
     // Windows and readonly filesystems can ignore this; package managers preserve executable metadata where supported.
   }
+}
+
+function isSupportedOs(value: string | undefined): value is SupportedOs {
+  return value === "darwin" || value === "linux" || value === "win32";
+}
+
+function isSupportedArch(value: string | undefined): value is SupportedArch {
+  return value === "arm64" || value === "x64";
+}
+
+function isLinuxLibc(value: string | undefined): value is LinuxLibc {
+  return value === "glibc" || value === "musl";
 }

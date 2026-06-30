@@ -44,13 +44,16 @@ fmt-cargo-check:
 c:
     just check
 check:
+    just check-scripts
     just check-versions
     just check-cargo
     just check-clippy
     just check-wasm
     just check-npm
+check-scripts:
+    pnpm run check:scripts
 check-versions:
-    node scripts/check-version-alignment.mjs
+    node scripts/check-version-alignment.ts
 check-cargo:
     cargo check --workspace
 check-clippy:
@@ -58,7 +61,7 @@ check-clippy:
 check-wasm:
     cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release
 check-npm:
-    pnpm --filter puggers build
+    pnpm --filter puggers exec tsc
 
 # BUILD SYSTEM
 b:
@@ -74,14 +77,14 @@ build-wasm:
 build-npm-native:
     cargo build -p puggers --release --locked
     cargo build -p puggers-node --release --locked
-    node scripts/npm-native.mjs local
+    node scripts/npm-native.ts local
 build-npm:
     just build-npm-native
     pnpm --filter puggers build
 package-npm-native *args:
-    node scripts/npm-native.mjs package {{ args }}
+    node scripts/npm-native.ts package {{ args }}
 pack-npm-native *args:
-    node scripts/npm-native.mjs pack {{ args }}
+    node scripts/npm-native.ts pack {{ args }}
 pack-npm:
     pnpm --filter puggers pack --pack-destination target/npm
 
@@ -102,9 +105,9 @@ publish-crates:
     cargo publish -p puggers
     cargo publish -p dprint-plugin-pug
 publish-npm-native *args:
-    node scripts/npm-native.mjs publish {{ args }}
+    node scripts/npm-native.ts publish {{ args }}
 publish-npm-native-provenance *args:
-    PUGGERS_NPM_PROVENANCE=1 node scripts/npm-native.mjs publish {{ args }}
+    PUGGERS_NPM_PROVENANCE=1 node scripts/npm-native.ts publish {{ args }}
 publish-npm:
     pnpm --filter puggers publish --access public
 publish-npm-provenance:

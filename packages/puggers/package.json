@@ -35,7 +35,7 @@
   "preferUnplugged": true,
   "scripts": {
     "build": "tsdown",
-    "test": "node --test test/*.test.mjs",
+    "test": "node --test test/*.test.ts",
     "pack:dry-run": "pnpm pack --dry-run"
   },
   "optionalDependencies": {
