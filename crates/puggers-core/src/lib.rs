@@ -1,4 +1,5 @@
 use std::collections::BTreeSet;
+use std::fmt;
 
 pub mod formatting;
 
@@ -11,8 +12,8 @@ pub use formatting::{PugFormatOptions, QuoteStyle};
 pub struct ConvertOptions {
     pub allowed_attributes: BTreeSet<String>,
     pub preserve_id_and_class_shorthand: bool,
-    pub trim_outer_document: bool,
-    pub collapse_single_nested: bool,
+    pub root: Option<RootSelection>,
+    pub collapse_single_nested: CollapseSingleNestedMode,
     pub text_whitespace: TextWhitespaceMode,
     pub keep_comments: bool,
     pub formatting: PugFormatOptions,
@@ -23,13 +24,154 @@ impl Default for ConvertOptions {
         Self {
             allowed_attributes: BTreeSet::new(),
             preserve_id_and_class_shorthand: true,
-            trim_outer_document: false,
-            collapse_single_nested: false,
+            root: None,
+            collapse_single_nested: CollapseSingleNestedMode::default(),
             text_whitespace: TextWhitespaceMode::default(),
             keep_comments: true,
             formatting: PugFormatOptions::default(),
         }
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RootSelection {
+    source: String,
+    steps: Vec<RootSelectionStep>,
+}
+
+impl RootSelection {
+    pub fn parse(input: &str) -> Result<Self, RootSelectionParseError> {
+        let mut steps = Vec::new();
+        let mut index = 0;
+        let mut pending_relation = RootSelectionRelation::Descendant;
+        let mut expecting_tag = true;
+        let chars: Vec<_> = input.char_indices().collect();
+
+        while index < input.len() {
+            let Some((next_index, ch)) = chars
+                .iter()
+                .copied()
+                .find(|(char_index, _)| *char_index >= index)
+            else {
+                break;
+            };
+
+            if ch.is_whitespace() {
+                index = next_index + ch.len_utf8();
+                continue;
+            }
+
+            if ch == '>' {
+                if expecting_tag {
+                    return Err(RootSelectionParseError::new(input));
+                }
+
+                pending_relation = RootSelectionRelation::DirectChild;
+                expecting_tag = true;
+                index = next_index + ch.len_utf8();
+                continue;
+            }
+
+            let tag_start = next_index;
+            let mut tag_end = tag_start;
+            for (char_index, tag_ch) in input[tag_start..].char_indices() {
+                if tag_ch.is_whitespace() || tag_ch == '>' {
+                    break;
+                }
+
+                tag_end = tag_start + char_index + tag_ch.len_utf8();
+            }
+
+            let tag = input[tag_start..tag_end].to_ascii_lowercase();
+            if tag.is_empty()
+                || !tag
+                    .chars()
+                    .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '-' | '_'))
+            {
+                return Err(RootSelectionParseError::new(input));
+            }
+
+            let relation = if steps.is_empty() {
+                RootSelectionRelation::Descendant
+            } else {
+                pending_relation
+            };
+            steps.push(RootSelectionStep { relation, tag });
+            pending_relation = RootSelectionRelation::Descendant;
+            expecting_tag = false;
+            index = tag_end;
+        }
+
+        if steps.is_empty() || expecting_tag {
+            return Err(RootSelectionParseError::new(input));
+        }
+
+        Ok(Self {
+            source: input.trim().to_string(),
+            steps,
+        })
+    }
+
+    fn source(&self) -> &str {
+        &self.source
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RootSelectionParseError {
+    input: String,
+}
+
+impl RootSelectionParseError {
+    fn new(input: &str) -> Self {
+        Self {
+            input: input.to_string(),
+        }
+    }
+}
+
+impl fmt::Display for RootSelectionParseError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "invalid root selection: {}", self.input)
+    }
+}
+
+impl std::error::Error for RootSelectionParseError {}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ConvertError {
+    RootNotFound { root: String },
+}
+
+impl fmt::Display for ConvertError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::RootNotFound { root } => write!(formatter, "root not found: {root}"),
+        }
+    }
+}
+
+impl std::error::Error for ConvertError {}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct RootSelectionStep {
+    relation: RootSelectionRelation,
+    tag: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum RootSelectionRelation {
+    DirectChild,
+    Descendant,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum CollapseSingleNestedMode {
+    #[default]
+    Off,
+    TopWins,
+    BottomWins,
+    BestTagWins,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -39,33 +181,89 @@ pub enum TextWhitespaceMode {
     Preserve,
 }
 
-pub fn convert_html_to_pug(input: &str, options: &ConvertOptions) -> String {
+pub fn convert_html_to_pug(input: &str, options: &ConvertOptions) -> Result<String, ConvertError> {
     let document = parse_html().one(input);
-    let mut nodes = if options.trim_outer_document {
-        root_nodes_from_body(&document, options)
+    let mut nodes = if let Some(root) = &options.root {
+        let root_node =
+            find_root_selection(&document, root).ok_or_else(|| ConvertError::RootNotFound {
+                root: root.source().to_string(),
+            })?;
+
+        node_from_dom(&root_node, options, TextBoundaryContext::default())
+            .map(|node| vec![node])
+            .unwrap_or_default()
     } else {
         nodes_from_children(&document, options)
     };
 
-    if options.collapse_single_nested {
-        nodes = nodes.into_iter().map(collapse_single_nested).collect();
+    if options.collapse_single_nested != CollapseSingleNestedMode::Off {
+        nodes = nodes
+            .into_iter()
+            .map(|node| collapse_single_nested(node, options.collapse_single_nested))
+            .collect();
     }
 
     let rendered = render_nodes(&nodes, 0, options);
     if rendered.is_empty() {
-        String::new()
+        Ok(String::new())
     } else {
-        format!("{rendered}\n")
+        Ok(format!("{rendered}\n"))
     }
 }
 
-fn root_nodes_from_body(document: &NodeRef, options: &ConvertOptions) -> Vec<Node> {
-    document
-        .select_first("body")
-        .ok()
-        .map(|body| nodes_from_children(body.as_node(), options))
-        .filter(|children| !children.is_empty())
-        .unwrap_or_else(|| nodes_from_children(document, options))
+fn find_root_selection(document: &NodeRef, root: &RootSelection) -> Option<NodeRef> {
+    find_root_step_matches(document, root, 0)
+}
+
+fn find_root_step_matches(
+    current: &NodeRef,
+    root: &RootSelection,
+    step_index: usize,
+) -> Option<NodeRef> {
+    if step_index >= root.steps.len() {
+        return Some(current.clone());
+    }
+
+    let step = &root.steps[step_index];
+    let candidates = match step.relation {
+        RootSelectionRelation::DirectChild => direct_child_elements_matching(current, &step.tag),
+        RootSelectionRelation::Descendant => descendant_elements_matching(current, &step.tag),
+    };
+
+    for candidate in candidates {
+        if let Some(matched) = find_root_step_matches(&candidate, root, step_index + 1) {
+            return Some(matched);
+        }
+    }
+
+    None
+}
+
+fn direct_child_elements_matching(node: &NodeRef, tag: &str) -> Vec<NodeRef> {
+    node.children()
+        .filter(|child| element_tag_matches(child, tag))
+        .collect()
+}
+
+fn descendant_elements_matching(node: &NodeRef, tag: &str) -> Vec<NodeRef> {
+    let mut matches = Vec::new();
+    collect_descendant_elements_matching(node, tag, &mut matches);
+    matches
+}
+
+fn collect_descendant_elements_matching(node: &NodeRef, tag: &str, matches: &mut Vec<NodeRef>) {
+    for child in node.children() {
+        if element_tag_matches(&child, tag) {
+            matches.push(child.clone());
+        }
+
+        collect_descendant_elements_matching(&child, tag, matches);
+    }
+}
+
+fn element_tag_matches(node: &NodeRef, expected: &str) -> bool {
+    node.as_element()
+        .is_some_and(|element| element.name.local.as_ref().eq_ignore_ascii_case(expected))
 }
 
 fn nodes_from_children(node: &NodeRef, options: &ConvertOptions) -> Vec<Node> {
@@ -109,7 +307,9 @@ fn node_from_dom(
 
     if let Some(element) = node.as_element() {
         let tag = element.name.local.to_string();
-        let attributes = sanitize_attributes(&element.attributes.borrow(), options);
+        let source_attributes = element.attributes.borrow();
+        let has_source_attributes = !source_attributes.map.is_empty();
+        let attributes = sanitize_attributes(&source_attributes, options);
         let raw_text = if is_raw_text_tag(&tag) {
             collect_raw_text(node)
         } else {
@@ -124,6 +324,7 @@ fn node_from_dom(
         return Some(Node::Element(ElementNode {
             tag,
             attributes,
+            has_source_attributes,
             raw_text,
             children,
         }));
@@ -287,30 +488,102 @@ fn comment_from_html(value: &str) -> CommentNode {
     }
 }
 
-fn collapse_single_nested(node: Node) -> Node {
+fn collapse_single_nested(node: Node, mode: CollapseSingleNestedMode) -> Node {
     match node {
         Node::Element(mut element) => {
             element.children = element
                 .children
                 .into_iter()
-                .map(collapse_single_nested)
+                .map(|child| collapse_single_nested(child, mode))
                 .collect();
 
-            while element.tag == "div"
-                && element.attributes.is_empty()
-                && element.children.len() == 1
-                && matches!(&element.children[0], Node::Element(_))
-            {
-                match element.children.remove(0) {
-                    Node::Element(child) => element = child,
-                    other => return other,
-                }
-            }
-
-            Node::Element(element)
+            collapse_single_nested_element(element, mode)
         }
         other => other,
     }
+}
+
+fn collapse_single_nested_element(element: ElementNode, mode: CollapseSingleNestedMode) -> Node {
+    let Some((chain, terminal_children)) = collect_single_nested_chain(&element) else {
+        return Node::Element(element);
+    };
+
+    let winner_index = match mode {
+        CollapseSingleNestedMode::Off => return Node::Element(element),
+        CollapseSingleNestedMode::TopWins => 0,
+        CollapseSingleNestedMode::BottomWins => chain.len() - 1,
+        CollapseSingleNestedMode::BestTagWins => chain
+            .iter()
+            .enumerate()
+            .min_by_key(|(index, element)| (best_tag_rank(&element.tag), *index))
+            .map(|(index, _)| index)
+            .unwrap_or(0),
+    };
+
+    let mut winner = chain[winner_index].clone();
+    winner.children = terminal_children;
+    Node::Element(winner)
+}
+
+fn collect_single_nested_chain(element: &ElementNode) -> Option<(Vec<ElementNode>, Vec<Node>)> {
+    if !is_single_nested_chain_link(element) {
+        return None;
+    }
+
+    let mut chain = Vec::new();
+    let mut current = element;
+
+    loop {
+        let [Node::Element(child)] = current.children.as_slice() else {
+            return None;
+        };
+
+        let mut link = current.clone();
+        link.children = Vec::new();
+        chain.push(link);
+
+        if !is_single_nested_chain_link(child) {
+            return (chain.len() >= 2).then(|| (chain, current.children.clone()));
+        }
+
+        current = child;
+    }
+}
+
+fn is_single_nested_chain_link(element: &ElementNode) -> bool {
+    !element.has_source_attributes
+        && element.raw_text.is_none()
+        && matches!(element.children.as_slice(), [Node::Element(_)])
+}
+
+const BEST_TAG_HIERARCHY: &[&str] = &[
+    "main",
+    "article",
+    "section",
+    "nav",
+    "aside",
+    "header",
+    "footer",
+    "form",
+    "table",
+    "ul",
+    "ol",
+    "dl",
+    "figure",
+    "blockquote",
+];
+
+fn best_tag_rank(tag: &str) -> usize {
+    BEST_TAG_HIERARCHY
+        .iter()
+        .position(|candidate| *candidate == tag)
+        .unwrap_or_else(|| {
+            if tag == "div" {
+                BEST_TAG_HIERARCHY.len() + 1
+            } else {
+                BEST_TAG_HIERARCHY.len()
+            }
+        })
 }
 
 fn render_nodes(nodes: &[Node], depth: usize, options: &ConvertOptions) -> String {
@@ -566,6 +839,7 @@ struct CommentNode {
 struct ElementNode {
     tag: String,
     attributes: Vec<Attribute>,
+    has_source_attributes: bool,
     raw_text: Option<String>,
     children: Vec<Node>,
 }

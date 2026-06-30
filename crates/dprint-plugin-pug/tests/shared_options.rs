@@ -3,8 +3,14 @@ mod support;
 pub use support::{ast, config, format_source, formatter, lexer, parser};
 
 use config::Configuration;
-use puggers_core::{ConvertOptions, PugFormatOptions, QuoteStyle, convert_html_to_pug};
+use puggers_core::{
+    ConvertOptions, PugFormatOptions, QuoteStyle, RootSelection, convert_html_to_pug,
+};
 use std::collections::BTreeSet;
+
+fn root(value: &str) -> RootSelection {
+    RootSelection::parse(value).expect("root path should parse")
+}
 
 #[test]
 fn formatter_configuration_maps_to_shared_format_options() {
@@ -41,14 +47,15 @@ fn formatter_and_converter_share_quote_style_for_attribute_values() {
         "<a title=\"Jeremy's docs\">Docs</a>",
         &ConvertOptions {
             allowed_attributes: BTreeSet::from([String::from("title")]),
-            trim_outer_document: true,
+            root: Some(root("a")),
             formatting: PugFormatOptions {
                 quote_style: QuoteStyle::Single,
                 ..Default::default()
             },
             ..Default::default()
         },
-    );
+    )
+    .expect("conversion should succeed");
 
     assert_eq!(formatter_output, "a(title='Jeremy\\'s docs') Docs\n");
     assert_eq!(converter_output, formatter_output);
@@ -68,14 +75,15 @@ fn formatter_and_converter_share_line_width_prose_wrapping() {
     let converter_output = convert_html_to_pug(
         &format!("<p>{prose}</p>"),
         &ConvertOptions {
-            trim_outer_document: true,
+            root: Some(root("p")),
             formatting: PugFormatOptions {
                 line_width: Some(30),
                 ..Default::default()
             },
             ..Default::default()
         },
-    );
+    )
+    .expect("conversion should succeed");
 
     assert_eq!(converter_output, formatter_output);
 }

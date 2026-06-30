@@ -1,0 +1,51 @@
+issue(id="0013" status="closed")
+  title Define structural extraction policy for HTML import
+  user-story
+    as-a maintainer of the puggers HTML converter
+    i-want structural simplification choices to be explicit extraction policy rather than loosely accumulated heuristics
+    so-that users can trust when wrappers, shells, and surrounding regions are removed versus preserved
+  premise.
+    The converter is intentionally allowed to suppress noise, but its current
+    structural controls are still coarse: `trim_outer_document` is broad,
+    `collapse-single-nested` is heuristic, and there is no clear model for when
+    surrounding structure is considered framing noise versus meaningful signal.
+    This deserves its own task rather than staying mixed into baseline
+    correction work. The output here should be a deliberate policy for wrapper
+    removal and region extraction, with concrete examples of what is safe to
+    drop, what must be preserved, and what should require an explicit option.
+    `collapse-single-nested` and richer region selection are distinct features,
+    but they belong together here because both are really about deciding what
+    structural context counts as noise.
+    For single-child structural chains, `div` should not be treated as the
+    preferred representative by default. A chain such as `div > section > div`
+    should be able to collapse to `section`, which means the policy is broader
+    than "remove anonymous `div` wrappers." This task should implement
+    `collapse-single-nested` as one of four explicit modes: off, top wins,
+    bottom wins, or best tag wins. The initial "best tag" ordering can live as a
+    puggers-owned global constant, with future configuration left open if real
+    users need to tune the hierarchy.
+    Region selection should also move beyond the inflexible
+    `trim_outer_document` formulation. Instead of only choosing between the
+    whole parsed document and all `body` children, the importer should accept an
+    explicit root path such as `html>body article`, where the first `article`
+    found under `html > body` becomes the emitted root. The CLI should expose
+    this as a shell-safe `--root` option, for example
+    `--root 'html>body article'`, and `trim_outer_document` should be removed
+    to keep the structural selection surface small.
+  acceptance-criteria
+    criterion Revisit `collapse-single-nested` and classify at least a few concrete wrapper-removal cases as safe, unsafe, or option-dependent.
+    criterion Implement single-child structural collapse as an explicit option with off, top-wins, bottom-wins, and best-tag-wins behavior, including a concrete example such as `div > section > div` collapsing to `section` when best-tag policy applies.
+    criterion Define the initial best-tag hierarchy as an internal global policy while keeping the API open to future configuration.
+    criterion Replace the inflexible `trim_outer_document` behavior with an explicit root-selection option that can target the first match for a path such as `html>body article`.
+    criterion Define and test the minimal root path grammar, including direct-child `>` and descendant whitespace semantics, with shell-safe CLI examples that quote selectors containing `>`.
+    criterion Define and test the no-match behavior for root selection so library, CLI, and future npm callers can report or recover from missing regions consistently.
+    criterion Add focused tests for wrapper-heavy and shell-heavy HTML samples so structural extraction decisions are reproducible instead of anecdotal.
+    criterion Make sure structural extraction policy is described independently from text-layout or formatter-compatibility concerns.
+    criterion Leave the importer with a smaller, more intentional set of structural heuristics than it started with, even if that means narrowing behavior rather than adding more options.
+  review-items
+    item(status="covered") The anonymous wrapper collapse flag is now an explicit collapse mode with off, top-wins, bottom-wins, and best-tag-wins semantics.
+    item(status="covered") The first best-tag hierarchy is defined globally inside puggers, while leaving custom hierarchy configuration as a possible future extension.
+    item(status="covered") Root selection is now the explicit model through `ConvertOptions::root`, `RootSelection`, and `--root`; `trim_outer_document` and `--trim-outer-document` were removed to keep the surface small.
+    item(status="covered") The root path grammar and no-match behavior are covered by core and CLI tests, including direct-child `>`, descendant whitespace, and typed `RootNotFound` errors.
+    item(status="covered") The structural extraction policy doc now describes root selection instead of deferring broader region selection.
+    item(status="covered") Richer root selectors such as ids, classes, and attributes are intentionally deferred to task `0018`.

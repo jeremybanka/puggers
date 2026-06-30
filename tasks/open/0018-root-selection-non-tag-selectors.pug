@@ -1,0 +1,22 @@
+issue(id="0018" status="open")
+  title Extend HTML import root selection beyond tag paths
+  user-story
+    as-a maintainer of the puggers HTML converter
+    i-want root selection to support useful non-tag selectors
+    so-that users can target meaningful regions without depending only on tag structure
+  premise.
+    Task `0013` introduces explicit `root` / `--root` selection with a small
+    tag-only path grammar. That keeps the first structural extraction pass easy
+    to explain and test, but real HTML often identifies meaningful regions with
+    `id`, `class`, ARIA roles, data attributes, or other attributes. This task
+    should extend the root-selection grammar deliberately rather than slipping
+    toward an accidental partial CSS selector engine.
+  acceptance-criteria
+    criterion Decide which non-tag selector forms belong in puggers root paths first, such as `#id`, `.class`, `[attr]`, or `[attr=value]`, and document the boundary.
+    criterion Add focused tests that cover matching, first-match ordering, no-match behavior, and interactions with direct-child `>` and descendant whitespace.
+    criterion Keep unsupported selector syntax rejected with clear parse errors instead of silently falling back to tag matching.
+    criterion Update CLI and core documentation with shell-safe examples for any selector syntax that needs quoting.
+    criterion Keep the design compatible with future CLI, library, and npm surfaces without requiring a full CSS selector API.
+  review-items
+    item(status="open") Confirm whether the first selector expansion should prioritize `#id` / `.class` or attribute selectors.
+    item(status="open") Decide whether selector matching should use source attributes even when those attributes are not retained in rendered Pug.

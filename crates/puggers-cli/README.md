@@ -18,8 +18,8 @@ that is easier to scan and edit.
 Current controls let you:
 
 - keep selected attributes with repeated `--allow-attr`
-- trim the outer `html` / `head` / `body` shell with `--trim-outer-document`
-- collapse anonymous nested wrappers with `--collapse-single-nested`
+- choose a root region with `--root 'html>body article'`
+- collapse single-child structural chains with `--collapse-single-nested <mode>`
 - preserve meaningful spaces around inline content with `--preserve-text-whitespace`
 - drop comments with `--drop-comments`
 - choose tabs or spaces with `--use-tabs` and `--indent-width`
@@ -30,13 +30,17 @@ By default, the converter is opinionated: it strips most attributes, keeps
 comments, and aggressively normalizes ordinary text. That makes it useful for
 finding structure quickly, even when the source is noisy.
 
+Structural extraction choices such as document shell trimming and single-child
+collapse modes are described in
+[`docs/html-import-structural-extraction.md`](../../docs/html-import-structural-extraction.md).
+
 ## Use Cases
 
 Readable document view:
 
 ```sh
 printf '%s' '<article><h1>Hello</h1><p>Intro</p></article>' \
-  | cargo run -p puggers -- --trim-outer-document
+  | cargo run -p puggers -- --root article
 ```
 
 Inspect structure and Tailwind-heavy markup:
@@ -44,7 +48,8 @@ Inspect structure and Tailwind-heavy markup:
 ```sh
 printf '%s' '<div class="grid gap-6 md:grid-cols-2"><a href="/docs">Docs</a></div>' \
   | cargo run -p puggers -- \
-      --trim-outer-document \
+      --root div \
+      --collapse-single-nested best-tag-wins \
       --allow-attr class \
       --allow-attr href \
       --quote-style single
@@ -55,7 +60,7 @@ printf '%s' '<div class="grid gap-6 md:grid-cols-2"><a href="/docs">Docs</a></di
 ```sh
 printf '<div class="card"><a href="/docs">Docs</a></div>' \
   | cargo run -p puggers -- \
-      --trim-outer-document \
+      --root div \
       --allow-attr class \
       --allow-attr href
 ```

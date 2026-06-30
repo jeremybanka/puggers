@@ -40,7 +40,7 @@ Example:
 
 ```sh
 cargo run -p puggers -- \
-  --trim-outer-document \
+  --root 'html>body main' \
   --allow-attr id \
   --allow-attr class \
   --allow-attr href \
