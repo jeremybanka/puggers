@@ -1,4 +1,4 @@
-issue(id="0012" status="review")
+issue(id="0012" status="closed")
   title Align the HTML converter with formatter settings and shared text layout logic
   user-story
     as-a maintainer of puggers
@@ -32,3 +32,4 @@ issue(id="0012" status="review")
     item(status="covered") The shared component is now code-backed: indentation, display width, prose word wrapping, and quoted attribute rendering live in `puggers-core`.
     item(status="covered") Compatibility inventory is documented in `docs/importer-formatter-compatibility.md` and backed by focused cross-surface tests.
     item(status="covered") Importer-only extraction controls remain on `ConvertOptions` outside the shared formatting option type.
+    item(status="covered") Review accepted the pre-1.0 `ConvertOptions::formatting` API change and confirmed `quoteStyle` as a fully shared puggers ecosystem option; wasm diagnostic dead-code cleanup is intentionally separate future work.
