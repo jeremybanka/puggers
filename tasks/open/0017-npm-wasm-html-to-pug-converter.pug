@@ -1,0 +1,29 @@
+issue(id="0017" status="open")
+  title Publish an npm-ready wasm build for the HTML to Pug converter
+  user-story
+    as-a JavaScript or web-tooling user
+    i-want to run the puggers HTML to Pug converter from npm through a wasm-backed package
+    so-that editors, browser tools, and Node workflows can use the converter without shelling out to the Rust CLI
+  premise.
+    The Rust HTML importer is becoming useful beyond the CLI, and future npm
+    users should be able to call the same conversion behavior from JavaScript
+    without a native install step. This task should define and implement the
+    first npm-facing wasm build for the HTML to Pug converter, reusing the
+    existing converter core instead of introducing a parallel implementation.
+    The package surface should be small at first, but stable enough that
+    editor integrations, browser demos, and Node-based tooling can depend on
+    it. Any wasm-specific limitations, such as DOM parser availability,
+    bundler assumptions, binary size, or synchronous versus asynchronous
+    initialization, should be documented where users will find them.
+  acceptance-criteria
+    criterion Add an npm-consumable wasm package or package entry point that exposes the HTML to Pug converter from JavaScript.
+    criterion Support at least one Node-oriented usage path and document whether browser bundlers are supported, experimental, or out of scope for the first release.
+    criterion Reuse the existing Rust converter behavior and options rather than maintaining a separate JavaScript conversion implementation.
+    criterion Add focused tests or examples that call the JavaScript API and assert converted Pug output for representative HTML input.
+    criterion Add a repeatable build command for producing the wasm/npm artifact, and make sure it can be run from a clean checkout with documented prerequisites.
+    criterion Document the initial JavaScript API, initialization model, option mapping, and known wasm limitations.
+    criterion Add a Knope change file using `default` frontmatter that summarizes the new npm/wasm converter surface.
+  review-items
+    item(status="open") Decide whether the first package should be a dedicated npm package, an export from an existing package, or a generated artifact staged for later publishing.
+    item(status="open") Confirm the wasm target can use the same HTML parsing path as the native converter, or document any necessary parser substitution before exposing the API.
+    item(status="open") Decide how much browser support is required for the first task versus leaving browser bundler coverage to a follow-up.
