@@ -136,10 +136,7 @@ fn reports_current_upstream_case_and_anti_case_coverage() {
 
     assert_eq!(
         diagnostics_by_role.into_iter().collect::<Vec<_>>(),
-        vec![
-            ((FixtureRole::Case, String::from("warnings")), 2),
-            ((FixtureRole::AntiCase, String::from("warnings")), 11),
-        ],
+        vec![((FixtureRole::AntiCase, String::from("warnings")), 11),],
         "diagnostic inventory drifted\n{report}"
     );
 

@@ -1,4 +1,4 @@
-issue(id="0008" status="review")
+issue(id="0008" status="closed")
   title Add validation boundaries and useful formatter error reporting
   user-story
     as-a user of puggers
@@ -26,4 +26,4 @@ issue(id="0008" status="review")
     item(status="covered") The first recovery slice quarantines malformed indentation, bare `include` or `extends`, and missing control-flow expressions without dropping surrounding valid structure.
     item(status="covered") The current diagnostics remain internal parser or formatter groundwork because `dprint` does not expose a per-file warning channel; future richer consumers can wrap the same report shape without changing the recovery semantics.
     item(status="covered") The next recovery tranche started with orphaned structural keywords: `else` and `default` now stay structurally modeled while emitting warnings for invalid sibling context or trailing payload.
-    item(status="open") Review the newly inventoried warnings on positive corpus fixtures such as `each.else`, `case`, and `mixin.attrs` to decide which should remain intentional recoveries versus which indicate overly eager invalid-syntax heuristics.
+    item(status="covered") Positive corpus review found `each.else`, `case`, and `mixin.attrs` warning-free; the remaining `code.conditionals` false positive was valid `unless`/`else` syntax and is now modeled without warnings.
