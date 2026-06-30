@@ -14,7 +14,7 @@ formatter.
 | `--allow-attr` | Importer-only | Determines which HTML attributes survive extraction. |
 | id/class shorthand preference | Importer-only | Chooses whether imported `id` and `class` values become Pug shorthand. |
 | `--trim-outer-document` | Importer-only | Selects body children instead of the parsed outer document shell. |
-| `--collapse-single-nested` | Importer-only | Collapses anonymous wrapper structure during import. |
+| `--collapse-single-nested` | Importer-only | Collapses source-anonymous single-child structural chains according to the selected mode. |
 | `--preserve-text-whitespace` | Importer-only | Changes how HTML text payload whitespace is normalized. |
 | `--drop-comments` | Importer-only | Removes HTML comments during import. |
 | Pug syntax normalization | Formatter-only / pending | Parser recovery, statement-head normalization, and Pug-only syntax cleanup do not currently have HTML-import equivalents. |

@@ -12,7 +12,7 @@ pub struct ConvertOptions {
     pub allowed_attributes: BTreeSet<String>,
     pub preserve_id_and_class_shorthand: bool,
     pub trim_outer_document: bool,
-    pub collapse_single_nested: bool,
+    pub collapse_single_nested: CollapseSingleNestedMode,
     pub text_whitespace: TextWhitespaceMode,
     pub keep_comments: bool,
     pub formatting: PugFormatOptions,
@@ -24,12 +24,21 @@ impl Default for ConvertOptions {
             allowed_attributes: BTreeSet::new(),
             preserve_id_and_class_shorthand: true,
             trim_outer_document: false,
-            collapse_single_nested: false,
+            collapse_single_nested: CollapseSingleNestedMode::default(),
             text_whitespace: TextWhitespaceMode::default(),
             keep_comments: true,
             formatting: PugFormatOptions::default(),
         }
     }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum CollapseSingleNestedMode {
+    #[default]
+    Off,
+    TopWins,
+    BottomWins,
+    BestTagWins,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -47,8 +56,11 @@ pub fn convert_html_to_pug(input: &str, options: &ConvertOptions) -> String {
         nodes_from_children(&document, options)
     };
 
-    if options.collapse_single_nested {
-        nodes = nodes.into_iter().map(collapse_single_nested).collect();
+    if options.collapse_single_nested != CollapseSingleNestedMode::Off {
+        nodes = nodes
+            .into_iter()
+            .map(|node| collapse_single_nested(node, options.collapse_single_nested))
+            .collect();
     }
 
     let rendered = render_nodes(&nodes, 0, options);
@@ -109,7 +121,9 @@ fn node_from_dom(
 
     if let Some(element) = node.as_element() {
         let tag = element.name.local.to_string();
-        let attributes = sanitize_attributes(&element.attributes.borrow(), options);
+        let source_attributes = element.attributes.borrow();
+        let has_source_attributes = !source_attributes.map.is_empty();
+        let attributes = sanitize_attributes(&source_attributes, options);
         let raw_text = if is_raw_text_tag(&tag) {
             collect_raw_text(node)
         } else {
@@ -124,6 +138,7 @@ fn node_from_dom(
         return Some(Node::Element(ElementNode {
             tag,
             attributes,
+            has_source_attributes,
             raw_text,
             children,
         }));
@@ -287,30 +302,102 @@ fn comment_from_html(value: &str) -> CommentNode {
     }
 }
 
-fn collapse_single_nested(node: Node) -> Node {
+fn collapse_single_nested(node: Node, mode: CollapseSingleNestedMode) -> Node {
     match node {
         Node::Element(mut element) => {
             element.children = element
                 .children
                 .into_iter()
-                .map(collapse_single_nested)
+                .map(|child| collapse_single_nested(child, mode))
                 .collect();
 
-            while element.tag == "div"
-                && element.attributes.is_empty()
-                && element.children.len() == 1
-                && matches!(&element.children[0], Node::Element(_))
-            {
-                match element.children.remove(0) {
-                    Node::Element(child) => element = child,
-                    other => return other,
-                }
-            }
-
-            Node::Element(element)
+            collapse_single_nested_element(element, mode)
         }
         other => other,
     }
+}
+
+fn collapse_single_nested_element(element: ElementNode, mode: CollapseSingleNestedMode) -> Node {
+    let Some((chain, terminal_children)) = collect_single_nested_chain(&element) else {
+        return Node::Element(element);
+    };
+
+    let winner_index = match mode {
+        CollapseSingleNestedMode::Off => return Node::Element(element),
+        CollapseSingleNestedMode::TopWins => 0,
+        CollapseSingleNestedMode::BottomWins => chain.len() - 1,
+        CollapseSingleNestedMode::BestTagWins => chain
+            .iter()
+            .enumerate()
+            .min_by_key(|(index, element)| (best_tag_rank(&element.tag), *index))
+            .map(|(index, _)| index)
+            .unwrap_or(0),
+    };
+
+    let mut winner = chain[winner_index].clone();
+    winner.children = terminal_children;
+    Node::Element(winner)
+}
+
+fn collect_single_nested_chain(element: &ElementNode) -> Option<(Vec<ElementNode>, Vec<Node>)> {
+    if !is_single_nested_chain_link(element) {
+        return None;
+    }
+
+    let mut chain = Vec::new();
+    let mut current = element;
+
+    loop {
+        let [Node::Element(child)] = current.children.as_slice() else {
+            return None;
+        };
+
+        let mut link = current.clone();
+        link.children = Vec::new();
+        chain.push(link);
+
+        if !is_single_nested_chain_link(child) {
+            return (chain.len() >= 2).then(|| (chain, current.children.clone()));
+        }
+
+        current = child;
+    }
+}
+
+fn is_single_nested_chain_link(element: &ElementNode) -> bool {
+    !element.has_source_attributes
+        && element.raw_text.is_none()
+        && matches!(element.children.as_slice(), [Node::Element(_)])
+}
+
+const BEST_TAG_HIERARCHY: &[&str] = &[
+    "main",
+    "article",
+    "section",
+    "nav",
+    "aside",
+    "header",
+    "footer",
+    "form",
+    "table",
+    "ul",
+    "ol",
+    "dl",
+    "figure",
+    "blockquote",
+];
+
+fn best_tag_rank(tag: &str) -> usize {
+    BEST_TAG_HIERARCHY
+        .iter()
+        .position(|candidate| *candidate == tag)
+        .unwrap_or_else(|| {
+            if tag == "div" {
+                BEST_TAG_HIERARCHY.len() + 1
+            } else {
+                BEST_TAG_HIERARCHY.len()
+            }
+        })
 }
 
 fn render_nodes(nodes: &[Node], depth: usize, options: &ConvertOptions) -> String {
@@ -566,6 +653,7 @@ struct CommentNode {
 struct ElementNode {
     tag: String,
     attributes: Vec<Attribute>,
+    has_source_attributes: bool,
     raw_text: Option<String>,
     children: Vec<Node>,
 }

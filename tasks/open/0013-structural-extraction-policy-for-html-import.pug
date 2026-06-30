@@ -16,13 +16,24 @@ issue(id="0013" status="open")
     `collapse-single-nested` and richer region selection are distinct features,
     but they belong together here because both are really about deciding what
     structural context counts as noise.
+    For single-child structural chains, `div` should not be treated as the
+    preferred representative by default. A chain such as `div > section > div`
+    should be able to collapse to `section`, which means the policy is broader
+    than "remove anonymous `div` wrappers." This task should implement
+    `collapse-single-nested` as one of four explicit modes: off, top wins,
+    bottom wins, or best tag wins. The initial "best tag" ordering can live as a
+    puggers-owned global constant, with future configuration left open if real
+    users need to tune the hierarchy.
   acceptance-criteria
     criterion Revisit `collapse-single-nested` and classify at least a few concrete wrapper-removal cases as safe, unsafe, or option-dependent.
+    criterion Implement single-child structural collapse as an explicit option with off, top-wins, bottom-wins, and best-tag-wins behavior, including a concrete example such as `div > section > div` collapsing to `section` when best-tag policy applies.
+    criterion Define the initial best-tag hierarchy as an internal global policy while keeping the API open to future configuration.
     criterion Decide whether broader region-selection controls are needed beyond `trim_outer_document`, and either implement the minimal useful control set or document why the current boundary is sufficient for now.
     criterion Add focused tests for wrapper-heavy and shell-heavy HTML samples so structural extraction decisions are reproducible instead of anecdotal.
     criterion Make sure structural extraction policy is described independently from text-layout or formatter-compatibility concerns.
     criterion Leave the importer with a smaller, more intentional set of structural heuristics than it started with, even if that means narrowing behavior rather than adding more options.
   review-items
-    item(status="open") Decide whether anonymous wrapper collapse should remain a convenience flag, become narrower, or be replaced by a more explicit structural profile.
+    item(status="open") Confirm the anonymous wrapper collapse flag has become an explicit collapse mode with off, top-wins, bottom-wins, and best-tag-wins semantics.
+    item(status="open") Define the first best-tag hierarchy globally inside puggers, while leaving custom hierarchy configuration as a possible future extension.
     item(status="open") Confirm whether front-matter and back-matter trimming are real user needs or just a proxy for wanting better region selection.
     item(status="open") Keep structural simplification policy understandable enough that future CLI and npm surfaces can explain it without a large caveat section.

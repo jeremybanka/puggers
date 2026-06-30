@@ -1,6 +1,8 @@
 use std::collections::BTreeSet;
 
-use puggers_core::{ConvertOptions, PugFormatOptions, QuoteStyle, convert_html_to_pug};
+use puggers_core::{
+    CollapseSingleNestedMode, ConvertOptions, PugFormatOptions, QuoteStyle, convert_html_to_pug,
+};
 
 fn options_with_attributes(attributes: &[&str]) -> ConvertOptions {
     ConvertOptions {
@@ -54,7 +56,7 @@ fn collapses_single_nested_anonymous_divs() {
         "<div><div><section><p>Hello</p></section></div></div>",
         &ConvertOptions {
             trim_outer_document: true,
-            collapse_single_nested: true,
+            collapse_single_nested: CollapseSingleNestedMode::BestTagWins,
             ..Default::default()
         },
     );

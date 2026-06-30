@@ -11,10 +11,7 @@ fn collapse_mode_off_preserves_single_child_chain() {
         },
     );
 
-    assert_eq!(
-        output,
-        "div\n  section\n    article\n      p Hello\n"
-    );
+    assert_eq!(output, "div\n  section\n    article\n      p Hello\n");
 }
 
 #[test]
@@ -93,7 +90,7 @@ fn collapse_preserves_wrappers_with_multiple_element_children() {
 #[test]
 fn collapse_preserves_comments_as_structure_when_comments_are_kept() {
     let output = convert_html_to_pug(
-        "<div><!-- marker --><section><p>Hello</p></section></div>",
+        "<div><!--marker--><section><p>Hello</p></section></div>",
         &ConvertOptions {
             trim_outer_document: true,
             collapse_single_nested: CollapseSingleNestedMode::BestTagWins,
@@ -107,7 +104,7 @@ fn collapse_preserves_comments_as_structure_when_comments_are_kept() {
 #[test]
 fn collapse_can_cross_comments_when_comments_are_dropped() {
     let output = convert_html_to_pug(
-        "<div><!-- marker --><section><p>Hello</p></section></div>",
+        "<div><!--marker--><section><p>Hello</p></section></div>",
         &ConvertOptions {
             trim_outer_document: true,
             collapse_single_nested: CollapseSingleNestedMode::BestTagWins,

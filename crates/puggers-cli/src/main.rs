@@ -5,7 +5,8 @@ use std::io::{self, Read};
 use std::process::ExitCode;
 
 use puggers_core::{
-    ConvertOptions, PugFormatOptions, QuoteStyle, TextWhitespaceMode, convert_html_to_pug,
+    CollapseSingleNestedMode, ConvertOptions, PugFormatOptions, QuoteStyle, TextWhitespaceMode,
+    convert_html_to_pug,
 };
 
 fn main() -> ExitCode {
@@ -22,7 +23,7 @@ fn run() -> Result<(), String> {
     let mut args = env::args().skip(1);
     let mut allowed_attributes = BTreeSet::new();
     let mut trim_outer_document = false;
-    let mut collapse_single_nested = false;
+    let mut collapse_single_nested = CollapseSingleNestedMode::Off;
     let mut text_whitespace = TextWhitespaceMode::Collapse;
     let mut keep_comments = true;
     let mut indent_width = 2;
@@ -40,7 +41,12 @@ fn run() -> Result<(), String> {
                 allowed_attributes.insert(value);
             }
             "--trim-outer-document" => trim_outer_document = true,
-            "--collapse-single-nested" => collapse_single_nested = true,
+            "--collapse-single-nested" => {
+                let value = args
+                    .next()
+                    .ok_or_else(|| String::from("missing value after --collapse-single-nested"))?;
+                collapse_single_nested = parse_collapse_single_nested_mode(&value)?;
+            }
             "--preserve-text-whitespace" => text_whitespace = TextWhitespaceMode::Preserve,
             "--drop-comments" => keep_comments = false,
             "--use-tabs" => use_tabs = true,
@@ -136,10 +142,24 @@ fn print_help() {
        --line-width <count>         Reflow prose and wrap long inline tag text\n\
        --quote-style <style>        Render attributes with double or single quotes\n\
        --trim-outer-document        Emit body children instead of html/head/body\n\
-       --collapse-single-nested     Collapse anonymous nested div wrappers\n\
+       --collapse-single-nested <mode>\n\
+                                    Collapse single-child structural chains with off,\n\
+                                    top-wins, bottom-wins, or best-tag-wins\n\
        --preserve-text-whitespace   Keep meaningful spaces around inline content\n\
        --drop-comments              Remove HTML comments\n\
        --use-tabs                   Indent with tabs instead of spaces\n\
        -h, --help                   Show this help text"
     );
+}
+
+fn parse_collapse_single_nested_mode(value: &str) -> Result<CollapseSingleNestedMode, String> {
+    match value {
+        "off" => Ok(CollapseSingleNestedMode::Off),
+        "top-wins" => Ok(CollapseSingleNestedMode::TopWins),
+        "bottom-wins" => Ok(CollapseSingleNestedMode::BottomWins),
+        "best-tag-wins" => Ok(CollapseSingleNestedMode::BestTagWins),
+        _ => Err(format!(
+            "invalid --collapse-single-nested value {value}: expected off, top-wins, bottom-wins, or best-tag-wins"
+        )),
+    }
 }
