@@ -59,10 +59,10 @@ just test-npm
 
 ## Native Package Artifacts
 
-The `scripts/npm-native.ts` helper only stages native files and package
+The `scripts/stage.node.ts` helper only stages native files and package
 metadata. `pnpm pack` and `pnpm publish` stay in the Justfile so release actions
-remain visible at the command layer. Its routes are `stage-local`,
-`stage-dist`, and `print-dist-path`.
+remain visible at the command layer. Its routes are `local`, `dist`, and
+`print-dist-path`.
 
 Generate a native package directory for the current host target:
 

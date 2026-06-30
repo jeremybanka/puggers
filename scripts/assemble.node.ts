@@ -13,6 +13,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { cli, options, required } from "comline";
+import takua from "takua";
 import { z } from "zod/v4";
 
 type SupportedArch = "arm64" | "x64";
@@ -57,8 +58,8 @@ const nativeTargetMetadataByTarget = {
 } satisfies Record<SupportedTarget, NativeTargetMetadata>;
 
 const cliRoutes = required({
-  "stage-local": null,
-  "stage-dist": null,
+  local: null,
+  dist: null,
   "print-dist-path": null
 });
 
@@ -78,13 +79,13 @@ const targetOptions = options(
 );
 
 const routeOptions = {
-  "stage-local": targetOptions,
-  "stage-dist": targetOptions,
+  local: targetOptions,
+  dist: targetOptions,
   "print-dist-path": targetOptions
 };
 
-const npmNativeCli = cli({
-  cliName: "npm-native",
+const stageCli = cli({
+  cliName: "stage",
   cliDescription: "Stage native puggers npm artifacts.",
   discoverConfigPath: () => undefined,
   routes: cliRoutes,
@@ -92,14 +93,14 @@ const npmNativeCli = cli({
 });
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const { inputs } = npmNativeCli(process.argv);
+const { inputs } = stageCli(process.argv);
 const target = inputs.opts.target ?? readTargetFromEnv() ?? detectTarget();
 
 switch (inputs.case) {
-  case "stage-local":
+  case "local":
     stageLocalArtifacts(target);
     break;
-  case "stage-dist":
+  case "dist":
     stageNativePackage(target);
     break;
   case "print-dist-path":
@@ -108,10 +109,9 @@ switch (inputs.case) {
 }
 
 function stageLocalArtifacts(target: SupportedTarget): void {
-  copyNativeArtifacts(
-    join(root, "packages", "puggers", ".native"),
-    resolveNativeArtifacts(target)
-  );
+  const outputDirectory = join(root, "packages", "puggers", ".native");
+  copyNativeArtifacts(outputDirectory, resolveNativeArtifacts(target));
+  takua.info("stage", "local", `${target} -> ${outputDirectory}`);
 }
 
 function stageNativePackage(packageTarget: SupportedTarget): string {
@@ -153,6 +153,8 @@ function stageNativePackage(packageTarget: SupportedTarget): string {
     join(packageDirectory, "README.md"),
     `# @puggers/${packageTarget}\n\nNative ${packageTarget} distribution for puggers.\n`
   );
+
+  takua.info("stage", "dist", `${packageTarget} -> ${packageDirectory}`);
 
   return packageDirectory;
 }
