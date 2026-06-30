@@ -5,8 +5,6 @@ default:
 
 # REPO SETUP
 prepare:
-    just prepare-hooks
-prepare-hooks:
     git config core.hooksPath .githooks
     chmod +x .githooks/pre-commit
 
@@ -14,8 +12,6 @@ prepare-hooks:
 i:
     just install
 install:
-    just install-cargo
-install-cargo:
     cargo install --path ./crates/puggers-cli
 
 r:
@@ -38,8 +34,6 @@ test-npm:
 f:
     just fmt
 fmt:
-    just fmt-cargo
-fmt-cargo:
     cargo fmt --all
 fmt-cargo-check:
     cargo fmt --all --check
@@ -65,13 +59,7 @@ check-cargo-clippy:
 check-cargo-wasm:
     cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release
 check-npm:
-    just check-npm-types
-check-npm-types:
     pnpm --filter puggers exec tsc
-check-clippy:
-    just check-cargo-clippy
-check-wasm:
-    just check-cargo-wasm
 
 # BUILD SYSTEM
 b:
@@ -84,6 +72,10 @@ build-cargo:
     cargo build --workspace
 build-wasm:
     cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release
+build-npm:
+    just build-npm-native
+    just build-npm-js
+    just build-npm-dist
 build-npm-native:
     just build-npm-native-cli
     just build-npm-native-addon
@@ -94,28 +86,19 @@ build-npm-native-addon:
     cargo build -p puggers-node --release --locked
 build-npm-native-local:
     node scripts/npm-native.ts local
-build-npm:
-    just build-npm-native
-    just build-npm-package
-build-npm-package:
+build-npm-js:
     pnpm --filter puggers build
-
-# DISTRIBUTION ARTIFACTS
-d:
-    just dist
-dist:
-    just dist-npm
-dist-npm:
-    just dist-npm-native
-    just dist-npm-package
-dist-npm-native *args:
-    just dist-npm-native-directory {{ args }}
-    just dist-npm-native-tarball {{ args }}
-dist-npm-native-directory *args:
+build-npm-dist:
+    just build-npm-dist-native
+    just build-npm-dist-package
+build-npm-dist-native *args:
+    just build-npm-dist-native-directory {{ args }}
+    just build-npm-dist-native-tarball {{ args }}
+build-npm-dist-native-directory *args:
     node scripts/npm-native.ts directory {{ args }}
-dist-npm-native-tarball *args:
+build-npm-dist-native-tarball *args:
     node scripts/npm-native.ts tarball {{ args }}
-dist-npm-package:
+build-npm-dist-package:
     pnpm --filter puggers pack --pack-destination target/npm
 
 # RELEASE SYSTEM
@@ -126,9 +109,6 @@ notes:
 
 version:
     knope version
-
-publish:
-    just publish-crates
 
 publish-crates:
     just publish-crates-core
@@ -141,16 +121,10 @@ publish-crates-cli:
 publish-crates-dprint:
     cargo publish -p dprint-plugin-pug
 publish-npm-native *args:
-    just publish-npm-native-package {{ args }}
-publish-npm-native-package *args:
     node scripts/npm-native.ts publish {{ args }}
 publish-npm-native-provenance *args:
-    PUGGERS_NPM_PROVENANCE=1 just publish-npm-native-package {{ args }}
+    PUGGERS_NPM_PROVENANCE=1 node scripts/npm-native.ts publish {{ args }}
 publish-npm:
-    just publish-npm-package
-publish-npm-package:
     pnpm --filter puggers publish --access public
 publish-npm-provenance:
-    just publish-npm-provenance-package
-publish-npm-provenance-package:
     pnpm --filter puggers publish --access public --provenance

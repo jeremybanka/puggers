@@ -44,8 +44,8 @@ pnpm install
 
 The npm package targets Node 26 or newer.
 
-Build the Rust native artifacts, copy them into `packages/puggers/.native`, and
-compile the TypeScript package:
+Build the Rust native artifacts, copy them into `packages/puggers/.native`,
+compile the TypeScript package, and produce the host npm tarballs:
 
 ```sh
 just build-npm
@@ -62,19 +62,19 @@ just test-npm
 Generate a native package directory for the current host target:
 
 ```sh
-just dist-npm-native-directory
+just build-npm-dist-native-directory
 ```
 
 Generate and pack a tarball:
 
 ```sh
-just dist-npm-native
+just build-npm-dist-native
 ```
 
 Pass an explicit target when packaging artifacts built elsewhere:
 
 ```sh
-PUGGERS_RELEASE_DIR=target/release just dist-npm-native linux-x64-glibc
+PUGGERS_RELEASE_DIR=target/release just build-npm-dist-native linux-x64-glibc
 ```
 
 Supported target names are:

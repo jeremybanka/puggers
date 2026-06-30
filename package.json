@@ -7,7 +7,7 @@
     "check:scripts": "tsc -p scripts/tsconfig.json",
     "build:npm": "pnpm --filter puggers build",
     "test:npm": "pnpm --filter puggers test",
-    "dist:npm": "pnpm --filter puggers pack --pack-destination target/npm"
+    "build:npm:dist": "pnpm --filter puggers pack --pack-destination target/npm"
   },
   "devDependencies": {
     "@types/node": "26.0.1",

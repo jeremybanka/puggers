@@ -76,7 +76,7 @@ Puggers uses a declarative release-note workflow with Knope.
 ```sh
 just notes
 just version
-just publish
+just publish-crates
 ```
 
 Release notes live in `.changeset/`, the coordinated changelog lives in
