@@ -1,6 +1,32 @@
 use puggers_core::{CollapseSingleNestedMode, ConvertOptions, convert_html_to_pug};
 
 #[test]
+fn full_document_import_preserves_parsed_document_shell_by_default() {
+    let output = convert_html_to_pug(
+        "<!doctype html><html><head><title>Docs</title></head><body><main><h1>Hello</h1></main></body></html>",
+        &ConvertOptions::default(),
+    );
+
+    assert_eq!(
+        output,
+        "doctype html\nhtml\n  head\n    title Docs\n  body\n    main\n      h1 Hello\n"
+    );
+}
+
+#[test]
+fn trim_outer_document_keeps_all_body_children_instead_of_selecting_main_content() {
+    let output = convert_html_to_pug(
+        "<!doctype html><html><body><header>Top</header><main><h1>Hello</h1></main><footer>End</footer></body></html>",
+        &ConvertOptions {
+            trim_outer_document: true,
+            ..Default::default()
+        },
+    );
+
+    assert_eq!(output, "header Top\nmain\n  h1 Hello\nfooter End\n");
+}
+
+#[test]
 fn collapse_mode_off_preserves_single_child_chain() {
     let output = convert_html_to_pug(
         "<div><section><article><p>Hello</p></article></section></div>",

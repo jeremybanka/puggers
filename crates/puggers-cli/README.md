@@ -30,6 +30,10 @@ By default, the converter is opinionated: it strips most attributes, keeps
 comments, and aggressively normalizes ordinary text. That makes it useful for
 finding structure quickly, even when the source is noisy.
 
+Structural extraction choices such as document shell trimming and single-child
+collapse modes are described in
+[`docs/html-import-structural-extraction.md`](../../docs/html-import-structural-extraction.md).
+
 ## Use Cases
 
 Readable document view:

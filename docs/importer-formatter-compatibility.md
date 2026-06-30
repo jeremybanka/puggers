@@ -3,7 +3,9 @@
 The HTML importer and Pug formatter share formatting options when the option
 means the same thing for generated Pug and existing Pug source. HTML extraction
 policy stays importer-owned so structural simplification does not leak into the
-formatter.
+formatter. See the separate
+[HTML import structural extraction policy](./html-import-structural-extraction.md)
+for wrapper, shell, and region-selection behavior.
 
 | Option | Status | Notes |
 | --- | --- | --- |

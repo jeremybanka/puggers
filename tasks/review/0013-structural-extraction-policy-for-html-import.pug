@@ -1,4 +1,4 @@
-issue(id="0013" status="open")
+issue(id="0013" status="review")
   title Define structural extraction policy for HTML import
   user-story
     as-a maintainer of the puggers HTML converter
@@ -33,7 +33,7 @@ issue(id="0013" status="open")
     criterion Make sure structural extraction policy is described independently from text-layout or formatter-compatibility concerns.
     criterion Leave the importer with a smaller, more intentional set of structural heuristics than it started with, even if that means narrowing behavior rather than adding more options.
   review-items
-    item(status="open") Confirm the anonymous wrapper collapse flag has become an explicit collapse mode with off, top-wins, bottom-wins, and best-tag-wins semantics.
-    item(status="open") Define the first best-tag hierarchy globally inside puggers, while leaving custom hierarchy configuration as a possible future extension.
-    item(status="open") Confirm whether front-matter and back-matter trimming are real user needs or just a proxy for wanting better region selection.
-    item(status="open") Keep structural simplification policy understandable enough that future CLI and npm surfaces can explain it without a large caveat section.
+    item(status="covered") The anonymous wrapper collapse flag is now an explicit collapse mode with off, top-wins, bottom-wins, and best-tag-wins semantics.
+    item(status="covered") The first best-tag hierarchy is defined globally inside puggers, while leaving custom hierarchy configuration as a possible future extension.
+    item(status="covered") Front-matter and back-matter trimming stay out of scope for now; `trim_outer_document` remains a body-shell control rather than a broader region-selection proxy.
+    item(status="covered") Structural simplification policy is documented separately from formatter compatibility so future CLI and npm surfaces can explain the option without inheriting formatter caveats.
