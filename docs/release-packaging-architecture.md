@@ -125,10 +125,11 @@ package manifests are tracked there; generated local binaries are ignored and
 release artifacts are staged separately under `target/npm`.
 
 In CI, the `Release` workflow runs when the `release` pull request merges. It
-publishes each native npm package on that target's GitHub-hosted runner using
-npm trusted publishing through GitHub Actions OIDC, then publishes the top-level
-`puggers` npm package after the native matrix succeeds. The workflow then uses
-crates.io trusted publishing for the ordered crate publish steps and runs
-`knope release` to create the GitHub release. The npm package names must have
-trusted publisher entries configured for `.github/workflows/release.yml` before
-OIDC publishing can succeed.
+calls the shared npm package-group workflow with publishing enabled. That
+workflow publishes each native npm package on that target's GitHub-hosted
+runner using npm trusted publishing through GitHub Actions OIDC, then publishes
+the top-level `puggers` npm package after the native matrix succeeds. The
+workflow then uses crates.io trusted publishing for the ordered crate publish
+steps and runs `knope release` to create the GitHub release. The npm package
+names must have trusted publisher entries configured for the calling
+`.github/workflows/release.yml` before OIDC publishing can succeed.

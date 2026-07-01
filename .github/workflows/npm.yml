@@ -18,55 +18,11 @@ defaults:
     shell: bash
 
 jobs:
-  Package:
-    name: Package
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-      - uses: ./.github/actions/setup
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run check:scripts
-      - run: just build-npm-js
-      - run: just build-npm-native --target=linux-x64-glibc
-      - run: pnpm --filter puggers test
-      - run: pnpm --filter puggers pack --pack-destination target/npm
-
-  NativePackage:
-    name: Native Package (${{ matrix.npm_target }})
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - npm_target: darwin-arm64
-            runner: macos-15
-            rust_target: aarch64-apple-darwin
-          - npm_target: darwin-x64
-            runner: macos-15
-            rust_target: x86_64-apple-darwin
-          - npm_target: linux-arm64-glibc
-            runner: ubuntu-24.04-arm
-            rust_target: aarch64-unknown-linux-gnu
-          - npm_target: linux-x64-glibc
-            runner: ubuntu-24.04
-            rust_target: x86_64-unknown-linux-gnu
-          - npm_target: win32-arm64
-            runner: windows-11-arm
-            rust_target: aarch64-pc-windows-msvc
-          - npm_target: win32-x64
-            runner: windows-2025
-            rust_target: x86_64-pc-windows-msvc
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-      - uses: ./.github/actions/setup
-      - run: pnpm install --frozen-lockfile
-      - run: rustup target add ${{ matrix.rust_target }}
-      - run: just build-npm-native --target=${{ matrix.npm_target }}
-      - run: pnpm npm-stage copy-binaries --destination=staging --target=${{ matrix.npm_target }}
-      - run: pnpm npm-stage write-manifest --target=${{ matrix.npm_target }}
-      - name: Pack Native Package
-        run: |
-          staging_path="$(pnpm --silent npm-stage print-staging-path --target=${{ matrix.npm_target }})"
-          pnpm --dir "${staging_path}" pack --pack-destination "${GITHUB_WORKSPACE}/target/npm"
+  NpmPackageGroup:
+    name: npm package group
+    uses: ./.github/workflows/npm-package-group.yml
+    with:
+      publish: false
+    permissions:
+      contents: read
+      id-token: write

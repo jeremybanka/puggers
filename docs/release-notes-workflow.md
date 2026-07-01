@@ -53,9 +53,9 @@ just publish-npm-native --target=<target>
 just publish-npm
 ```
 
-The merged `release` pull request triggers the `Release` workflow. It publishes
-the native npm packages first, publishes the top-level `puggers` npm package
-after the native matrix succeeds, publishes the Rust crates with crates.io
-trusted publishing, and then runs `knope release`. npm provenance comes from
-trusted publishing through GitHub Actions OIDC once each npm package has a
-trusted publisher entry for `.github/workflows/release.yml`.
+The merged `release` pull request triggers the `Release` workflow. It calls the
+shared npm package-group workflow with publishing enabled, publishes the Rust
+crates with crates.io trusted publishing after npm succeeds, and then runs
+`knope release`. npm provenance comes from trusted publishing through GitHub
+Actions OIDC once each npm package has a trusted publisher entry for the calling
+`.github/workflows/release.yml`.
