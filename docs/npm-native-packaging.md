@@ -14,8 +14,8 @@ This keeps the CLI implementation in Rust while giving Node users a typed
 
 - `packages/puggers`: top-level ESM package users install as `puggers`
 - `crates/puggers-node`: Node-API wrapper around `puggers-core`
-- `packages/native/*`: private workspace placeholders so pnpm can resolve the
-  optional native package names locally before they are published
+- `packages/native/*`: workspace platform packages that receive generated
+  native artifacts for local development
 - `@puggers/<target>`: generated native packages containing:
   - `puggers` or `puggers.exe`
   - `puggers.node`
@@ -26,10 +26,10 @@ be added later when browser support has its own tests and initialization model.
 ## Versioning
 
 The npm packages use the same version as the Rust workspace and crates. Knope
-updates the top-level `packages/puggers/package.json` and the private
-`packages/native/*/package.json` placeholders during release preparation.
+updates the top-level `packages/puggers/package.json` and the
+`packages/native/*/package.json` platform packages during release preparation.
 
-Keep those placeholder versions aligned: pnpm rewrites the top-level package's
+Keep those package versions aligned: pnpm rewrites the top-level package's
 `workspace:*` optional dependencies to the linked package versions when packing
 or publishing.
 
@@ -44,8 +44,9 @@ pnpm install
 
 The npm package targets Node 26 or newer.
 
-Build the Rust native artifacts, copy them into `packages/puggers/.native`,
-compile the TypeScript package, and produce the host npm tarballs:
+Build the TypeScript package, then build the current host's Rust native target
+and emplace the artifacts into the matching `packages/native/*` workspace
+package:
 
 ```sh
 just build-npm
@@ -59,31 +60,31 @@ just test-npm
 
 ## Native Package Artifacts
 
-The `scripts/stage.node.ts` helper only stages native files and package
-metadata. `pnpm pack` and `pnpm publish` stay in the Justfile so release actions
-remain visible at the command layer. Its routes are `local`, `dist`, and
-`print-dist-path`.
+The `scripts/assemble.node.ts` helper stages native files and package metadata.
+`pnpm publish` stays in the Justfile so release actions remain visible at the
+command layer. Its routes are `emplace`, `dist`, and `print-dist-path`.
 
-Generate a native package directory for the current host target:
+Build and emplace the current host target:
 
 ```sh
-just build-npm-dist-native-directory
+just build-npm-native
 ```
 
-Generate and pack a tarball:
+Pass an explicit target in CI matrix jobs:
 
 ```sh
-just build-npm-dist-native
-```
-
-Pass an explicit target when packaging artifacts built elsewhere:
-
-```sh
-PUGGERS_RELEASE_DIR=target/release just build-npm-dist-native --target=linux-x64-glibc
+just build-npm-native --target=linux-x64-glibc
 ```
 
 Use `--target=<target>` or `PUGGERS_NPM_TARGET=<target>` to override host target
 detection.
+
+When publishing artifacts built outside the default Cargo target directory, pass
+the same target and point the staging helper at those files:
+
+```sh
+PUGGERS_RELEASE_DIR=target/release just publish-npm-native --target=linux-x64-glibc
+```
 
 Supported target names are:
 
@@ -96,9 +97,11 @@ Supported target names are:
 - `win32-arm64`
 - `win32-x64`
 
-Cross-compilation is intentionally not hidden in the package script. When
-packaging for a non-host target, set `PUGGERS_EXE` and `PUGGERS_NODE_ADDON` to
-the already-built artifacts.
+Each CI job builds one supported npm target. Host targets use Cargo's default
+target directory, while alternate or cross targets use `cargo build --target`
+and expect the corresponding Rust target and linker to be installed. When
+packaging externally built artifacts, set `PUGGERS_EXE` and
+`PUGGERS_NODE_ADDON` to the already-built files.
 
 ## Publishing Order
 

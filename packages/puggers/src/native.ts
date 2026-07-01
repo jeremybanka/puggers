@@ -1,7 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 
 interface NativeBinding {
   convertHtmlToPugNative(input: string, optionsJson?: string): string;
@@ -51,11 +50,6 @@ function resolveNativeDirectory(): string {
   const overrideDirectory = process.env.PUGGERS_NATIVE_DIR;
   if (overrideDirectory != null && overrideDirectory !== "") {
     return overrideDirectory;
-  }
-
-  const localDirectory = fileURLToPath(new URL("../.native/", import.meta.url));
-  if (existsSync(join(localDirectory, "puggers.node"))) {
-    return localDirectory;
   }
 
   const packageName = resolveNativePackageName();

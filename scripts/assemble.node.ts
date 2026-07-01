@@ -8,17 +8,19 @@ import {
   rmSync,
   writeFileSync
 } from "node:fs";
-import { arch, platform, report } from "node:process";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { cli, options, required } from "comline";
 import takua from "takua";
 import { z } from "zod/v4";
-
-type SupportedArch = "arm64" | "x64";
-type SupportedOs = "darwin" | "linux" | "win32";
-type LinuxLibc = "glibc" | "musl";
+import {
+  detectTarget,
+  nativeTargetMetadataByTarget,
+  readTargetFromEnv,
+  targetSchema,
+  type SupportedTarget
+} from "./native-targets.ts";
 
 interface NativeArtifacts {
   executablePath: string;
@@ -26,45 +28,16 @@ interface NativeArtifacts {
   outputExecutableName: string;
 }
 
-interface NativeTargetMetadata {
-  os: SupportedOs;
-  cpu: SupportedArch;
-  libc?: LinuxLibc;
-}
-
-const supportedTargets = [
-  "darwin-arm64",
-  "darwin-x64",
-  "linux-arm64-glibc",
-  "linux-arm64-musl",
-  "linux-x64-glibc",
-  "linux-x64-musl",
-  "win32-arm64",
-  "win32-x64"
-] as const;
-type SupportedTarget = (typeof supportedTargets)[number];
-
-const targetSchema = z.enum(supportedTargets);
 const cliTargetSchema = targetSchema.optional();
-const nativeTargetMetadataByTarget = {
-  "darwin-arm64": { os: "darwin", cpu: "arm64" },
-  "darwin-x64": { os: "darwin", cpu: "x64" },
-  "linux-arm64-glibc": { os: "linux", cpu: "arm64", libc: "glibc" },
-  "linux-arm64-musl": { os: "linux", cpu: "arm64", libc: "musl" },
-  "linux-x64-glibc": { os: "linux", cpu: "x64", libc: "glibc" },
-  "linux-x64-musl": { os: "linux", cpu: "x64", libc: "musl" },
-  "win32-arm64": { os: "win32", cpu: "arm64" },
-  "win32-x64": { os: "win32", cpu: "x64" }
-} satisfies Record<SupportedTarget, NativeTargetMetadata>;
 
 const cliRoutes = required({
-  local: null,
+  emplace: null,
   dist: null,
   "print-dist-path": null
 });
 
 const targetOptions = options(
-  "stage native npm artifacts",
+  "assemble native npm artifacts",
   z.object({
     target: cliTargetSchema
   }),
@@ -79,39 +52,39 @@ const targetOptions = options(
 );
 
 const routeOptions = {
-  local: targetOptions,
+  emplace: targetOptions,
   dist: targetOptions,
   "print-dist-path": targetOptions
 };
 
-const stageCli = cli({
-  cliName: "stage",
-  cliDescription: "Stage native puggers npm artifacts.",
+const assembleCli = cli({
+  cliName: "assemble",
+  cliDescription: "Assemble native puggers npm artifacts.",
   discoverConfigPath: () => undefined,
   routes: cliRoutes,
   routeOptions
 });
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const { inputs } = stageCli(process.argv);
-const target = inputs.opts.target ?? readTargetFromEnv() ?? detectTarget();
+const { inputs } = assembleCli(process.argv);
+const targetOverride = inputs.opts.target ?? readTargetFromEnv();
 
 switch (inputs.case) {
-  case "local":
-    stageLocalArtifacts(target);
+  case "emplace":
+    emplaceNativePackage(targetOverride ?? detectTarget());
     break;
   case "dist":
-    stageNativePackage(target);
+    stageNativePackage(targetOverride ?? detectTarget());
     break;
   case "print-dist-path":
-    console.log(nativePackageDirectory(target));
+    console.log(nativePackageDirectory(targetOverride ?? detectTarget()));
     break;
 }
 
-function stageLocalArtifacts(target: SupportedTarget): void {
-  const outputDirectory = join(root, "packages", "puggers", ".native");
-  copyNativeArtifacts(outputDirectory, resolveNativeArtifacts(target));
-  takua.info("stage", "local", `${target} -> ${outputDirectory}`);
+function emplaceNativePackage(packageTarget: SupportedTarget): void {
+  const outputDirectory = nativeWorkspacePackageDirectory(packageTarget);
+  copyNativeArtifacts(outputDirectory, resolveNativeArtifacts(packageTarget));
+  takua.info("assemble", "emplace", `${packageTarget} -> ${outputDirectory}`);
 }
 
 function stageNativePackage(packageTarget: SupportedTarget): string {
@@ -154,13 +127,17 @@ function stageNativePackage(packageTarget: SupportedTarget): string {
     `# @puggers/${packageTarget}\n\nNative ${packageTarget} distribution for puggers.\n`
   );
 
-  takua.info("stage", "dist", `${packageTarget} -> ${packageDirectory}`);
+  takua.info("assemble", "dist", `${packageTarget} -> ${packageDirectory}`);
 
   return packageDirectory;
 }
 
 function nativePackageDirectory(packageTarget: SupportedTarget): string {
   return join(root, "target", "npm", "@puggers", packageTarget);
+}
+
+function nativeWorkspacePackageDirectory(packageTarget: SupportedTarget): string {
+  return join(root, "packages", "native", packageTarget);
 }
 
 function copyNativeArtifacts(outputDirectory: string, artifacts: NativeArtifacts): void {
@@ -170,110 +147,51 @@ function copyNativeArtifacts(outputDirectory: string, artifacts: NativeArtifacts
   chmodIfPossible(join(outputDirectory, artifacts.outputExecutableName));
 }
 
-function resolveNativeArtifacts(packageTarget: SupportedTarget): NativeArtifacts {
-  const releaseDirectory = process.env.PUGGERS_RELEASE_DIR ?? join(root, "target", "release");
-  const outputExecutableName = packageTarget.startsWith("win32-") ? "puggers.exe" : "puggers";
-  const sourceExecutableName = platform === "win32" ? "puggers.exe" : "puggers";
-  const sourceAddonName =
-    platform === "win32"
-      ? "puggers_node.dll"
-      : platform === "darwin"
-        ? "libpuggers_node.dylib"
-        : "libpuggers_node.so";
+function resolveNativeArtifacts(
+  packageTarget: SupportedTarget,
+  releaseDirectory = targetReleaseDirectory(packageTarget),
+  buildHint = targetBuildHint(packageTarget)
+): NativeArtifacts {
+  const metadata = nativeTargetMetadataByTarget[packageTarget];
 
   const executablePath =
-    process.env.PUGGERS_EXE ?? join(releaseDirectory, sourceExecutableName);
+    process.env.PUGGERS_EXE ?? join(releaseDirectory, metadata.executableName);
   const addonPath =
-    process.env.PUGGERS_NODE_ADDON ?? join(releaseDirectory, sourceAddonName);
+    process.env.PUGGERS_NODE_ADDON ?? join(releaseDirectory, metadata.addonName);
 
-  assertExists(executablePath, "native puggers executable");
-  assertExists(addonPath, "native puggers Node-API addon");
+  assertExists(executablePath, "native puggers executable", buildHint);
+  assertExists(addonPath, "native puggers Node-API addon", buildHint);
 
   return {
     executablePath,
     addonPath,
-    outputExecutableName
+    outputExecutableName: metadata.executableName
   };
 }
 
-function detectTarget(): SupportedTarget {
-  if (platform === "darwin") {
-    return parseTarget(`darwin-${supportedArch()}`);
+function targetReleaseDirectory(packageTarget: SupportedTarget): string {
+  const metadata = nativeTargetMetadataByTarget[packageTarget];
+  if (process.env.PUGGERS_RELEASE_DIR != null) {
+    return process.env.PUGGERS_RELEASE_DIR;
   }
 
-  if (platform === "linux") {
-    return parseTarget(`linux-${supportedArch()}-${detectLinuxLibc()}`);
+  if (packageTarget === detectTarget()) {
+    return join(root, "target", "release");
   }
 
-  if (platform === "win32") {
-    return parseTarget(`win32-${supportedArch()}`);
-  }
-
-  throw new Error(`unsupported platform: ${platform}`);
+  return join(root, "target", metadata.rustTarget, "release");
 }
 
-function readTargetFromEnv(): SupportedTarget | undefined {
-  const target = process.env.PUGGERS_NPM_TARGET;
-  return target == null || target === "" ? undefined : parseTarget(target);
-}
-
-function parseTarget(target: string): SupportedTarget {
-  return targetSchema.parse(target);
-}
-
-function supportedArch(): SupportedArch {
-  if (arch === "arm64" || arch === "x64") {
-    return arch;
-  }
-
-  throw new Error(`unsupported architecture: ${arch}`);
-}
-
-function detectLinuxLibc(): LinuxLibc {
-  const runtimeReport: unknown = report?.getReport();
-  const parsedReport =
-    typeof runtimeReport === "string"
-      ? (JSON.parse(runtimeReport) as unknown)
-      : runtimeReport;
-
-  if (parsedReport == null || typeof parsedReport !== "object") {
-    return detectLinuxLibcFromLdd();
-  }
-
-  if (!("header" in parsedReport)) {
-    return detectLinuxLibcFromLdd();
-  }
-
-  const { header } = parsedReport;
-  if (header != null && typeof header === "object" && "glibcVersionRuntime" in header) {
-    return "glibc";
-  }
-
-  if (!("sharedObjects" in parsedReport)) {
-    return detectLinuxLibcFromLdd();
-  }
-
-  const { sharedObjects } = parsedReport;
-  if (
-    Array.isArray(sharedObjects) &&
-    sharedObjects.some(
-      (path) =>
-        typeof path === "string" &&
-        (path.includes("libc.musl-") || path.includes("ld-musl-"))
-    )
-  ) {
-    return "musl";
-  }
-
-  return detectLinuxLibcFromLdd();
-}
-
-function detectLinuxLibcFromLdd(): LinuxLibc {
-  try {
-    return readFileSync("/usr/bin/ldd", "utf8").includes("musl") ? "musl" : "glibc";
-  } catch {
-    return "glibc";
-  }
+function targetBuildHint(packageTarget: SupportedTarget): string {
+  const { rustTarget } = nativeTargetMetadataByTarget[packageTarget];
+  const targetArg = `--target=${packageTarget}`;
+  return [
+    `Run just build-npm-native-binaries ${targetArg}, or`,
+    `cargo build -p puggers --release --locked --target ${rustTarget}`,
+    "and",
+    `cargo build -p puggers-node --release --locked --target ${rustTarget}`,
+    "first."
+  ].join(" ");
 }
 
 function readWorkspaceVersion(): string {
@@ -286,11 +204,9 @@ function readWorkspaceVersion(): string {
   return match[1];
 }
 
-function assertExists(path: string, label: string): void {
+function assertExists(path: string, label: string, buildHint: string): void {
   if (!existsSync(path)) {
-    throw new Error(
-      `missing ${label} at ${path}. Run cargo build -p puggers --release and cargo build -p puggers-node --release first.`
-    );
+    throw new Error(`missing ${label} at ${path}. ${buildHint}`);
   }
 }
 

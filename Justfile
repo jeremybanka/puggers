@@ -72,35 +72,18 @@ build-cargo:
     cargo build --workspace
 build-wasm:
     cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release
-build-npm:
-    just build-npm-native
+build-npm *args:
     just build-npm-js
-    just build-npm-dist
-build-npm-native:
-    just build-npm-native-cli
-    just build-npm-native-addon
-    just build-npm-native-local
-build-npm-native-cli:
-    cargo build -p puggers --release --locked
-build-npm-native-addon:
-    cargo build -p puggers-node --release --locked
-build-npm-native-local:
-    node scripts/assemble.node.ts local
+    just build-npm-native {{ args }}
 build-npm-js:
     pnpm --filter puggers build
-build-npm-dist:
-    just build-npm-dist-native
-    just build-npm-dist-package
-build-npm-dist-native *args:
-    just build-npm-dist-native-directory {{ args }}
-    just build-npm-dist-native-tarball {{ args }}
-build-npm-dist-native-directory *args:
-    pnpm assemble dist {{ args }}
-build-npm-dist-native-tarball *args:
-    native_path="$(pnpm assemble print-dist-path {{ args }})"
-    pnpm --dir "$native_path" pack --pack-destination "$(pwd)/target/npm"
-build-npm-dist-package:
-    pnpm --filter puggers pack --pack-destination target/npm
+build-npm-native *args:
+    just build-npm-native-binaries {{ args }}
+    just build-npm-native-emplace {{ args }}
+build-npm-native-binaries *args:
+    node scripts/build-native-binaries.node.ts {{ args }}
+build-npm-native-emplace *args:
+    node scripts/assemble.node.ts emplace {{ args }}
 
 # RELEASE SYSTEM
 n:
@@ -122,13 +105,11 @@ publish-crates-cli:
 publish-crates-dprint:
     cargo publish -p dprint-plugin-pug
 publish-npm-native *args:
-    just build-npm-dist-native-directory {{ args }}
-    native_path="$(pnpm assemble print-dist-path {{ args }})" 
-    pnpm --dir "$native_path" publish --access public
+    node scripts/assemble.node.ts dist {{ args }}
+    pnpm --dir "$(node scripts/assemble.node.ts print-dist-path {{ args }})" publish --access public
 publish-npm-native-provenance *args:
-    just build-npm-dist-native-directory {{ args }}
-    native_path="$(pnpm assemble print-dist-path {{ args }})"
-    pnpm --dir "$native_path" publish --access public --provenance
+    node scripts/assemble.node.ts dist {{ args }}
+    pnpm --dir "$(node scripts/assemble.node.ts print-dist-path {{ args }})" publish --access public --provenance
 publish-npm:
     pnpm --filter puggers publish --access public
 publish-npm-provenance:

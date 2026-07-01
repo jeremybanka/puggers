@@ -1,5 +1,7 @@
 target/
 node_modules/
-packages/*/.native/
+packages/native/*/puggers
+packages/native/*/puggers.exe
+packages/native/*/puggers.node
 packages/*/dist/
 target/npm/
