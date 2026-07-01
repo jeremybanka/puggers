@@ -18,10 +18,25 @@ defaults:
     shell: bash
 
 jobs:
-  release:
-    if: github.head_ref == 'release' && github.event.pull_request.merged == true
+  NpmPackageGroup:
+    name: npm package group
+    if: github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'release'
+    uses: ./.github/workflows/npm-package-group.yml
+    with:
+      publish: true
+    permissions:
+      contents: read
+      id-token: write
+
+  Release:
+    name: Release
+    if: github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'release'
+    needs: NpmPackageGroup
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: app-token
@@ -41,24 +56,43 @@ jobs:
           version: 0.23.0
       - uses: rust-lang/crates-io-auth-action@v1
         id: crates-io-auth
-      - run: cargo publish -p puggers-core --locked
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
-      - name: Wait For puggers-core And Publish puggers
+      - name: Publish Crates
         run: |
-          for attempt in {1..20}; do
-            if cargo publish -p puggers --dry-run --locked >/dev/null 2>&1; then
-              cargo publish -p puggers --locked
-              exit 0
+          version="$(node -e "const fs = require('node:fs'); const cargoToml = fs.readFileSync('Cargo.toml', 'utf8'); console.log(cargoToml.match(/\\[workspace\\.package\\][\\s\\S]*?version = \"([^\"]+)\"/)[1]);")"
+
+          crate_is_published() {
+            curl --fail --silent "https://crates.io/api/v1/crates/${1}/${version}" >/dev/null
+          }
+
+          publish_crate() {
+            crate="${1}"
+            if crate_is_published "${crate}"; then
+              echo "${crate}@${version} is already published; skipping."
+              return 0
             fi
-            echo "Waiting for puggers-core to propagate to crates.io (attempt ${attempt}/20)..."
-            sleep 15
-          done
-          echo "Timed out waiting for puggers-core to become visible on crates.io." >&2
-          exit 1
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
-      - run: cargo publish -p dprint-plugin-pug --locked
+
+            cargo publish -p "${crate}" --locked
+          }
+
+          wait_for_crate() {
+            crate="${1}"
+            for attempt in {1..20}; do
+              if crate_is_published "${crate}"; then
+                return 0
+              fi
+
+              echo "Waiting for ${crate}@${version} to propagate to crates.io (attempt ${attempt}/20)..."
+              sleep 15
+            done
+
+            echo "Timed out waiting for ${crate}@${version} to become visible on crates.io." >&2
+            exit 1
+          }
+
+          publish_crate puggers-core
+          wait_for_crate puggers-core
+          publish_crate puggers
+          publish_crate dprint-plugin-pug
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
       - run: knope release --verbose

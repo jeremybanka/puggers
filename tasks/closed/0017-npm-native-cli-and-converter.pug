@@ -1,0 +1,30 @@
+issue(id="0017" status="closed")
+  title Publish a native npm package for the CLI and HTML to Pug converter
+  user-story
+    as-a JavaScript or web-tooling user
+    i-want to install puggers from npm and call the HTML to Pug converter from Node
+    so-that Node workflows can use the converter through either a CLI or a typed runtime API
+  premise.
+    The Rust HTML importer is useful beyond the Cargo CLI, and npm users should
+    be able to install a package named `puggers` that exposes both a command and
+    a runtime converter. The first npm package should follow the native package
+    pattern used by tools like dprint: a small top-level package plus
+    platform-specific optional dependencies. The JavaScript package should be
+    ESM-only, authored in TypeScript, built with tsdown, and shipped with
+    generated `.d.ts` files. Browser and bundler-oriented wasm support is a
+    separate future task, not an implicit promise of this Node package.
+  acceptance-criteria
+    criterion Add an npm-consumable `packages/puggers` package that exposes a typed ESM `convertHtmlToPug` function for Node.
+    criterion Add a native Node-API crate that reuses `puggers-core` for conversion instead of maintaining JavaScript conversion logic.
+    criterion Add an npm CLI bin that forwards to the native Rust `puggers` executable instead of duplicating CLI option parsing in JavaScript.
+    criterion Support a repeatable native package build path for the current host target and document how platform-specific packages are generated.
+    criterion Document that browser bundlers and wasm support are out of scope for this first npm package.
+    criterion Reuse the existing Rust converter behavior and options rather than maintaining a separate JavaScript conversion implementation.
+    criterion Add focused tests or examples that call the JavaScript API and assert converted Pug output for representative HTML input.
+    criterion Add a repeatable build command for producing the native npm artifact, and make sure it can be run from a clean checkout with documented prerequisites.
+    criterion Document the initial JavaScript API, native package resolution model, option mapping, and known platform limitations.
+    criterion Add a Knope change file using `default` frontmatter that summarizes the new native npm converter surface.
+  review-items
+    item(status="covered") Use a dedicated top-level npm package named `puggers`, with platform-specific native packages under `@puggers/<target>`.
+    item(status="covered") Use a native Node-API addon instead of wasm for the first Node package, so the converter keeps the same `puggers-core` parser path.
+    item(status="covered") Leave browser and bundler-oriented wasm coverage to a follow-up task.

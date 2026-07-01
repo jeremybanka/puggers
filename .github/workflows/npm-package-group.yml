@@ -1,0 +1,123 @@
+name: npm package group
+
+on:
+  workflow_call:
+    inputs:
+      publish:
+        description: Publish packages instead of packing them.
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  NativePackage:
+    name: Native Package (${{ matrix.npm_target }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - npm_target: darwin-arm64
+            runner: macos-15
+            rust_target: aarch64-apple-darwin
+          - npm_target: darwin-x64
+            runner: macos-15
+            rust_target: x86_64-apple-darwin
+          - npm_target: linux-arm64-glibc
+            runner: ubuntu-24.04-arm
+            rust_target: aarch64-unknown-linux-gnu
+          - npm_target: linux-x64-glibc
+            runner: ubuntu-24.04
+            rust_target: x86_64-unknown-linux-gnu
+          - npm_target: win32-arm64
+            runner: windows-11-arm
+            rust_target: aarch64-pc-windows-msvc
+          - npm_target: win32-x64
+            runner: windows-2025
+            rust_target: x86_64-pc-windows-msvc
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: ./.github/actions/setup
+      - run: pnpm install --frozen-lockfile
+      - run: rustup target add ${{ matrix.rust_target }}
+      - run: just build-npm-native --target=${{ matrix.npm_target }}
+      - run: pnpm npm-stage copy-binaries --destination=staging --target=${{ matrix.npm_target }}
+      - run: pnpm npm-stage write-manifest --target=${{ matrix.npm_target }}
+      - name: Pack Native Package
+        if: ${{ inputs.publish == false }}
+        run: |
+          staging_path="$(pnpm --silent npm-stage print-staging-path --target=${{ matrix.npm_target }})"
+          pnpm --dir "${staging_path}" pack --pack-destination "${GITHUB_WORKSPACE}/target/npm"
+      - name: Publish Native Package
+        if: ${{ inputs.publish == true }}
+        run: |
+          staging_path="$(pnpm --silent npm-stage print-staging-path --target=${{ matrix.npm_target }})"
+          package_name="$(node -e "const fs = require('node:fs'); const path = require('node:path'); const packageJson = JSON.parse(fs.readFileSync(path.join(process.argv[1], 'package.json'), 'utf8')); console.log(packageJson.name);" "${staging_path}")"
+          package_version="$(node -e "const fs = require('node:fs'); const path = require('node:path'); const packageJson = JSON.parse(fs.readFileSync(path.join(process.argv[1], 'package.json'), 'utf8')); console.log(packageJson.version);" "${staging_path}")"
+
+          if pnpm view "${package_name}@${package_version}" version >/dev/null 2>&1; then
+            echo "${package_name}@${package_version} is already published; skipping."
+            exit 0
+          fi
+
+          pnpm --dir "${staging_path}" publish --access public --provenance --no-git-checks
+
+  Package:
+    name: Package
+    needs: NativePackage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: ./.github/actions/setup
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run check:scripts
+      - run: just build-npm-js
+      - run: just build-npm-native --target=linux-x64-glibc
+      - run: pnpm --filter puggers test
+      - name: Pack Package
+        if: ${{ inputs.publish == false }}
+        run: pnpm --filter puggers pack --pack-destination target/npm
+      - name: Wait For Native Packages
+        if: ${{ inputs.publish == true }}
+        run: |
+          package_version="$(node -p "require('./packages/puggers/package.json').version")"
+          native_packages="$(node -e "const packageJson = require('./packages/puggers/package.json'); console.log(Object.keys(packageJson.optionalDependencies ?? {}).filter((name) => name.startsWith('@puggers/')).join('\n'));")"
+
+          while IFS= read -r package_name; do
+            for attempt in {1..20}; do
+              if pnpm view "${package_name}@${package_version}" version >/dev/null 2>&1; then
+                echo "${package_name}@${package_version} is visible on npm."
+                break
+              fi
+
+              if [[ "${attempt}" -eq 20 ]]; then
+                echo "Timed out waiting for ${package_name}@${package_version} to become visible on npm." >&2
+                exit 1
+              fi
+
+              echo "Waiting for ${package_name}@${package_version} to become visible on npm (attempt ${attempt}/20)..."
+              sleep 15
+            done
+          done <<< "${native_packages}"
+      - name: Publish Package
+        if: ${{ inputs.publish == true }}
+        run: |
+          package_name="$(node -p "require('./packages/puggers/package.json').name")"
+          package_version="$(node -p "require('./packages/puggers/package.json').version")"
+
+          if pnpm view "${package_name}@${package_version}" version >/dev/null 2>&1; then
+            echo "${package_name}@${package_version} is already published; skipping."
+            exit 0
+          fi
+
+          pnpm --filter puggers publish --access public --provenance --no-git-checks

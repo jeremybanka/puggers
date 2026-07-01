@@ -10,12 +10,21 @@ name = "puggers"
 changelog = "CHANGELOG.md"
 versioned_files = [
   "Cargo.toml",
+  "packages/puggers/package.json",
+  "packages/native/darwin-arm64/package.json",
+  "packages/native/darwin-x64/package.json",
+  "packages/native/linux-arm64-glibc/package.json",
+  "packages/native/linux-x64-glibc/package.json",
+  "packages/native/win32-arm64/package.json",
+  "packages/native/win32-x64/package.json",
   { path = "crates/puggers-cli/Cargo.toml", dependency = "puggers-core" },
+  { path = "crates/puggers-node/Cargo.toml", dependency = "puggers-core" },
   { path = "Cargo.lock", dependency = "puggers-core" },
   { path = "Cargo.lock", dependency = "puggers" },
+  { path = "Cargo.lock", dependency = "puggers-node" },
   { path = "Cargo.lock", dependency = "dprint-plugin-pug" },
 ]
-scopes = ["puggers", "puggers-core", "dprint-plugin-pug"]
+scopes = ["puggers", "puggers-core", "puggers-node", "dprint-plugin-pug"]
 
 [[workflows]]
 name = "document-change"

@@ -1,0 +1,26 @@
+issue(id="0019" status="open")
+  title Add an explicit npm build-from-source distribution path
+  user-story
+    as-a security-conscious JavaScript or web-tooling user
+    i-want to install or rebuild puggers from source through npm intentionally
+    so-that I can avoid relying only on prebuilt native binaries when my trust model requires local compilation
+  premise.
+    The default `puggers` npm package should remain convenient and native-backed,
+    but serious users may want a deliberate build-from-source path that does not
+    depend on trusting published binary artifacts. This path should not hide
+    arbitrary install-time compilation in the default package. It should make the
+    source artifact, required toolchain, build script permissions, and resulting
+    runtime files clear enough for package managers like pnpm and npm to gate or
+    approve the native build explicitly.
+  acceptance-criteria
+    criterion Decide whether the source-build surface is a separate package, a documented install mode, or both, and record the rationale in the npm packaging docs.
+    criterion Define the distributable source artifact shape, including which Rust crates, Cargo metadata, TypeScript files, and lockfiles must be included.
+    criterion Add a repeatable npm-accessible build command that compiles the Node-API addon and Rust CLI from source with locked dependencies.
+    criterion Ensure the source-build path produces the same runtime layout expected by the existing JavaScript loader and CLI wrapper.
+    criterion Document how pnpm and npm users approve or opt into the build scripts required for the source-build path.
+    criterion Add tests or CI coverage that installs the source-build artifact in a clean temporary project and verifies both `convertHtmlToPug` and the `puggers` bin.
+    criterion Keep the default `puggers` install path free of implicit source compilation unless the policy is explicitly revisited.
+  review-items
+    item(status="open") Decide between a separate package such as `puggers-source` and an explicit build-from-source install mode for `puggers`.
+    item(status="open") Determine whether to use NAPI-RS tooling directly, a small custom install script, or a node-gyp wrapper around Cargo.
+    item(status="open") Decide what reproducibility proof or comparison workflow should accompany locally built artifacts.

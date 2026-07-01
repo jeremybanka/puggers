@@ -1,0 +1,28 @@
+name: npm
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  NpmPackageGroup:
+    name: npm package group
+    uses: ./.github/workflows/npm-package-group.yml
+    with:
+      publish: false
+    permissions:
+      contents: read
+      id-token: write

@@ -20,7 +20,9 @@ just version
 
 That command runs `knope version`, which reads the pending change files,
 updates the shared workspace version, rewrites dependent version references, and
-updates `CHANGELOG.md`.
+updates `CHANGELOG.md`. The same version is applied to the Rust workspace, the
+top-level npm package, and the native platform packages used for pnpm's local
+`workspace:*` resolution.
 
 The GitHub Actions `Create Release PR` workflow runs automatically on pushes to
 `main`. It follows Knope's pull-request-driven recipe directly: install Knope
@@ -31,18 +33,29 @@ automatically.
 ## Publish
 
 ```sh
-just publish
+just publish-crates
 ```
 
-Publishing remains explicit and ordered:
+Crate publishing remains explicit and ordered:
 
 1. `puggers-core`
 2. `puggers`
 3. `dprint-plugin-pug`
 
 Knope is the source of truth for release intent and changelog generation.
-Cargo remains the actual publisher.
+Cargo and npm remain the actual publishers.
 
-After the initial manual publish, the merged `release` pull request triggers
-the `Release` workflow, which publishes with crates.io trusted publishing
-instead of a long-lived crates.io token and then runs `knope release`.
+npm publishing is also ordered. Publish every generated native platform package
+for the release version before publishing the top-level `puggers` package:
+
+```sh
+just publish-npm-native --target=<target>
+just publish-npm
+```
+
+The merged `release` pull request triggers the `Release` workflow. It calls the
+shared npm package-group workflow with publishing enabled, publishes the Rust
+crates with crates.io trusted publishing after npm succeeds, and then runs
+`knope release`. npm provenance comes from trusted publishing through GitHub
+Actions OIDC once each npm package has a trusted publisher entry for the calling
+`.github/workflows/release.yml`.

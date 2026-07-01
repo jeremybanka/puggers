@@ -1,0 +1,7 @@
+{
+  "name": "@puggers/win32-arm64",
+  "version": "0.1.9",
+  "private": true,
+  "description": "Workspace placeholder for the generated win32-arm64 native puggers package.",
+  "license": "MIT"
+}

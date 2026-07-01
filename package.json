@@ -1,0 +1,19 @@
+{
+  "name": "puggers-workspace",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "check:scripts": "tsc -p scripts/tsconfig.json",
+    "build:npm": "pnpm --filter puggers build",
+    "test:npm": "pnpm --filter puggers test",
+    "npm-stage": "node ./scripts/npm-stage.node.ts"
+  },
+  "devDependencies": {
+    "@types/node": "26.0.1",
+    "comline": "0.5.0",
+    "takua": "0.2.1",
+    "typescript": "6.0.3",
+    "zod": "4.4.3"
+  }
+}

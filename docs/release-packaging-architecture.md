@@ -5,25 +5,28 @@ Puggers is a Rust workspace with a small family of related Pug tools:
 - `puggers-core`: shared conversion and utility library
 - `puggers`: CLI built on top of `puggers-core`
 - `dprint-plugin-pug`: dprint formatter plugin
+- `puggers` on npm: ESM TypeScript package with native Node-API bindings
+- `@puggers/<target>` on npm: generated native platform packages
 
 ## Product Principles
 
 - one repository
 - one coordinated release version
 - explicit release notes checked into the repo
-- Cargo is the publisher
+- Cargo and npm are the publishers
 - release metadata and changelog generation are handled separately from publishing
 
 ## Versioning Philosophy
 
-All public crates move together under one shared workspace version.
+All public crates and npm packages move together under one shared workspace
+version.
 
 Benefits:
 
 - simpler release bookkeeping
 - clearer compatibility between the CLI and library
 - one changelog for the repo instead of three drifting ones
-- easier future expansion if this workspace gains npm or editor targets
+- one npm version that corresponds to the same Rust implementation version
 
 ## Release Orchestration
 
@@ -35,11 +38,14 @@ Knope is responsible for:
 - collecting those changes into release notes
 - updating the shared workspace version
 - updating dependent version references
+- updating the npm package manifests used by `puggers` and the native platform
+  packages
 - maintaining `CHANGELOG.md`
 
-Knope is not the publisher. Publishing stays explicit in `Justfile`.
-GitHub Actions automates that explicit publish order for tagged release PRs
-using crates.io trusted publishing.
+Knope is not the publisher. GitHub Actions publishes the prepared release with
+the version Knope wrote into the repo. The release workflow publishes native npm
+packages first, then the top-level npm package, then the Rust crates, and runs
+`knope release` after every registry publish succeeds.
 
 ## Release Workflow
 
@@ -69,6 +75,7 @@ That runs Knope's release preparation workflow to:
 
 - update `workspace.package.version`
 - keep the CLI's dependency on `puggers-core` aligned
+- keep npm package manifests aligned with the workspace version
 - refresh `Cargo.lock`
 - append the release entry to `CHANGELOG.md`
 
@@ -86,10 +93,12 @@ commit shape so merging the release PR does not immediately create another one.
 
 ### Publishing
 
-After version preparation is reviewed and merged:
+After version preparation is reviewed and merged, the `Release` workflow
+publishes the full package group. Local manual publishing remains available for
+recovery and initial package setup:
 
 ```sh
-just publish
+just publish-crates
 ```
 
 Publish order matters:
@@ -101,8 +110,26 @@ Publish order matters:
 That order keeps downstream crates from referencing a version that has not been
 published yet.
 
+For npm, publish all native platform packages first, then the top-level package:
+
+```sh
+just publish-npm-native --target=<target>
+just publish-npm
+```
+
+The top-level npm package uses `workspace:*` optional dependencies during local
+development. pnpm rewrites those dependencies to the matching package versions
+when packing or publishing, so the `packages/native/*` platform package
+versions must stay aligned with the top-level package version. Only the native
+package manifests are tracked there; generated local binaries are ignored and
+release artifacts are staged separately under `target/npm`.
+
 In CI, the `Release` workflow runs when the `release` pull request merges. It
-uses crates.io trusted publishing through GitHub Actions OIDC for the ordered
-crate publish steps, then runs `knope release` to create the GitHub release.
-The first release still needs to be published manually before the trusted
-publisher relationship can be used.
+calls the shared npm package-group workflow with publishing enabled. That
+workflow publishes each native npm package on that target's GitHub-hosted
+runner using npm trusted publishing through GitHub Actions OIDC, then publishes
+the top-level `puggers` npm package after the native matrix succeeds. The
+workflow then uses crates.io trusted publishing for the ordered crate publish
+steps and runs `knope release` to create the GitHub release. The npm package
+names must have trusted publisher entries configured for the calling
+`.github/workflows/release.yml` before OIDC publishing can succeed.
