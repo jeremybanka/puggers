@@ -71,7 +71,16 @@ function resolveNativePackageName(): string {
   }
 
   if (process.platform === "linux") {
-    return `@puggers/linux-${resolveSupportedArch()}-${detectLinuxLibc()}`;
+    const arch = resolveSupportedArch();
+    const libc = detectLinuxLibc();
+    if (libc !== "glibc") {
+      throw new Error(
+        `Unsupported Linux libc for puggers native package: ${libc}. ` +
+          "puggers currently ships Linux native npm packages for glibc only."
+      );
+    }
+
+    return `@puggers/linux-${arch}-glibc`;
   }
 
   if (process.platform === "win32") {

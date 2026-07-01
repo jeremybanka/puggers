@@ -31,3 +31,30 @@ test("puggers bin forwards to the native CLI", () => {
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stdout, "main\n  h1 Hello\n");
 });
+
+test(
+  "Linux musl reports an unsupported native package",
+  { skip: process.platform !== "linux" },
+  () => {
+    const packageUrl = new URL("../dist/index.js", import.meta.url).href;
+    const script = `
+      process.report.getReport = () => ({
+        header: {},
+        sharedObjects: ["/lib/ld-musl-x86_64.so.1"]
+      });
+
+      const { convertHtmlToPug } = await import(${JSON.stringify(packageUrl)});
+      convertHtmlToPug("<main></main>");
+    `;
+
+    const result = spawnSync(process.execPath, ["--input-type=module", "--eval", script], {
+      encoding: "utf8"
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(
+      result.stderr,
+      /Unsupported Linux libc for puggers native package: musl/
+    );
+  }
+);

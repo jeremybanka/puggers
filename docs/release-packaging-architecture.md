@@ -118,7 +118,9 @@ just publish-npm
 The top-level npm package uses `workspace:*` optional dependencies during local
 development. pnpm rewrites those dependencies to the matching package versions
 when packing or publishing, so the `packages/native/*` platform package
-versions must stay aligned with the top-level package version.
+versions must stay aligned with the top-level package version. Only the native
+package manifests are tracked there; generated local binaries are ignored and
+release artifacts are staged separately under `target/npm`.
 
 In CI, the `Release` workflow runs when the `release` pull request merges. It
 uses crates.io trusted publishing through GitHub Actions OIDC for the ordered

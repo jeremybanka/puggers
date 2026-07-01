@@ -14,8 +14,8 @@ This keeps the CLI implementation in Rust while giving Node users a typed
 
 - `packages/puggers`: top-level ESM package users install as `puggers`
 - `crates/puggers-node`: Node-API wrapper around `puggers-core`
-- `packages/native/*`: workspace platform packages that receive generated
-  native artifacts for local development
+- `packages/native/*`: tracked workspace package manifests plus ignored native
+  artifacts generated for local development
 - `@puggers/<target>`: generated native packages containing:
   - `puggers` or `puggers.exe`
   - `puggers.node`
@@ -50,6 +50,10 @@ and copy the artifacts into the matching `packages/native/*` workspace package:
 ```sh
 just build-npm
 ```
+
+The `packages/native/*/package.json` files are tracked so pnpm can resolve the
+top-level package's `workspace:*` optional dependencies. Generated binaries in
+those directories are ignored and should not be committed.
 
 Run the Node tests:
 
