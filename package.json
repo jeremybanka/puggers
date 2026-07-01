@@ -7,7 +7,7 @@
     "check:scripts": "tsc -p scripts/tsconfig.json",
     "build:npm": "pnpm --filter puggers build",
     "test:npm": "pnpm --filter puggers test",
-    "npm-stage": "./scripts/npm-stage.node.ts"
+    "npm-stage": "node ./scripts/npm-stage.node.ts"
   },
   "devDependencies": {
     "@types/node": "26.0.1",

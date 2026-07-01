@@ -91,9 +91,7 @@ Supported target names are:
 - `darwin-arm64`
 - `darwin-x64`
 - `linux-arm64-glibc`
-- `linux-arm64-musl`
 - `linux-x64-glibc`
-- `linux-x64-musl`
 - `win32-arm64`
 - `win32-x64`
 

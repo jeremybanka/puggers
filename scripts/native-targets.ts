@@ -10,11 +10,9 @@ export type RustTarget =
   | "aarch64-apple-darwin"
   | "aarch64-pc-windows-msvc"
   | "aarch64-unknown-linux-gnu"
-  | "aarch64-unknown-linux-musl"
   | "x86_64-apple-darwin"
   | "x86_64-pc-windows-msvc"
-  | "x86_64-unknown-linux-gnu"
-  | "x86_64-unknown-linux-musl";
+  | "x86_64-unknown-linux-gnu";
 
 export interface NativeTargetMetadata {
   os: SupportedOs;
@@ -29,9 +27,7 @@ export const supportedTargets = [
   "darwin-arm64",
   "darwin-x64",
   "linux-arm64-glibc",
-  "linux-arm64-musl",
   "linux-x64-glibc",
-  "linux-x64-musl",
   "win32-arm64",
   "win32-x64"
 ] as const;
@@ -62,27 +58,11 @@ export const nativeTargetMetadataByTarget = {
     executableName: "puggers",
     addonName: "libpuggers_node.so"
   },
-  "linux-arm64-musl": {
-    os: "linux",
-    cpu: "arm64",
-    libc: "musl",
-    rustTarget: "aarch64-unknown-linux-musl",
-    executableName: "puggers",
-    addonName: "libpuggers_node.so"
-  },
   "linux-x64-glibc": {
     os: "linux",
     cpu: "x64",
     libc: "glibc",
     rustTarget: "x86_64-unknown-linux-gnu",
-    executableName: "puggers",
-    addonName: "libpuggers_node.so"
-  },
-  "linux-x64-musl": {
-    os: "linux",
-    cpu: "x64",
-    libc: "musl",
-    rustTarget: "x86_64-unknown-linux-musl",
     executableName: "puggers",
     addonName: "libpuggers_node.so"
   },
@@ -112,7 +92,12 @@ export function detectTarget(): SupportedTarget {
   }
 
   if (platform === "linux") {
-    return parseTarget(`linux-${supportedArch()}-${detectLinuxLibc()}`);
+    const libc = detectLinuxLibc();
+    if (libc !== "glibc") {
+      throw new Error(`unsupported linux libc: ${libc}`);
+    }
+
+    return parseTarget(`linux-${supportedArch()}-glibc`);
   }
 
   if (platform === "win32") {

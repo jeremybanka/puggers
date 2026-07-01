@@ -1,6 +1,6 @@
 {
   "name": "puggers",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Native npm CLI and Node API for converting HTML to Pug.",
   "type": "module",
   "bin": {
@@ -42,9 +42,7 @@
     "@puggers/darwin-arm64": "workspace:*",
     "@puggers/darwin-x64": "workspace:*",
     "@puggers/linux-arm64-glibc": "workspace:*",
-    "@puggers/linux-arm64-musl": "workspace:*",
     "@puggers/linux-x64-glibc": "workspace:*",
-    "@puggers/linux-x64-musl": "workspace:*",
     "@puggers/win32-arm64": "workspace:*",
     "@puggers/win32-x64": "workspace:*"
   },

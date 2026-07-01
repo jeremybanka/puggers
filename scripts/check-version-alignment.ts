@@ -16,9 +16,7 @@ const packageJsonPaths: string[] = [
   "packages/native/darwin-arm64/package.json",
   "packages/native/darwin-x64/package.json",
   "packages/native/linux-arm64-glibc/package.json",
-  "packages/native/linux-arm64-musl/package.json",
   "packages/native/linux-x64-glibc/package.json",
-  "packages/native/linux-x64-musl/package.json",
   "packages/native/win32-arm64/package.json",
   "packages/native/win32-x64/package.json"
 ];

@@ -1,7 +1,0 @@
-{
-  "name": "@puggers/linux-arm64-musl",
-  "version": "0.1.8",
-  "private": true,
-  "description": "Workspace placeholder for the generated linux-arm64-musl native puggers package.",
-  "license": "MIT"
-}

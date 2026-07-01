@@ -30,11 +30,7 @@ importers:
 
   packages/native/linux-arm64-glibc: {}
 
-  packages/native/linux-arm64-musl: {}
-
   packages/native/linux-x64-glibc: {}
-
-  packages/native/linux-x64-musl: {}
 
   packages/native/win32-arm64: {}
 
@@ -61,15 +57,9 @@ importers:
       '@puggers/linux-arm64-glibc':
         specifier: workspace:*
         version: link:../native/linux-arm64-glibc
-      '@puggers/linux-arm64-musl':
-        specifier: workspace:*
-        version: link:../native/linux-arm64-musl
       '@puggers/linux-x64-glibc':
         specifier: workspace:*
         version: link:../native/linux-x64-glibc
-      '@puggers/linux-x64-musl':
-        specifier: workspace:*
-        version: link:../native/linux-x64-musl
       '@puggers/win32-arm64':
         specifier: workspace:*
         version: link:../native/win32-arm64
