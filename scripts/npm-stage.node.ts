@@ -28,16 +28,17 @@ interface NativeArtifacts {
   outputExecutableName: string;
 }
 
+const binaryDestinationSchema = z.enum(["workspace", "staging"]);
 const cliTargetSchema = targetSchema.optional();
 
 const cliRoutes = required({
-  emplace: null,
-  dist: null,
-  "print-dist-path": null
+  "copy-binaries": null,
+  "write-manifest": null,
+  "print-staging-path": null
 });
 
 const targetOptions = options(
-  "assemble native npm artifacts",
+  "stage native npm artifacts",
   z.object({
     target: cliTargetSchema
   }),
@@ -51,50 +52,78 @@ const targetOptions = options(
   }
 );
 
+const copyBinariesOptions = options(
+  "copy native binaries into a package directory",
+  z.object({
+    destination: binaryDestinationSchema.optional(),
+    target: cliTargetSchema
+  }),
+  {
+    destination: {
+      description: "binary destination package directory",
+      example: "--destination=staging",
+      flag: "d",
+      required: false
+    },
+    target: {
+      description: "native npm target triple",
+      example: "--target=linux-x64-glibc",
+      flag: "t",
+      required: false
+    }
+  }
+);
+
 const routeOptions = {
-  emplace: targetOptions,
-  dist: targetOptions,
-  "print-dist-path": targetOptions
+  "copy-binaries": copyBinariesOptions,
+  "write-manifest": targetOptions,
+  "print-staging-path": targetOptions
 };
 
-const assembleCli = cli({
-  cliName: "assemble",
-  cliDescription: "Assemble native puggers npm artifacts.",
+const npmStageCli = cli({
+  cliName: "npm-stage",
+  cliDescription: "Stage native puggers npm artifacts.",
   discoverConfigPath: () => undefined,
   routes: cliRoutes,
   routeOptions
 });
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const { inputs } = assembleCli(process.argv);
+const { inputs } = npmStageCli(process.argv);
 const targetOverride = inputs.opts.target ?? readTargetFromEnv();
 
 switch (inputs.case) {
-  case "emplace":
-    emplaceNativePackage(targetOverride ?? detectTarget());
+  case "copy-binaries":
+    copyBinaries(targetOverride ?? detectTarget(), inputs.opts.destination ?? "workspace");
     break;
-  case "dist":
-    stageNativePackage(targetOverride ?? detectTarget());
+  case "write-manifest":
+    writeManifest(targetOverride ?? detectTarget());
     break;
-  case "print-dist-path":
-    console.log(nativePackageDirectory(targetOverride ?? detectTarget()));
+  case "print-staging-path":
+    console.log(nativeStagingPackageDirectory(targetOverride ?? detectTarget()));
     break;
 }
 
-function emplaceNativePackage(packageTarget: SupportedTarget): void {
-  const outputDirectory = nativeWorkspacePackageDirectory(packageTarget);
+function copyBinaries(packageTarget: SupportedTarget, destination: "workspace" | "staging"): void {
+  const outputDirectory =
+    destination === "workspace"
+      ? nativeWorkspacePackageDirectory(packageTarget)
+      : nativeStagingPackageDirectory(packageTarget);
+
+  if (destination === "staging") {
+    rmSync(outputDirectory, { recursive: true, force: true });
+  }
+
   copyNativeArtifacts(outputDirectory, resolveNativeArtifacts(packageTarget));
-  takua.info("assemble", "emplace", `${packageTarget} -> ${outputDirectory}`);
+  takua.info("npm-stage", "copy-binaries", `${packageTarget} -> ${outputDirectory}`);
 }
 
-function stageNativePackage(packageTarget: SupportedTarget): string {
+function writeManifest(packageTarget: SupportedTarget): string {
   const version = readWorkspaceVersion();
   const metadata = nativeTargetMetadataByTarget[packageTarget];
-  const artifacts = resolveNativeArtifacts(packageTarget);
-  const packageDirectory = nativePackageDirectory(packageTarget);
+  const packageDirectory = nativeStagingPackageDirectory(packageTarget);
 
-  rmSync(packageDirectory, { recursive: true, force: true });
-  copyNativeArtifacts(packageDirectory, artifacts);
+  mkdirSync(packageDirectory, { recursive: true });
 
   writeFileSync(
     join(packageDirectory, "package.json"),
@@ -112,7 +141,7 @@ function stageNativePackage(packageTarget: SupportedTarget): string {
         os: [metadata.os],
         cpu: [metadata.cpu],
         ...("libc" in metadata ? { libc: [metadata.libc] } : {}),
-        files: [artifacts.outputExecutableName, "puggers.node", "README.md"],
+        files: [metadata.executableName, "puggers.node", "README.md"],
         publishConfig: {
           access: "public"
         }
@@ -127,12 +156,12 @@ function stageNativePackage(packageTarget: SupportedTarget): string {
     `# @puggers/${packageTarget}\n\nNative ${packageTarget} distribution for puggers.\n`
   );
 
-  takua.info("assemble", "dist", `${packageTarget} -> ${packageDirectory}`);
+  takua.info("npm-stage", "write-manifest", `${packageTarget} -> ${packageDirectory}`);
 
   return packageDirectory;
 }
 
-function nativePackageDirectory(packageTarget: SupportedTarget): string {
+function nativeStagingPackageDirectory(packageTarget: SupportedTarget): string {
   return join(root, "target", "npm", "@puggers", packageTarget);
 }
 

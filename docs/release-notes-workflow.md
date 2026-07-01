@@ -21,8 +21,8 @@ just version
 That command runs `knope version`, which reads the pending change files,
 updates the shared workspace version, rewrites dependent version references, and
 updates `CHANGELOG.md`. The same version is applied to the Rust workspace, the
-top-level npm package, and the private native-package placeholders used for
-pnpm's local `workspace:*` resolution.
+top-level npm package, and the native platform packages used for pnpm's local
+`workspace:*` resolution.
 
 The GitHub Actions `Create Release PR` workflow runs automatically on pushes to
 `main`. It follows Knope's pull-request-driven recipe directly: install Knope
@@ -53,10 +53,8 @@ just publish-npm-native --target=<target>
 just publish-npm
 ```
 
-When publishing from a supported CI environment with npm provenance, use
-`just publish-npm-native-provenance --target=<target>` and
-`just publish-npm-provenance`.
-
 After the initial manual publish, the merged `release` pull request triggers
 the `Release` workflow, which publishes with crates.io trusted publishing
-instead of a long-lived crates.io token and then runs `knope release`.
+instead of a long-lived crates.io token and then runs `knope release`. npm
+provenance should come from trusted publishing through CI OIDC once those
+publisher relationships are configured.

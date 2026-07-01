@@ -79,11 +79,11 @@ build-npm-js:
     pnpm --filter puggers build
 build-npm-native *args:
     just build-npm-native-binaries {{ args }}
-    just build-npm-native-emplace {{ args }}
+    just build-npm-native-copy-binaries {{ args }}
 build-npm-native-binaries *args:
     node scripts/build-native-binaries.node.ts {{ args }}
-build-npm-native-emplace *args:
-    node scripts/assemble.node.ts emplace {{ args }}
+build-npm-native-copy-binaries *args:
+    pnpm npm-stage copy-binaries {{ args }}
 
 # RELEASE SYSTEM
 n:
@@ -105,12 +105,8 @@ publish-crates-cli:
 publish-crates-dprint:
     cargo publish -p dprint-plugin-pug
 publish-npm-native *args:
-    node scripts/assemble.node.ts dist {{ args }}
-    pnpm --dir "$(node scripts/assemble.node.ts print-dist-path {{ args }})" publish --access public
-publish-npm-native-provenance *args:
-    node scripts/assemble.node.ts dist {{ args }}
-    pnpm --dir "$(node scripts/assemble.node.ts print-dist-path {{ args }})" publish --access public --provenance
+    pnpm npm-stage copy-binaries --destination=staging {{ args }}
+    pnpm npm-stage write-manifest {{ args }}
+    pnpm --dir "$(pnpm --silent npm-stage print-staging-path {{ args }})" publish --access public
 publish-npm:
     pnpm --filter puggers publish --access public
-publish-npm-provenance:
-    pnpm --filter puggers publish --access public --provenance

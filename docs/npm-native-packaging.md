@@ -45,8 +45,7 @@ pnpm install
 The npm package targets Node 26 or newer.
 
 Build the TypeScript package, then build the current host's Rust native target
-and emplace the artifacts into the matching `packages/native/*` workspace
-package:
+and copy the artifacts into the matching `packages/native/*` workspace package:
 
 ```sh
 just build-npm
@@ -60,11 +59,12 @@ just test-npm
 
 ## Native Package Artifacts
 
-The `scripts/assemble.node.ts` helper stages native files and package metadata.
+The `scripts/npm-stage.node.ts` helper stages native files and package metadata.
 `pnpm publish` stays in the Justfile so release actions remain visible at the
-command layer. Its routes are `emplace`, `dist`, and `print-dist-path`.
+command layer. Its routes are `copy-binaries`, `write-manifest`, and
+`print-staging-path`.
 
-Build and emplace the current host target:
+Build and copy binaries for the current host target:
 
 ```sh
 just build-npm-native
@@ -117,13 +117,5 @@ Then publish the top-level package:
 just publish-npm
 ```
 
-For CI-backed publishes with npm provenance, use the provenance variants:
-
-```sh
-just publish-npm-native-provenance --target=linux-x64-glibc
-just publish-npm-provenance
-```
-
-Use npm trusted publishing/provenance for both package layers once the npm
-package names have been claimed and the trusted publisher relationships are
-configured.
+Use npm trusted publishing through CI OIDC for provenance once the npm package
+names have been claimed and the trusted publisher relationships are configured.

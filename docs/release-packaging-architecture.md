@@ -38,8 +38,8 @@ Knope is responsible for:
 - collecting those changes into release notes
 - updating the shared workspace version
 - updating dependent version references
-- updating the npm package manifests used by `puggers` and the generated native
-  package placeholders
+- updating the npm package manifests used by `puggers` and the native platform
+  packages
 - maintaining `CHANGELOG.md`
 
 Knope is not the publisher. Publishing stays explicit in `Justfile`.
@@ -117,7 +117,7 @@ just publish-npm
 
 The top-level npm package uses `workspace:*` optional dependencies during local
 development. pnpm rewrites those dependencies to the matching package versions
-when packing or publishing, so the private `packages/native/*` placeholder
+when packing or publishing, so the `packages/native/*` platform package
 versions must stay aligned with the top-level package version.
 
 In CI, the `Release` workflow runs when the `release` pull request merges. It
