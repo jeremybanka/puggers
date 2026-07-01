@@ -53,8 +53,9 @@ just publish-npm-native --target=<target>
 just publish-npm
 ```
 
-After the initial manual publish, the merged `release` pull request triggers
-the `Release` workflow, which publishes with crates.io trusted publishing
-instead of a long-lived crates.io token and then runs `knope release`. npm
-provenance should come from trusted publishing through CI OIDC once those
-publisher relationships are configured.
+The merged `release` pull request triggers the `Release` workflow. It publishes
+the native npm packages first, publishes the top-level `puggers` npm package
+after the native matrix succeeds, publishes the Rust crates with crates.io
+trusted publishing, and then runs `knope release`. npm provenance comes from
+trusted publishing through GitHub Actions OIDC once each npm package has a
+trusted publisher entry for `.github/workflows/release.yml`.
