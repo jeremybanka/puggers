@@ -4,6 +4,33 @@
 
 ## Example
 
+Install from npm and let dprint resolve the plugin through `node_modules`:
+
+```sh
+pnpm add -D dprint-plugin-pug
+```
+
+```json
+{
+  "plugins": ["npm:dprint-plugin-pug"],
+  "pug": {
+    "quoteStyle": "single",
+    "lineWidth": 80,
+    "indentWidth": 2,
+    "useTabs": false
+  }
+}
+```
+
+Use a pinned npm specifier when the config should resolve a specific registry
+version:
+
+```json
+{
+  "plugins": ["npm:dprint-plugin-pug@0.1.9"]
+}
+```
+
 Build the plugin:
 
 ```sh

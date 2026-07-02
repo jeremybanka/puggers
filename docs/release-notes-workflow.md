@@ -21,8 +21,8 @@ just version
 That command runs `knope version`, which reads the pending change files,
 updates the shared workspace version, rewrites dependent version references, and
 updates `CHANGELOG.md`. The same version is applied to the Rust workspace, the
-top-level npm package, and the native platform packages used for pnpm's local
-`workspace:*` resolution.
+top-level npm package, the dprint plugin npm package, and the native platform
+packages used for pnpm's local `workspace:*` resolution.
 
 The GitHub Actions `Create Release PR` workflow runs automatically on pushes to
 `main`. It follows Knope's pull-request-driven recipe directly: install Knope
@@ -46,11 +46,13 @@ Knope is the source of truth for release intent and changelog generation.
 Cargo and npm remain the actual publishers.
 
 npm publishing is also ordered. Publish every generated native platform package
-for the release version before publishing the top-level `puggers` package:
+for the release version before publishing the top-level `puggers` package, and
+publish the dprint plugin package from its staged Wasm artifact:
 
 ```sh
 just publish-npm-native --target=<target>
 just publish-npm
+just publish-npm-dprint-plugin
 ```
 
 The merged `release` pull request triggers the `Release` workflow. It calls the

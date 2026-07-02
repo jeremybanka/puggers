@@ -70,11 +70,12 @@ build:
     just build-npm
 build-cargo:
     cargo build --workspace
-build-wasm:
+build-dprint-plugin:
     cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release
 build-npm *args:
     just build-npm-js
     just build-npm-native {{ args }}
+    just build-npm-dprint-plugin
 build-npm-js:
     pnpm --filter puggers build
 build-npm-native *args:
@@ -84,6 +85,12 @@ build-npm-native-binaries *args:
     node scripts/build-native-binaries.node.ts {{ args }}
 build-npm-native-copy-binaries *args:
     pnpm npm-stage copy-binaries {{ args }}
+build-npm-dprint-plugin:
+    just build-dprint-plugin
+    pnpm npm-stage copy-dprint-plugin --destination=staging
+    staging_path="$(pnpm --silent npm-stage print-dprint-plugin-staging-path)"; \
+    pnpm --dir "$staging_path" pack --pack-destination "{{ justfile_directory() }}/target/npm"
+
 
 # RELEASE SYSTEM
 n:
@@ -107,6 +114,11 @@ publish-crates-dprint:
 publish-npm-native *args:
     pnpm npm-stage copy-binaries --destination=staging {{ args }}
     pnpm npm-stage write-manifest {{ args }}
-    pnpm --dir "$(pnpm --silent npm-stage print-staging-path {{ args }})" publish --access public
+    staging_path="$(pnpm --silent npm-stage print-staging-path {{ args }})"; \
+    pnpm --dir $staging_path publish --access public
+publish-npm-dprint-plugin:
+    just build-npm-dprint-plugin
+    staging_path="$(pnpm --silent npm-stage print-dprint-plugin-staging-path)"; \
+    pnpm --dir $staging_path publish --access public
 publish-npm:
     pnpm --filter puggers publish --access public

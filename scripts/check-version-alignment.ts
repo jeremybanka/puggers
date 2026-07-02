@@ -12,6 +12,7 @@ interface PackageJson {
 
 const workspaceVersion = readWorkspaceVersion();
 const packageJsonPaths: string[] = [
+  "packages/dprint-plugin-pug/package.json",
   "packages/puggers/package.json",
   "packages/native/darwin-arm64/package.json",
   "packages/native/darwin-x64/package.json",
