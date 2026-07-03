@@ -1,6 +1,6 @@
 {
   "name": "dprint-plugin-pug",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Wasm module for the puggers dprint Pug formatter plugin.",
   "main": "./index.js",
   "types": "./index.d.ts",

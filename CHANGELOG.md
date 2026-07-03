@@ -2,6 +2,22 @@
 
 All notable user-facing changes to `puggers` will be documented here.
 
+## 0.1.10 (2026-07-03)
+
+### Features
+
+#### Publish the dprint plugin as an npm package
+
+Add a `dprint-plugin-pug` npm package that stages the release Wasm plugin as
+`plugin.wasm`, exposes a dprint-compatible `getPath()` entrypoint, and wires the
+package into the npm release workflow with trusted publishing.
+
+#### Add a native npm package surface
+
+Add an ESM-only `puggers` npm package with TypeScript declarations, a native
+Node-API `convertHtmlToPug` runtime function, and a CLI bin that forwards to the
+Rust `puggers` executable instead of reimplementing CLI parsing in JavaScript.
+
 ## 0.1.9 (2026-06-30)
 
 ### Features

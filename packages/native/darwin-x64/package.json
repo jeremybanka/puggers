@@ -1,6 +1,6 @@
 {
   "name": "@puggers/darwin-x64",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "private": true,
   "description": "Workspace placeholder for the generated darwin-x64 native puggers package.",
   "license": "MIT"
