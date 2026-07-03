@@ -34,7 +34,9 @@ const cliTargetSchema = targetSchema.optional();
 const cliRoutes = required({
   "copy-binaries": null,
   "write-manifest": null,
-  "print-staging-path": null
+  "print-staging-path": null,
+  "copy-dprint-plugin": null,
+  "print-dprint-plugin-staging-path": null
 });
 
 const targetOptions = options(
@@ -74,15 +76,32 @@ const copyBinariesOptions = options(
   }
 );
 
+const copyDprintPluginOptions = options(
+  "copy the dprint plugin wasm into a package directory",
+  z.object({
+    destination: binaryDestinationSchema.optional()
+  }),
+  {
+    destination: {
+      description: "dprint plugin destination package directory",
+      example: "--destination=staging",
+      flag: "d",
+      required: false
+    }
+  }
+);
+
 const routeOptions = {
   "copy-binaries": copyBinariesOptions,
   "write-manifest": targetOptions,
-  "print-staging-path": targetOptions
+  "print-staging-path": targetOptions,
+  "copy-dprint-plugin": copyDprintPluginOptions,
+  "print-dprint-plugin-staging-path": null
 };
 
 const npmStageCli = cli({
   cliName: "npm-stage",
-  cliDescription: "Stage native puggers npm artifacts.",
+  cliDescription: "Stage puggers npm artifacts.",
   discoverConfigPath: () => undefined,
   routes: cliRoutes,
   routeOptions
@@ -90,18 +109,27 @@ const npmStageCli = cli({
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const { inputs } = npmStageCli(process.argv);
-const targetOverride = inputs.opts.target ?? readTargetFromEnv();
 
 switch (inputs.case) {
   case "copy-binaries":
-    copyBinaries(targetOverride ?? detectTarget(), inputs.opts.destination ?? "workspace");
+    copyBinaries(resolvePackageTarget(inputs.opts.target), inputs.opts.destination ?? "workspace");
     break;
   case "write-manifest":
-    writeManifest(targetOverride ?? detectTarget());
+    writeManifest(resolvePackageTarget(inputs.opts.target));
     break;
   case "print-staging-path":
-    console.log(nativeStagingPackageDirectory(targetOverride ?? detectTarget()));
+    console.log(nativeStagingPackageDirectory(resolvePackageTarget(inputs.opts.target)));
     break;
+  case "copy-dprint-plugin":
+    copyDprintPlugin(inputs.opts.destination ?? "workspace");
+    break;
+  case "print-dprint-plugin-staging-path":
+    console.log(dprintPluginStagingPackageDirectory());
+    break;
+}
+
+function resolvePackageTarget(targetOverride: SupportedTarget | undefined): SupportedTarget {
+  return targetOverride ?? readTargetFromEnv() ?? detectTarget();
 }
 
 function copyBinaries(packageTarget: SupportedTarget, destination: "workspace" | "staging"): void {
@@ -116,6 +144,23 @@ function copyBinaries(packageTarget: SupportedTarget, destination: "workspace" |
 
   copyNativeArtifacts(outputDirectory, resolveNativeArtifacts(packageTarget));
   takua.info("npm-stage", "copy-binaries", `${packageTarget} -> ${outputDirectory}`);
+}
+
+function copyDprintPlugin(destination: "workspace" | "staging"): void {
+  const outputDirectory =
+    destination === "workspace"
+      ? dprintPluginWorkspacePackageDirectory()
+      : dprintPluginStagingPackageDirectory();
+
+  if (destination === "staging") {
+    rmSync(outputDirectory, { recursive: true, force: true });
+    copyDprintPluginPackageFiles(outputDirectory);
+  } else {
+    mkdirSync(outputDirectory, { recursive: true });
+  }
+
+  copyFileSync(resolveDprintPluginWasm(), join(outputDirectory, "plugin.wasm"));
+  takua.info("npm-stage", "copy-dprint-plugin", outputDirectory);
 }
 
 function writeManifest(packageTarget: SupportedTarget): string {
@@ -169,6 +214,25 @@ function nativeWorkspacePackageDirectory(packageTarget: SupportedTarget): string
   return join(root, "packages", "native", packageTarget);
 }
 
+function dprintPluginStagingPackageDirectory(): string {
+  return join(root, "target", "npm", "dprint-plugin-pug");
+}
+
+function dprintPluginWorkspacePackageDirectory(): string {
+  return join(root, "packages", "dprint-plugin-pug");
+}
+
+function copyDprintPluginPackageFiles(outputDirectory: string): void {
+  mkdirSync(outputDirectory, { recursive: true });
+
+  for (const filename of ["package.json", "README.md", "index.js", "index.d.ts"]) {
+    copyFileSync(
+      join(dprintPluginWorkspacePackageDirectory(), filename),
+      join(outputDirectory, filename)
+    );
+  }
+}
+
 function copyNativeArtifacts(outputDirectory: string, artifacts: NativeArtifacts): void {
   mkdirSync(outputDirectory, { recursive: true });
   copyFileSync(artifacts.executablePath, join(outputDirectory, artifacts.outputExecutableName));
@@ -198,6 +262,15 @@ function resolveNativeArtifacts(
   };
 }
 
+function resolveDprintPluginWasm(releaseDirectory = dprintPluginReleaseDirectory()): string {
+  const wasmPath =
+    process.env.PUGGERS_DPRINT_PLUGIN_WASM ??
+    join(releaseDirectory, "dprint_plugin_pug.wasm");
+
+  assertExists(wasmPath, "dprint plugin Wasm module", dprintPluginBuildHint());
+  return wasmPath;
+}
+
 function targetReleaseDirectory(packageTarget: SupportedTarget): string {
   const metadata = nativeTargetMetadataByTarget[packageTarget];
   if (process.env.PUGGERS_RELEASE_DIR != null) {
@@ -211,6 +284,13 @@ function targetReleaseDirectory(packageTarget: SupportedTarget): string {
   return join(root, "target", metadata.rustTarget, "release");
 }
 
+function dprintPluginReleaseDirectory(): string {
+  return (
+    process.env.PUGGERS_DPRINT_PLUGIN_RELEASE_DIR ??
+    join(root, "target", "wasm32-unknown-unknown", "release")
+  );
+}
+
 function targetBuildHint(packageTarget: SupportedTarget): string {
   const { rustTarget } = nativeTargetMetadataByTarget[packageTarget];
   const targetArg = `--target=${packageTarget}`;
@@ -219,6 +299,14 @@ function targetBuildHint(packageTarget: SupportedTarget): string {
     `cargo build -p puggers --release --locked --target ${rustTarget}`,
     "and",
     `cargo build -p puggers-node --release --locked --target ${rustTarget}`,
+    "first."
+  ].join(" ");
+}
+
+function dprintPluginBuildHint(): string {
+  return [
+    "Run just build-npm-dprint-plugin, or",
+    "cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release",
     "first."
   ].join(" ");
 }

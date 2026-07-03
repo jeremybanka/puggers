@@ -18,6 +18,90 @@ defaults:
     shell: bash
 
 jobs:
+  DprintPluginPackage:
+    name: dprint Plugin Package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: ./.github/actions/setup
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run check:scripts
+      - run: rustup target add wasm32-unknown-unknown
+      - run: just build-npm-dprint-plugin
+      - name: Verify Local dprint Plugin Resolver
+        run: |
+          verify_dir="${GITHUB_WORKSPACE}/target/npm/dprint-plugin-verify/local"
+          mkdir -p "${verify_dir}"
+          cat > "${verify_dir}/dprint.json" <<'JSON'
+          {
+            "plugins": ["npm:dprint-plugin-pug"],
+            "includes": ["tasks/**/*.pug"]
+          }
+          JSON
+
+          dprint check --config "${verify_dir}/dprint.json" tasks/issue-template.pug
+      - run: pnpm npm-stage copy-dprint-plugin --destination=staging
+      - name: Read dprint Plugin Package Metadata
+        id: dprint_plugin_package
+        run: |
+          staging_path="$(pnpm --silent npm-stage print-dprint-plugin-staging-path)"
+          package_name="$(node -e "const fs = require('node:fs'); const path = require('node:path'); const packageJson = JSON.parse(fs.readFileSync(path.join(process.argv[1], 'package.json'), 'utf8')); console.log(packageJson.name);" "${staging_path}")"
+          package_version="$(node -e "const fs = require('node:fs'); const path = require('node:path'); const packageJson = JSON.parse(fs.readFileSync(path.join(process.argv[1], 'package.json'), 'utf8')); console.log(packageJson.version);" "${staging_path}")"
+
+          echo "staging_path=${staging_path}" >> "${GITHUB_OUTPUT}"
+          echo "package_name=${package_name}" >> "${GITHUB_OUTPUT}"
+          echo "package_version=${package_version}" >> "${GITHUB_OUTPUT}"
+      - name: Pack dprint Plugin Package
+        if: ${{ inputs.publish == false }}
+        run: pnpm --dir "${{ steps.dprint_plugin_package.outputs.staging_path }}" pack --pack-destination "${GITHUB_WORKSPACE}/target/npm"
+      - name: Publish dprint Plugin Package
+        if: ${{ inputs.publish == true }}
+        run: |
+          staging_path="${{ steps.dprint_plugin_package.outputs.staging_path }}"
+          package_name="${{ steps.dprint_plugin_package.outputs.package_name }}"
+          package_version="${{ steps.dprint_plugin_package.outputs.package_version }}"
+
+          if pnpm view "${package_name}@${package_version}" version >/dev/null 2>&1; then
+            echo "${package_name}@${package_version} is already published; skipping."
+            exit 0
+          fi
+
+          pnpm --dir "${staging_path}" publish --access public --provenance --no-git-checks
+      - name: Wait For dprint Plugin Package
+        if: ${{ inputs.publish == true }}
+        run: |
+          package_name="${{ steps.dprint_plugin_package.outputs.package_name }}"
+          package_version="${{ steps.dprint_plugin_package.outputs.package_version }}"
+
+          for attempt in {1..20}; do
+            if pnpm view "${package_name}@${package_version}" version >/dev/null 2>&1; then
+              echo "${package_name}@${package_version} is visible on npm."
+              exit 0
+            fi
+
+            echo "Waiting for ${package_name}@${package_version} to become visible on npm (attempt ${attempt}/20)..."
+            sleep 15
+          done
+
+          echo "Timed out waiting for ${package_name}@${package_version} to become visible on npm." >&2
+          exit 1
+      - name: Verify Published dprint Plugin Resolver
+        if: ${{ inputs.publish == true }}
+        run: |
+          package_name="${{ steps.dprint_plugin_package.outputs.package_name }}"
+          package_version="${{ steps.dprint_plugin_package.outputs.package_version }}"
+          verify_dir="${GITHUB_WORKSPACE}/target/npm/dprint-plugin-verify/pinned"
+          mkdir -p "${verify_dir}"
+          cat > "${verify_dir}/dprint.json" <<JSON
+          {
+            "plugins": ["npm:${package_name}@${package_version}"],
+            "includes": ["tasks/**/*.pug"]
+          }
+          JSON
+
+          dprint check --config "${verify_dir}/dprint.json" tasks/issue-template.pug
+
   NativePackage:
     name: Native Package (${{ matrix.npm_target }})
     runs-on: ${{ matrix.runner }}

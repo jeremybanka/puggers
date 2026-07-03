@@ -5,6 +5,7 @@ Puggers is a Rust workspace with a small family of related Pug tools:
 - `puggers-core`: shared conversion and utility library
 - `puggers`: CLI built on top of `puggers-core`
 - `dprint-plugin-pug`: dprint formatter plugin
+- `dprint-plugin-pug` on npm: Wasm dprint plugin package
 - `puggers` on npm: ESM TypeScript package with native Node-API bindings
 - `@puggers/<target>` on npm: generated native platform packages
 
@@ -40,12 +41,13 @@ Knope is responsible for:
 - updating dependent version references
 - updating the npm package manifests used by `puggers` and the native platform
   packages
+- updating the npm package manifest used by the dprint Wasm plugin package
 - maintaining `CHANGELOG.md`
 
 Knope is not the publisher. GitHub Actions publishes the prepared release with
-the version Knope wrote into the repo. The release workflow publishes native npm
-packages first, then the top-level npm package, then the Rust crates, and runs
-`knope release` after every registry publish succeeds.
+the version Knope wrote into the repo. The release workflow publishes the npm
+package group, then the Rust crates, and runs `knope release` after every
+registry publish succeeds.
 
 ## Release Workflow
 
@@ -110,11 +112,13 @@ Publish order matters:
 That order keeps downstream crates from referencing a version that has not been
 published yet.
 
-For npm, publish all native platform packages first, then the top-level package:
+For npm, publish all native platform packages first, then the top-level package.
+Publish the dprint plugin npm package from its staged Wasm artifact:
 
 ```sh
 just publish-npm-native --target=<target>
 just publish-npm
+just publish-npm-dprint-plugin
 ```
 
 The top-level npm package uses `workspace:*` optional dependencies during local
@@ -124,11 +128,17 @@ versions must stay aligned with the top-level package version. Only the native
 package manifests are tracked there; generated local binaries are ignored and
 release artifacts are staged separately under `target/npm`.
 
+The dprint npm package lives in `packages/dprint-plugin-pug` and stages the
+release Wasm output as `plugin.wasm`. Its packaging policy and dprint
+configuration examples are documented in
+[`docs/npm-dprint-plugin-packaging.md`](npm-dprint-plugin-packaging.md).
+
 In CI, the `Release` workflow runs when the `release` pull request merges. It
 calls the shared npm package-group workflow with publishing enabled. That
 workflow publishes each native npm package on that target's GitHub-hosted
-runner using npm trusted publishing through GitHub Actions OIDC, then publishes
-the top-level `puggers` npm package after the native matrix succeeds. The
+runner using npm trusted publishing through GitHub Actions OIDC, publishes the
+top-level `puggers` npm package after the native matrix succeeds, and publishes
+the `dprint-plugin-pug` Wasm package from the staged plugin artifact. The
 workflow then uses crates.io trusted publishing for the ordered crate publish
 steps and runs `knope release` to create the GitHub release. The npm package
 names must have trusted publisher entries configured for the calling

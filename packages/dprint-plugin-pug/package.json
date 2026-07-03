@@ -1,0 +1,28 @@
+{
+  "name": "dprint-plugin-pug",
+  "version": "0.1.9",
+  "description": "Wasm module for the puggers dprint Pug formatter plugin.",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "plugin.wasm",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeremybanka/puggers.git",
+    "directory": "packages/dprint-plugin-pug"
+  },
+  "keywords": [
+    "pug",
+    "dprint",
+    "formatter",
+    "wasm"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -10,6 +10,7 @@ name = "puggers"
 changelog = "CHANGELOG.md"
 versioned_files = [
   "Cargo.toml",
+  "packages/dprint-plugin-pug/package.json",
   "packages/puggers/package.json",
   "packages/native/darwin-arm64/package.json",
   "packages/native/darwin-x64/package.json",

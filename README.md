@@ -40,9 +40,13 @@ cargo run -p puggers -- --help
 
 ## npm
 
-The npm package lives in `packages/puggers`. It is an ESM-only TypeScript
-package built with `tsdown`, backed by native platform packages that carry the
-Rust CLI executable and Node-API addon.
+The native converter npm package lives in `packages/puggers`. It is an ESM-only
+TypeScript package built with `tsdown`, backed by native platform packages that
+carry the Rust CLI executable and Node-API addon.
+
+The dprint plugin npm package lives in `packages/dprint-plugin-pug`. It stages
+the Rust Wasm output as `plugin.wasm` so dprint users can configure
+`npm:dprint-plugin-pug`.
 
 ```sh
 just build-npm
@@ -50,7 +54,9 @@ just test-npm
 ```
 
 The native npm packaging policy and publish order are documented in
-[`docs/npm-native-packaging.md`](docs/npm-native-packaging.md).
+[`docs/npm-native-packaging.md`](docs/npm-native-packaging.md). The dprint
+plugin package is documented in
+[`docs/npm-dprint-plugin-packaging.md`](docs/npm-dprint-plugin-packaging.md).
 
 Example:
 

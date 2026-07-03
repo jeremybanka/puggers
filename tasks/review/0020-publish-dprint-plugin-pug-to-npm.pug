@@ -1,4 +1,4 @@
-issue(id="0020" status="open")
+issue(id="0020" status="review")
   title Publish dprint-plugin-pug as a Wasm npm package
   user-story
     as-a dprint user in an npm-managed JavaScript or web-tooling project
@@ -22,6 +22,4 @@ issue(id="0020" status="open")
     criterion Document installation and dprint configuration examples for npm users, including when to use pinned npm specifiers versus local `node_modules` resolution.
     criterion Add a Knope change file using `default` frontmatter that summarizes the new npm distribution path for the dprint plugin.
   review-items
-    item(status="open") Confirm the final npm package name and claim it before enabling trusted publishing.
-    item(status="open") Decide whether this package should live under `packages/dprint-plugin-pug` or be staged entirely from generated release artifacts.
-    item(status="open") Confirm whether the package should be included in the existing npm package-group workflow or published in a smaller dedicated release job.
+    item(status="open") Claim `dprint-plugin-pug` on npm and configure the trusted publisher for `.github/workflows/release.yml` before the first release publish.
