@@ -70,6 +70,8 @@ build:
     just build-npm
 build-cargo:
     cargo build --workspace
+build-wasm:
+    just build-dprint-plugin
 build-dprint-plugin:
     cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release
 build-npm *args:
@@ -87,6 +89,7 @@ build-npm-native-copy-binaries *args:
     pnpm npm-stage copy-binaries {{ args }}
 build-npm-dprint-plugin:
     just build-dprint-plugin
+    pnpm npm-stage copy-dprint-plugin
     pnpm npm-stage copy-dprint-plugin --destination=staging
     staging_path="$(pnpm --silent npm-stage print-dprint-plugin-staging-path)"; \
     pnpm --dir "$staging_path" pack --pack-destination "{{ justfile_directory() }}/target/npm"

@@ -33,15 +33,14 @@ jobs:
         run: |
           verify_dir="${GITHUB_WORKSPACE}/target/npm/dprint-plugin-verify/local"
           mkdir -p "${verify_dir}"
-          printf 'p Hello\n' > "${verify_dir}/sample.pug"
           cat > "${verify_dir}/dprint.json" <<'JSON'
           {
             "plugins": ["npm:dprint-plugin-pug"],
-            "includes": ["*.pug"]
+            "includes": ["tasks/**/*.pug"]
           }
           JSON
 
-          dprint check --config "${verify_dir}/dprint.json" "${verify_dir}/sample.pug"
+          dprint check --config "${verify_dir}/dprint.json" tasks/issue-template.pug
       - run: pnpm npm-stage copy-dprint-plugin --destination=staging
       - name: Read dprint Plugin Package Metadata
         id: dprint_plugin_package
@@ -94,15 +93,14 @@ jobs:
           package_version="${{ steps.dprint_plugin_package.outputs.package_version }}"
           verify_dir="${GITHUB_WORKSPACE}/target/npm/dprint-plugin-verify/pinned"
           mkdir -p "${verify_dir}"
-          printf 'p Hello\n' > "${verify_dir}/sample.pug"
           cat > "${verify_dir}/dprint.json" <<JSON
           {
             "plugins": ["npm:${package_name}@${package_version}"],
-            "includes": ["*.pug"]
+            "includes": ["tasks/**/*.pug"]
           }
           JSON
 
-          dprint check --config "${verify_dir}/dprint.json" "${verify_dir}/sample.pug"
+          dprint check --config "${verify_dir}/dprint.json" tasks/issue-template.pug
 
   NativePackage:
     name: Native Package (${{ matrix.npm_target }})
