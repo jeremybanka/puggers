@@ -14,7 +14,7 @@
     "comline": "0.5.0",
     "dprint-plugin-pug": "workspace:*",
     "takua": "0.2.2",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "zod": "4.4.3"
   }
 }
