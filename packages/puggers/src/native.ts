@@ -1,6 +1,14 @@
-import { existsSync, readFileSync } from "node:fs";
+import {
+  chmodSync,
+  copyFileSync,
+  existsSync,
+  linkSync,
+  readFileSync,
+  statSync
+} from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 interface NativeBinding {
   convertHtmlToPugNative(input: string, optionsJson?: string): string;
@@ -26,14 +34,35 @@ export function loadNativeBinding(): NativeBinding {
 }
 
 export function resolveNativeExecutable(): string {
-  const fileName = process.platform === "win32" ? "puggers.exe" : "puggers";
-  const executablePath = join(resolveNativeDirectory(), fileName);
-
-  if (!existsSync(executablePath)) {
-    throw new Error(`Native puggers executable was not found at ${executablePath}`);
+  if (hasNativeDirectoryOverride()) {
+    return resolveNativePackageExecutable();
   }
 
-  return executablePath;
+  const installedExecutablePath = topLevelNativeExecutablePath();
+  if (existsSync(installedExecutablePath)) {
+    return installedExecutablePath;
+  }
+
+  return installNativeExecutable();
+}
+
+export function installNativeExecutable(): string {
+  const sourceExecutablePath = resolveNativePackageExecutable();
+  const installedExecutablePath = topLevelNativeExecutablePath();
+
+  if (existsSync(installedExecutablePath)) {
+    chmodExecutableIfNeeded(installedExecutablePath);
+    return installedExecutablePath;
+  }
+
+  try {
+    linkSync(sourceExecutablePath, installedExecutablePath);
+  } catch {
+    copyFileSync(sourceExecutablePath, installedExecutablePath);
+  }
+
+  chmodExecutableIfNeeded(installedExecutablePath);
+  return installedExecutablePath;
 }
 
 function resolveNativeBindingPath(): string {
@@ -44,6 +73,16 @@ function resolveNativeBindingPath(): string {
   }
 
   return bindingPath;
+}
+
+function resolveNativePackageExecutable(): string {
+  const executablePath = join(resolveNativeDirectory(), nativeExecutableFileName());
+
+  if (!existsSync(executablePath)) {
+    throw new Error(`Native puggers executable was not found at ${executablePath}`);
+  }
+
+  return executablePath;
 }
 
 function resolveNativeDirectory(): string {
@@ -63,6 +102,31 @@ function resolveNativeDirectory(): string {
       { cause: error }
     );
   }
+}
+
+function topLevelNativeExecutablePath(): string {
+  return join(packageRoot(), nativeExecutableFileName());
+}
+
+function packageRoot(): string {
+  return fileURLToPath(new URL("..", import.meta.url));
+}
+
+function nativeExecutableFileName(): "puggers" | "puggers.exe" {
+  return process.platform === "win32" ? "puggers.exe" : "puggers";
+}
+
+function hasNativeDirectoryOverride(): boolean {
+  return process.env.PUGGERS_NATIVE_DIR != null && process.env.PUGGERS_NATIVE_DIR !== "";
+}
+
+function chmodExecutableIfNeeded(path: string): void {
+  if (process.platform === "win32") {
+    return;
+  }
+
+  const mode = statSync(path).mode;
+  chmodSync(path, mode | 0o111);
 }
 
 function resolveNativePackageName(): string {

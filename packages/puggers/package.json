@@ -35,6 +35,7 @@
   "preferUnplugged": true,
   "scripts": {
     "build": "tsdown",
+    "postinstall": "node ./dist/install.js",
     "test": "node --test test/*.test.ts",
     "pack:dry-run": "pnpm pack --dry-run"
   },

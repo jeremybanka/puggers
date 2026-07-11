@@ -3,6 +3,8 @@ node_modules/
 packages/native/*/puggers
 packages/native/*/puggers.exe
 packages/native/*/puggers.node
+packages/puggers/puggers
+packages/puggers/puggers.exe
 packages/dprint-plugin-pug/plugin.wasm
 packages/*/dist/
 target/npm/
