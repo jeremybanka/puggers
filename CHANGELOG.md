@@ -2,6 +2,14 @@
 
 All notable user-facing changes to `puggers` will be documented here.
 
+## 0.1.11 (2026-07-11)
+
+### Fixes
+
+#### Fix npm CLI executable setup
+
+Prepare a top-level native `puggers` executable during npm install so the CLI runs even when native package tarballs do not preserve executable mode bits.
+
 ## 0.1.10 (2026-07-03)
 
 ### Features

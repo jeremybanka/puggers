@@ -1,6 +1,6 @@
 {
   "name": "puggers",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Native npm CLI and Node API for converting HTML to Pug.",
   "type": "module",
   "bin": {
