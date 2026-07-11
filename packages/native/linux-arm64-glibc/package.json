@@ -1,6 +1,6 @@
 {
   "name": "@puggers/linux-arm64-glibc",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "private": true,
   "description": "Workspace placeholder for the generated linux-arm64-glibc native puggers package.",
   "license": "MIT"
