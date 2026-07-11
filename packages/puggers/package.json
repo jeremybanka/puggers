@@ -16,6 +16,7 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
+    "install.js",
     "README.md"
   ],
   "repository": {
@@ -35,6 +36,7 @@
   "preferUnplugged": true,
   "scripts": {
     "build": "tsdown",
+    "postinstall": "node ./install.js",
     "test": "node --test test/*.test.ts",
     "pack:dry-run": "pnpm pack --dry-run"
   },
