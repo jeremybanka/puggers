@@ -1,5 +1,5 @@
 [tools]
-dprint = "0.55.1"
+dprint = "0.55.2"
 just = "1.56.0"
 node = "26"
 pnpm = "11.13.0"
