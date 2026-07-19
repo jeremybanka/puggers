@@ -2,7 +2,7 @@
   "name": "puggers-workspace",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.14.0",
+  "packageManager": "pnpm@11.15.0",
   "scripts": {
     "check:scripts": "tsc -p scripts/tsconfig.json",
     "build:npm": "pnpm --filter puggers build",
