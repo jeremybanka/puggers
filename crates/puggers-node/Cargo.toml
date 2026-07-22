@@ -12,7 +12,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 napi = "=3.11.0"
-napi-derive = "=3.5.10"
+napi-derive = "=3.6.0"
 puggers-core = { version = "0.1.11", path = "../puggers-core" }
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
