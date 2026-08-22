@@ -10,7 +10,7 @@ repository.workspace = true
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-dprint-core = { version = "=0.69.0", features = ["wasm"] }
+dprint-core = { version = "=0.69.1", features = ["wasm"] }
 puggers-core = { path = "../puggers-core", version = "0.1.6" }
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
