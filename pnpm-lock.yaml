@@ -14,8 +14,8 @@ importers:
         specifier: 26.2.0
         version: 26.2.0
       comline:
-        specifier: 0.5.1
-        version: 0.5.1(zod@4.4.3)
+        specifier: 0.5.2
+        version: 0.5.2(zod@4.4.3)
       dprint-plugin-pug:
         specifier: workspace:*
         version: link:packages/dprint-plugin-pug
@@ -457,8 +457,8 @@ packages:
     resolution: {integrity: sha512-tixWYgm5ZoOD+3g6UTea91eow5z6AAHaho3g0V9CNSNb45gM8SmflpAc+GRd1InC4AqN/07Unrgp56Y94N9hJQ==}
     engines: {node: '>=20.19.0'}
 
-  comline@0.5.1:
-    resolution: {integrity: sha512-Ld9dLjIJt4UgQ2/PBcL346ARXwybfwmzrrGEMgQE/AzLFnyTLMVlrxkwwmRCte1NJIW6rKMVaYbt0E7IC/1hnw==}
+  comline@0.5.2:
+    resolution: {integrity: sha512-eMGYMIw2Q34LtO4vaNvQCPWcVTasnMUCDj7YnOADvyfc4ddKqhKX1TwQgYiiKp8qSjgXdMYE+EHJl9cznQ7azA==}
     peerDependencies:
       arktype: ^2.1.28
       zod: ^4.2.0
@@ -557,8 +557,8 @@ packages:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
     hasBin: true
 
-  treetrunks@0.1.8:
-    resolution: {integrity: sha512-fD1vRlo9LqlSxjnKlyZvJ6U4hrOIwNUrSEl+3npElgpm7UvwwVqh6ncl8663IqhIxMy34BQILddW5vgz/NaGbA==}
+  treetrunks@0.1.9:
+    resolution: {integrity: sha512-+K9abw3ZRJ3dKrSPNmUWMyGYkTjL++2WkehbxywrnsdgHHClPbBLY5L1ksKtKF/JfX4RzxaUj9tONAW5hgRABw==}
 
   tsdown@0.22.14:
     resolution: {integrity: sha512-ule7Y+fsAN2iZbLDoo7C4KYljFJNJJ+fLshyn+9gozeTspVersWHxwdGB+Dm2hzA38s6muFnUTl0jK3vJm9ifQ==}
@@ -851,10 +851,10 @@ snapshots:
 
   cac@7.0.0: {}
 
-  comline@0.5.1(zod@4.4.3):
+  comline@0.5.2(zod@4.4.3):
     dependencies:
       '@standard-schema/spec': 1.1.0
-      treetrunks: 0.1.8
+      treetrunks: 0.1.9
     optionalDependencies:
       zod: 4.4.3
 
@@ -930,7 +930,7 @@ snapshots:
 
   tree-kill@1.2.2: {}
 
-  treetrunks@0.1.8: {}
+  treetrunks@0.1.9: {}
 
   tsdown@0.22.14:
     dependencies:
