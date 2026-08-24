@@ -13,7 +13,7 @@
     "@types/node": "26.2.0",
     "comline": "0.5.1",
     "dprint-plugin-pug": "workspace:*",
-    "takua": "0.2.2",
+    "takua": "0.2.3",
     "typescript": "7.0.2",
     "zod": "4.4.3"
   }

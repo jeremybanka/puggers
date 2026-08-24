@@ -20,8 +20,8 @@ importers:
         specifier: workspace:*
         version: link:packages/dprint-plugin-pug
       takua:
-        specifier: 0.2.2
-        version: 0.2.2
+        specifier: 0.2.3
+        version: 0.2.3
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -542,8 +542,8 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
-  takua@0.2.2:
-    resolution: {integrity: sha512-yjNZ/dE7vzzecyyMyzpV9IF74cirv8H1ci6U+1fICICOtsb/5Cstz86Hu4GK8IgO9HTlA6rgjg7d/ljq7RDNWQ==}
+  takua@0.2.3:
+    resolution: {integrity: sha512-X/UsrLMSttBXrgAthtDZW9iuorphm7dgm5h6AskgpONCtpwd59zo8dN3sPHzi9LkEZ2mfxTVWMqAZpsoeEIt1Q==}
 
   tinyexec@1.2.4:
     resolution: {integrity: sha512-SHf/r48b7vOrjve9PxJo3MN5v5yuyjHvdUcrQffT3WXMUfnGmHDVbC4k3sHJaJTgZCwpUplIaAo5ANtMyp3YHg==}
@@ -919,7 +919,7 @@ snapshots:
       '@rolldown/binding-win32-arm64-msvc': 1.2.0
       '@rolldown/binding-win32-x64-msvc': 1.2.0
 
-  takua@0.2.2: {}
+  takua@0.2.3: {}
 
   tinyexec@1.2.4: {}
 
