@@ -10,7 +10,7 @@
     "npm-stage": "node ./scripts/npm-stage.node.ts"
   },
   "devDependencies": {
-    "@types/node": "26.2.0",
+    "@types/node": "26.3.0",
     "comline": "0.5.2",
     "dprint-plugin-pug": "workspace:*",
     "takua": "0.2.3",
