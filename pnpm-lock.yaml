@@ -116,7 +116,7 @@ importers:
         version: 26.5.1
       comline:
         specifier: 0.5.4
-        version: 0.5.4(zod@4.6.0)
+        version: 0.5.4(zod@4.6.1)
       dprint-plugin-pug:
         specifier: workspace:*
         version: link:packages/dprint-plugin-pug
@@ -127,8 +127,8 @@ importers:
         specifier: 7.0.2
         version: 7.0.2
       zod:
-        specifier: 4.6.0
-        version: 4.6.0
+        specifier: 4.6.1
+        version: 4.6.1
 
   packages/dprint-plugin-pug: {}
 
@@ -708,8 +708,8 @@ packages:
   yuku-parser@0.9.3:
     resolution: {integrity: sha512-96wPoHnwaXfkZv7UIOUkDb+s7ZH8lv8Qtg+MxdvHUV1LFa5jV9iKOaams1942YQt+krFQrWiD6lSg2ermv5kHA==}
 
-  zod@4.6.0:
-    resolution: {integrity: sha512-iIvwyDnebKYpww2ta0DjaNOL8RnVLmPMhgWyOzlW9y0EIIxv5gl+H6Y0ONpt83HqjGqkk78uWp6xWtpxzZdPbw==}
+  zod@4.6.1:
+    resolution: {integrity: sha512-341aRWQsve0rvronKNTqZpjmzdbUDlFuzHaI/XLg/Ej82qffDJRRfBTCuv7+9q/rMjB6LSLyEBnW4InJeMtt/Q==}
 
 snapshots:
 
@@ -908,12 +908,12 @@ snapshots:
 
   cac@7.0.0: {}
 
-  comline@0.5.4(zod@4.6.0):
+  comline@0.5.4(zod@4.6.1):
     dependencies:
       '@standard-schema/spec': 1.1.0
       treetrunks: 0.1.11
     optionalDependencies:
-      zod: 4.6.0
+      zod: 4.6.1
 
   defu@6.1.7: {}
 
@@ -1084,4 +1084,4 @@ snapshots:
       '@yuku-parser/binding-win32-arm64': 0.9.3
       '@yuku-parser/binding-win32-x64': 0.9.3
 
-  zod@4.6.0: {}
+  zod@4.6.1: {}
