@@ -42,6 +42,11 @@
   ],
   "packageRules": [
     {
+      "groupName": "napi dependencies",
+      "matchManagers": ["cargo"],
+      "matchPackageNames": ["/^napi(?:-.+)?$/"]
+    },
+    {
       "matchPackageNames": ["jdx/mise"],
       "matchDatasources": ["github-releases"],
       "ignoreUnstable": true,
