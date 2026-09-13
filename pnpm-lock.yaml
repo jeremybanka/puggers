@@ -172,8 +172,8 @@ importers:
         specifier: 26.5.1
         version: 26.5.1
       comline:
-        specifier: 0.6.0
-        version: 0.6.0(zod@4.6.2)
+        specifier: 0.6.1
+        version: 0.6.1(zod@4.6.2)
       dprint-plugin-pug:
         specifier: workspace:*
         version: link:packages/dprint-plugin-pug
@@ -604,8 +604,8 @@ packages:
     resolution: {integrity: sha512-tixWYgm5ZoOD+3g6UTea91eow5z6AAHaho3g0V9CNSNb45gM8SmflpAc+GRd1InC4AqN/07Unrgp56Y94N9hJQ==}
     engines: {node: '>=20.19.0'}
 
-  comline@0.6.0:
-    resolution: {integrity: sha512-xGnbd0VKp770L6uRq6iS3I4p/Vd+2J+zyQad2ZaDn0HzoVIN+JdYB588W49Dt6lNnPGo5P2HvEJRrne0yHmEzA==}
+  comline@0.6.1:
+    resolution: {integrity: sha512-Fg9dLzYpaIPdpmhVLBuE6polGpm+H4VOpbORkIUxVXkxsWHXRLMrCRW3wBJYs1HrknFvI9TNjH8vJmpSJNfWfQ==}
     peerDependencies:
       arktype: ^2.1.28
       zod: ^4.2.0
@@ -965,7 +965,7 @@ snapshots:
 
   cac@7.0.0: {}
 
-  comline@0.6.0(zod@4.6.2):
+  comline@0.6.1(zod@4.6.2):
     dependencies:
       '@standard-schema/spec': 1.1.0
       treetrunks: 0.1.11
