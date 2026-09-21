@@ -11,11 +11,11 @@ publish = false
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-napi = "=3.12.6"
-napi-derive = "=3.6.7"
+napi = "=3.12.7"
+napi-derive = "=3.6.8"
 puggers-core = { version = "0.1.11", path = "../puggers-core" }
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
 
 [build-dependencies]
-napi-build = "=2.4.3"
+napi-build = "=2.4.4"
