@@ -19,8 +19,7 @@
     "release:version": "knope version",
     "test": "just test",
     "test:npm": "pnpm --filter puggers test",
-    "test:watch": "pnpm --filter puggers run test:watch",
-    "verify": "pnpm run check && pnpm run build && pnpm run test"
+    "test:watch": "pnpm --filter puggers run test:watch"
   },
   "devDependencies": {
     "@types/node": "26.6.3",
