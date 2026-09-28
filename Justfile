@@ -40,12 +40,9 @@ fmt-cargo-check:
 c:
     just check
 check:
-    just check-scripts
-    just check-versions
-    just check-cargo
-    just check-npm
+    pnpm run check
 check-scripts:
-    pnpm run check:scripts
+    pnpm exec tsc -p scripts/tsconfig.json
 check-versions:
     node scripts/check-version-alignment.ts
 check-cargo:

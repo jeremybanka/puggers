@@ -92,3 +92,7 @@ Release notes live in `.changeset/`, the coordinated changelog lives in
 After the initial manual publish, GitHub Actions automatically keeps a
 `release` PR updated from pushes to `main` using Knope's pull-request flow and
 publishes merged releases via crates.io trusted publishing (OIDC).
+
+## Repository commands
+
+See [the command guide](docs/commands.md) for formatting, static checks, tests, coverage where available, and release commands.

@@ -36,3 +36,7 @@
 - Follow a red-green workflow for task-defining behavior changes: land focused failing tests that express the intended behavior, commit that red state, then implement the code that turns the tests green in a later commit.
 - Run `cargo test` for normal verification.
 - Before landing broader Rust changes, also run `cargo fmt --all`, `cargo check --workspace`, `cargo clippy --workspace --all-targets -- -D warnings`, and `cargo build -p dprint-plugin-pug --target wasm32-unknown-unknown --release` when the affected area justifies it.
+
+## Repository commands
+
+Use the canonical command names in `docs/commands.md`: `fmt` writes formatting, `check` aggregates `check:*` validators, `test` runs once, and `verify` runs the complete repository verification sequence. Coverage commands use the `cov` prefix where implemented. Keep CI and documentation references aligned when changing commands.

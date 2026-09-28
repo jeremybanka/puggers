@@ -26,7 +26,8 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: ./.github/actions/setup
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run check:scripts
+      - run: pnpm run check:tsc
+      - run: pnpm run check:versions
       - run: rustup target add wasm32-unknown-unknown
       - run: just build-npm-dprint-plugin
       - name: Verify Local dprint Plugin Resolver
@@ -164,7 +165,8 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: ./.github/actions/setup
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run check:scripts
+      - run: pnpm run check:tsc
+      - run: pnpm run check:versions
       - run: just build-npm-js
       - run: just build-npm-native --target=linux-x64-glibc
       - run: pnpm --filter puggers test
