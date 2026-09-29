@@ -1,0 +1,15 @@
+issue(id="0022" status="review")
+  title Generate declarations only for the npm library entrypoint
+  user-story
+    as-a Package maintainer
+    i-want Declaration generation limited to the public library entrypoint.
+    so-that Executable and installation scripts do not produce unused type declarations.
+  premise.
+    The npm package exports src/index.ts as its library API. The bin and install
+    entrypoints are scripts and still need JavaScript output, but no declarations.
+  acceptance-criteria
+    criterion The build emits index.js, bin.js, and install.js.
+    criterion The build emits index.d.ts without bin.d.ts or install.d.ts.
+    criterion Existing npm consumer tests and type checks pass.
+  review-items
+    item(status="covered") The public library export and runtime entrypoints retain their existing paths.
