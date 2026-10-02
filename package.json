@@ -4,10 +4,22 @@
   "type": "module",
   "packageManager": "pnpm@12.8.1",
   "scripts": {
-    "check:scripts": "tsc -p scripts/tsconfig.json",
+    "build": "just build",
     "build:npm": "pnpm --filter puggers build",
+    "change": "knope document-change",
+    "check": "pnpm run \"/^check:.*/\"",
+    "check:cargo": "just check-cargo-workspace",
+    "check:clippy": "just check-cargo-clippy",
+    "check:fmt": "just fmt-cargo-check",
+    "check:tsc": "tsc -p scripts/tsconfig.json && pnpm --filter puggers exec tsc",
+    "check:versions": "node scripts/check-version-alignment.ts",
+    "check:wasm": "just check-cargo-wasm",
+    "fmt": "just fmt",
+    "npm-stage": "node ./scripts/npm-stage.node.ts",
+    "release:version": "knope version",
+    "test": "just test",
     "test:npm": "pnpm --filter puggers test",
-    "npm-stage": "node ./scripts/npm-stage.node.ts"
+    "test:watch": "pnpm --filter puggers run test:watch"
   },
   "devDependencies": {
     "@types/node": "26.6.3",
