@@ -36,11 +36,11 @@ jobs:
           cat > "${verify_dir}/dprint.json" <<'JSON'
           {
             "plugins": ["npm:dprint-plugin-pug"],
-            "includes": ["tasks/**/*.pug"]
+            "includes": ["../../../../tasks/**/*.pug"]
           }
           JSON
 
-          dprint check --config "${verify_dir}/dprint.json" tasks/issue-template.pug
+          dprint check --config "${verify_dir}/dprint.json" "${GITHUB_WORKSPACE}/tasks/issue-template.pug"
       - run: pnpm npm-stage copy-dprint-plugin --destination=staging
       - name: Read dprint Plugin Package Metadata
         id: dprint_plugin_package
@@ -96,11 +96,11 @@ jobs:
           cat > "${verify_dir}/dprint.json" <<JSON
           {
             "plugins": ["npm:${package_name}@${package_version}"],
-            "includes": ["tasks/**/*.pug"]
+            "includes": ["../../../../tasks/**/*.pug"]
           }
           JSON
 
-          dprint check --config "${verify_dir}/dprint.json" tasks/issue-template.pug
+          dprint check --config "${verify_dir}/dprint.json" "${GITHUB_WORKSPACE}/tasks/issue-template.pug"
 
   NativePackage:
     name: Native Package (${{ matrix.npm_target }})
