@@ -73,6 +73,7 @@ impl SyncPluginHandler<Configuration> for PugPluginHandler {
             file_matching: FileMatchingInfo {
                 file_extensions: vec![String::from("pug")],
                 file_names: Vec::new(),
+                additive: false,
             },
         }
     }
