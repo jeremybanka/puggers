@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup
-      - run: just fmt-cargo-check
+      - run: pnpm run check:fmt
 
   CargoBuild:
     name: Cargo Build
@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup
-      - run: just check-cargo-clippy
+      - run: pnpm run check:clippy
 
   WasmBuild:
     name: Wasm Build
@@ -52,4 +52,4 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup
-      - run: just build-wasm
+      - run: pnpm run check:wasm
