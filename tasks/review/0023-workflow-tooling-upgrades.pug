@@ -1,0 +1,16 @@
+issue(id="0023" status="review")
+  title Upgrade pinned workflow tooling
+  user-story
+    as-a Repository maintainer
+    i-want Current stable mise and Renovate workflow tooling.
+    so-that CI and release automation receive upstream improvements.
+  premise.
+    GitHub Actions remain pinned to full commit SHAs, and mise remains pinned to
+    an explicit release. This maintenance change does not affect published packages.
+  acceptance-criteria
+    criterion The mise action uses v5.1.1 and installs mise 2026.10.6.
+    criterion The Renovate action uses v46.3.7.
+    criterion Workflow validation introduces no diagnostics relative to main.
+  review-items
+    item(status="covered") Upstream release tags resolve to the pinned action commits.
+    item(status="covered") Actionlint reports no diagnostics before or after the upgrades.
