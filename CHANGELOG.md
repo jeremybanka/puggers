@@ -2,6 +2,14 @@
 
 All notable user-facing changes to `puggers` will be documented here.
 
+## 0.1.12 (2026-10-09)
+
+### Fixes
+
+#### Support dprint-core 0.70
+
+Keep the Pug plugin as the primary formatter for Pug files with dprint-core's new file matching metadata.
+
 ## 0.1.11 (2026-07-11)
 
 ### Fixes

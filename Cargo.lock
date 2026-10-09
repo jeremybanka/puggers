@@ -126,7 +126,7 @@ dependencies = [
 
 [[package]]
 name = "dprint-plugin-pug"
-version = "0.1.11"
+version = "0.1.12"
 dependencies = [
  "dprint-core",
  "puggers-core",
@@ -685,14 +685,14 @@ dependencies = [
 
 [[package]]
 name = "puggers"
-version = "0.1.11"
+version = "0.1.12"
 dependencies = [
  "puggers-core",
 ]
 
 [[package]]
 name = "puggers-core"
-version = "0.1.11"
+version = "0.1.12"
 dependencies = [
  "kuchikiki",
  "serde",
@@ -700,7 +700,7 @@ dependencies = [
 
 [[package]]
 name = "puggers-node"
-version = "0.1.11"
+version = "0.1.12"
 dependencies = [
  "napi",
  "napi-build",
