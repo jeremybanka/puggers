@@ -1,6 +1,13 @@
 name: Release
 
 on:
+  workflow_dispatch:
+    inputs:
+      recovery_version:
+        description: Recover the partially published release from its original source
+        required: true
+        type: choice
+        options: ["0.1.12"]
   pull_request:
     types: [closed]
     branches: ["main"]
@@ -11,7 +18,7 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 defaults:
   run:
@@ -30,7 +37,13 @@ jobs:
 
   Release:
     name: Release
-    if: github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'release'
+    if: >-
+      always() && (
+        (github.event_name == 'pull_request' && github.event.pull_request.merged == true &&
+         github.event.pull_request.head.ref == 'release' && needs.NpmPackageGroup.result == 'success') ||
+        (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' &&
+         inputs.recovery_version == '0.1.12')
+      )
     needs: NpmPackageGroup
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -50,50 +63,44 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ steps.app-token.outputs.token }}
+          ref: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
+      - name: Select immutable release source
+        id: source
+        run: |
+          install -m 644 scripts/publish-crates.py "${RUNNER_TEMP}/publish-crates.py"
+          if [[ "${RECOVERY}" == 'true' ]]; then
+            source='3a5257f08e4a3d465d3be38ec826e8804add9522'
+            git merge-base --is-ancestor "${source}" HEAD
+            git checkout --detach "${source}"
+          fi
+          version="$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')"
+          if [[ "${RECOVERY}" == 'true' && "${version}" != '0.1.12' ]]; then
+            echo 'Recovery source must be version 0.1.12.' >&2
+            exit 1
+          fi
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+          echo "Release source: $(git rev-parse HEAD), version ${version}"
+        env:
+          RECOVERY: ${{ github.event_name == 'workflow_dispatch' }}
       - uses: ./.github/actions/setup
       - uses: knope-dev/action@19617851f9f13ab2f27a05989c55efb18aca3675 # v2.1.2
         with:
           version: 0.23.0
+      - name: Check recovery packages before obtaining publishing credentials
+        if: github.event_name == 'workflow_dispatch'
+        run: python3 "${RUNNER_TEMP}/publish-crates.py" preflight 0.1.12 puggers dprint-plugin-pug --require-core
       - uses: rust-lang/crates-io-auth-action@c6f97d42243bad5fab37ca0427f495c86d5b1a18 # v1.0.5
         id: crates-io-auth
       - name: Publish Crates
         run: |
-          version="$(node -e "const fs = require('node:fs'); const cargoToml = fs.readFileSync('Cargo.toml', 'utf8'); console.log(cargoToml.match(/\\[workspace\\.package\\][\\s\\S]*?version = \"([^\"]+)\"/)[1]);")"
-
-          crate_is_published() {
-            curl --fail --silent "https://crates.io/api/v1/crates/${1}/${version}" >/dev/null
-          }
-
-          publish_crate() {
-            crate="${1}"
-            if crate_is_published "${crate}"; then
-              echo "${crate}@${version} is already published; skipping."
-              return 0
-            fi
-
-            cargo publish -p "${crate}" --locked
-          }
-
-          wait_for_crate() {
-            crate="${1}"
-            for attempt in {1..20}; do
-              if crate_is_published "${crate}"; then
-                return 0
-              fi
-
-              echo "Waiting for ${crate}@${version} to propagate to crates.io (attempt ${attempt}/20)..."
-              sleep 15
-            done
-
-            echo "Timed out waiting for ${crate}@${version} to become visible on crates.io." >&2
-            exit 1
-          }
-
-          publish_crate puggers-core
-          wait_for_crate puggers-core
-          publish_crate puggers
-          publish_crate dprint-plugin-pug
+          if [[ "${RECOVERY}" == 'true' ]]; then
+            python3 "${RUNNER_TEMP}/publish-crates.py" publish 0.1.12 puggers dprint-plugin-pug --require-core
+          else
+            python3 "${RUNNER_TEMP}/publish-crates.py" publish "${VERSION}" puggers-core puggers dprint-plugin-pug
+          fi
         env:
+          RECOVERY: ${{ github.event_name == 'workflow_dispatch' }}
+          VERSION: ${{ steps.source.outputs.version }}
           CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
       - run: knope release --verbose
         env:
