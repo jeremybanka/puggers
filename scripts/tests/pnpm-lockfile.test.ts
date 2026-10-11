@@ -60,7 +60,7 @@ test("Renovate-generated pnpm lockfiles support frozen installs", () => {
         timeout: 30_000
       });
 
-      assert.equal(result.error, undefined, result.error?.message);
+      assert.ifError(result.error);
       assert.equal(result.status, 0, result.stdout + result.stderr);
     };
 
@@ -69,7 +69,10 @@ test("Renovate-generated pnpm lockfiles support frozen installs", () => {
     // registry metadata for a new external package version.
     const manifestPath = join(fixture, "package.json");
     const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-    manifest.devDependencies["dprint-plugin-pug"] = "workspace:^";
+    manifest.devDependencies["dprint-plugin-pug"] =
+      manifest.devDependencies["dprint-plugin-pug"] === "workspace:^"
+        ? "workspace:*"
+        : "workspace:^";
     writeFileSync(manifestPath, JSON.stringify(manifest));
     // Renovate disables pnpm hooks when allowScripts is false (the default).
     install(["--no-frozen-lockfile", "--ignore-pnpmfile"]);

@@ -1,4 +1,4 @@
-issue(id="0025" status="open")
+issue(id="0025" status="review")
   title Keep Renovate lockfiles compatible with frozen pnpm installs
   user-story
     as-a Package maintainer
@@ -14,4 +14,6 @@ issue(id="0025" status="open")
     criterion npm library declarations build with TypeScript 7 without the legacy hook.
     criterion CI runs the lockfile regression test and retains frozen installs.
   review-items
-    item(status="open") Confirm CI passes with the obsolete hook removed.
+    item(status="covered") The regression test fails with the old hook and passes without it.
+    item(status="covered") Frozen install, TypeScript checks, declarations, Cargo tests, and npm consumer tests pass locally.
+    item(status="open") Confirm hosted CI passes before merging.
