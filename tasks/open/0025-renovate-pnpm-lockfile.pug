@@ -1,0 +1,17 @@
+issue(id="0025" status="open")
+  title Keep Renovate lockfiles compatible with frozen pnpm installs
+  user-story
+    as-a Package maintainer
+    i-want Renovate npm updates to produce lockfiles accepted by CI.
+    so-that Dependency updates can build, test, and merge automatically.
+  premise.
+    Renovate ignores pnpm hooks by default and removes pnpmfileChecksum when
+    regenerating the lockfile. CI loads the existing hook and rejects the result.
+    The hook's TypeScript 6 workaround targets tsdown 0.22 and Vite+ core 0.2;
+    neither is in the current dependency graph, which uses tsdown 0.23.
+  acceptance-criteria
+    criterion A lockfile regenerated with Renovate's hook policy passes a frozen install.
+    criterion npm library declarations build with TypeScript 7 without the legacy hook.
+    criterion CI runs the lockfile regression test and retains frozen installs.
+  review-items
+    item(status="open") Confirm CI passes with the obsolete hook removed.
