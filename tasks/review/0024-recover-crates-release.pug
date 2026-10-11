@@ -1,0 +1,20 @@
+issue(id="0024" status="review")
+  title Recover the partially published 0.1.12 release
+  user-story
+    as-a Release maintainer.
+    i-want Reliable exact-version checks and a bounded recovery run.
+    so-that Registry request failures cannot cause duplicate uploads or hide a partial release.
+  premise.
+    The 0.1.12 release published npm packages and puggers-core, then stopped after
+    an opaque crates.io API visibility timeout. The historical HTTP failure is
+    unknown. Recovery must use original source 3a5257f08e4a3d465d3be38ec826e8804add9522
+    and the existing release.yml trusted publisher without credential changes.
+  acceptance-criteria
+    criterion Exact non-yanked sparse-index versions are skipped; confirmed absence permits publishing.
+    criterion HTTP, transport, parsing, and yanked-version failures stop before uploading.
+    criterion Missing crates pass locked Cargo dry runs and are verified after publishing.
+    criterion Recovery only runs on main for 0.1.12, skips npm and core, and releases the original source.
+  review-items
+    item(status="covered") Regression tests cover present, absent, uncertain, and publishing failure paths.
+    item(status="open") Approve merging the recovery workflow into main before dispatching it.
+    item(status="open") Verify missing registry versions and the GitHub release after the recovery run.
