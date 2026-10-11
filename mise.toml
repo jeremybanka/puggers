@@ -1,3 +1,6 @@
+[env]
+_.path = ["{{config_root}}/node_modules/.bin"]
+
 [tools]
 dprint = "0.61.1"
 just = "1.58.0"
