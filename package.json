@@ -7,6 +7,7 @@
     "check:scripts": "tsc -p scripts/tsconfig.json",
     "build:npm": "pnpm --filter puggers build",
     "test:npm": "pnpm --filter puggers test",
+    "test:lockfile": "node --test scripts/tests/pnpm-lockfile.test.ts",
     "npm-stage": "node ./scripts/npm-stage.node.ts"
   },
   "devDependencies": {
