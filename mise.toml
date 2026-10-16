@@ -1,6 +1,6 @@
 [tools]
 dprint = "0.63.0"
-just = "1.58.0"
+just = "1.59.0"
 node = "26"
 pnpm = "12.11.2"
 rust = { version = "1.99.1", profile = "minimal", components = "clippy,rustfmt", targets = "wasm32-unknown-unknown" }
