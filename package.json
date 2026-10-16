@@ -16,6 +16,6 @@
     "dprint-plugin-pug": "workspace:*",
     "takua": "0.2.3",
     "typescript": "7.0.2",
-    "zod": "4.6.6"
+    "zod": "4.6.7"
   }
 }
