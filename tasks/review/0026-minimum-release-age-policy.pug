@@ -1,0 +1,16 @@
+issue(id="0026" status="review")
+  title Align dependency release-age exceptions
+  user-story
+    as-a Repository maintainer
+    i-want First-party dependencies to bypass the release-age delay at every version
+    so-that Updates to maintained packages can be consumed immediately.
+  premise.
+    The exception list is limited to comline, takua, and transitive treetrunks, which this
+    repository resolves from npm. Other packages retain the one-day release-age delay.
+  acceptance-criteria
+    criterion Renovate and pnpm exempt the same three unversioned npm package names.
+    criterion pnpm explicitly enforces a minimum release age of 1440 minutes.
+    criterion Existing dependency grouping and release automation remain intact.
+  review-items
+    item(status="covered") Confirmed the first-party intersection against the committed lockfile.
+    item(status="open") Review the dependency policy configuration changes.
