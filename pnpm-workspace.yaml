@@ -1,3 +1,11 @@
 packages:
   - "packages/*"
   - "packages/native/*"
+
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  # Consumed jeremybanka packages are exempt at every version.
+  # Keep aligned with the npm rule in renovate.json.
+  - comline
+  - takua
+  - treetrunks
