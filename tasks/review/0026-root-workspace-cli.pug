@@ -1,0 +1,15 @@
+issue(id="0026" status="review")
+  title Install the workspace CLI at the repository root
+  user-story
+    as-a Repository contributor.
+    i-want The root development dependencies to include the local puggers CLI.
+    so-that Root package-manager commands resolve the workspace package.
+  premise.
+    The repository root should depend on puggers through workspace:* and record
+    the local package link in pnpm-lock.yaml.
+  acceptance-criteria
+    criterion Root devDependencies declares puggers as workspace:*.
+    criterion The root lockfile importer links puggers to packages/puggers.
+    criterion A frozen lockfile-only install succeeds without changing the lockfile.
+  review-items
+    item(status="open") Review the root dependency and lockfile link.

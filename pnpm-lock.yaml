@@ -175,6 +175,9 @@ importers:
       dprint-plugin-pug:
         specifier: workspace:*
         version: link:packages/dprint-plugin-pug
+      puggers:
+        specifier: workspace:*
+        version: link:packages/puggers
       takua:
         specifier: 0.2.3
         version: 0.2.3
