@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@types/node": "26.6.5",
-    "comline": "0.9.1",
+    "comline": "0.9.2",
     "dprint-plugin-pug": "workspace:*",
     "takua": "0.2.3",
     "typescript": "7.0.2",
