@@ -14,6 +14,7 @@
     "@types/node": "26.6.5",
     "comline": "0.9.3",
     "dprint-plugin-pug": "workspace:*",
+    "puggers": "workspace:*",
     "takua": "0.2.3",
     "typescript": "7.0.2",
     "zod": "4.6.7"
