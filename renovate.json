@@ -42,6 +42,10 @@
   ],
   "packageRules": [
     {
+      "groupName": "dprint",
+      "matchPackageNames": ["dprint", "@dprint/*", "/^dprint-plugin-/"]
+    },
+    {
       "groupName": "napi dependencies",
       "matchManagers": ["cargo"],
       "matchPackageNames": ["/^napi(?:-.+)?$/"]
